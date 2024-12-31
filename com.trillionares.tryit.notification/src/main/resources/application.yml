@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: notification-service
+  config:
+    import: configserver:http://localhost:18080   # Config Server 주소
+
+server:
+  port: 19050
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:18080/eureka/
+
+logging:
+  level:
+    feign: DEBUG
+    feign.Logger: DEBUG
+    com.sparta.logistics.delivery.infrastructure.client: DEBUG
+    com.sparta.logistics.delivery: DEBUG
+    org.springframework.web: DEBUG
+
+openapi:
+  service:
+    url: http://localhost:19091 # API Gateway 포트
