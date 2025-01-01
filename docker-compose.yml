@@ -19,3 +19,6 @@ services:
       - review-network
       - notification-network
       - statistics-network
+
+volumes:
+  postgres-data:
