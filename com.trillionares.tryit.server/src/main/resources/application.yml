@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: eureka-server
+
+server:
+  port: 19090
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+  instance:
+    hostname: localhost
+
+logging:
+  level:
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO
