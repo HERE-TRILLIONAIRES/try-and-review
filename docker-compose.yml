@@ -150,7 +150,38 @@ services:
     networks:
       - kafka-network
 
+  # monitoring containers
+  prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - auth-network
+      - recruitment-network
+      - product-network
+      - review-network
+      - notification-network
+      - statistics-network
+      - kafka-network
 
+  loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
+      - auth-network
+      - recruitment-network
+      - product-network
+      - review-network
+      - notification-network
+      - statistics-network
+      - kafka-network
 
 
 volumes:
