@@ -1,0 +1,21 @@
+services:
+  # postgres container
+  postgres:
+    image: bitnami/postgresql:latest
+    platform: linux/amd64
+    ports:
+      - ${DB_PORTS_HOST_CONTAINER}
+    environment:
+      POSTGRESQL_USERNAME: ${DB_USERNAME}
+      POSTGRESQL_PASSWORD: ${DB_PASSWORD}
+      POSTGRESQL_DATABASE: ${DB_DATABASE}
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
+      - postgres-data:/postgresql/data
+    networks:
+      - auth-network
+      - recruitment-network
+      - product-network
+      - review-network
+      - notification-network
+      - statistics-network
