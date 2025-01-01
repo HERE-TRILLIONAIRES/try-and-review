@@ -20,5 +20,96 @@ services:
       - notification-network
       - statistics-network
 
+  # redis container
+  auth-redis:
+    image: redis/redis-stack:latest
+    container_name: auth-redis
+    platform: linux/amd64
+    ports:
+      - "16379:6379"
+      - "18001:8001"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - auth_redis_data:/data
+    networks:
+      - auth-network
+
+  recruitment-redis:
+    image: redis/redis-stack:latest
+    container_name: recruitment-redis
+    platform: linux/amd64
+    ports:
+      - "16380:6379"
+      - "18002:8001"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - recruitment_redis_data:/data
+    networks:
+      - recruitment-network
+
+  product-redis:
+    image: redis/redis-stack:latest
+    container_name: product-redis
+    platform: linux/amd64
+    ports:
+      - "16381:6379"
+      - "18003:8001"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - product_redis_data:/data
+    networks:
+      - product-network
+
+  review-redis:
+    image: redis/redis-stack:latest
+    container_name: review-redis
+    platform: linux/amd64
+    ports:
+      - "16382:6379"
+      - "18004:8001"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - review_redis_data:/data
+    networks:
+      - review-network
+
+  notification-redis:
+    image: redis/redis-stack:latest
+    container_name: notification-redis
+    platform: linux/amd64
+    ports:
+      - "16383:6379"
+      - "18005:8001"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - notification_redis_data:/data
+    networks:
+      - notification-network
+
+  statistics-redis:
+    image: redis/redis-stack:latest
+    container_name: statistics-redis
+    platform: linux/amd64
+    ports:
+      - "16384:6379"
+      - "18006:8001"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - statistics_redis_data:/data
+    networks:
+      - statistics-network
+
 volumes:
   postgres-data:
+  auth_redis_data:
+  recruitment_redis_data:
+  product_redis_data:
+  review_redis_data:
+  notification_redis_data:
+  statistics_redis_data:
