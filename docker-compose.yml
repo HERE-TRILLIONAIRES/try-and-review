@@ -183,6 +183,27 @@ services:
       - statistics-network
       - kafka-network
 
+networks:
+  auth-network:
+    driver: bridge
+
+  recruitment-network:
+    driver: bridge
+
+  product-network:
+    driver: bridge
+
+  review-network:
+    driver: bridge
+
+  notification-network:
+    driver: bridge
+
+  statistics-network:
+    driver: bridge
+
+  kafka-network:
+    driver: bridge
 
 volumes:
   postgres-data:
