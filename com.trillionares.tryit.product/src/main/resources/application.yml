@@ -5,8 +5,8 @@ spring:
 #    import: configserver:http://localhost:18080   # Config Server 주소
   datasource:
     url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_PRODUCT_USERNAME}
+    password: ${DB_PRODUCT_PASSWORD}
     driver-class-name: org.postgresql.Driver
   data:
     redis:
