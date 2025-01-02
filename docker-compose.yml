@@ -1,0 +1,303 @@
+services:
+  # postgres container
+  postgres:
+    image: bitnami/postgresql:latest
+    platform: linux/amd64
+    ports:
+      - ${DB_PORTS_HOST_CONTAINER}
+    environment:
+      POSTGRESQL_USERNAME: ${DB_USERNAME}
+      POSTGRESQL_PASSWORD: ${DB_PASSWORD}
+      POSTGRESQL_DATABASE: ${DB_DATABASE}
+    volumes:
+      - ./environment/init-scripts:/docker-entrypoint-initdb.d
+      - postgres-data:/postgresql/data
+    networks:
+      - auth-network
+      - recruitment-network
+      - product-network
+      - review-network
+      - notification-network
+      - statistics-network
+
+  # redis container
+  auth-redis:
+    image: redis/redis-stack:latest
+    container_name: auth-redis
+    platform: linux/amd64
+    ports:
+      - "${AUTH_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${AUTH_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - auth_redis_data:/data
+    networks:
+      - auth-network
+
+  recruitment-redis:
+    image: redis/redis-stack:latest
+    container_name: recruitment-redis
+    platform: linux/amd64
+    ports:
+      - "${RECRUITMENT_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${RECRUITMENT_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - recruitment_redis_data:/data
+    networks:
+      - recruitment-network
+
+  product-redis:
+    image: redis/redis-stack:latest
+    container_name: product-redis
+    platform: linux/amd64
+    ports:
+      - "${PRODUCT_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${PRODUCT_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - product_redis_data:/data
+    networks:
+      - product-network
+
+  review-redis:
+    image: redis/redis-stack:latest
+    container_name: review-redis
+    platform: linux/amd64
+    ports:
+      - "${REVIEW_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${REVIEW_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - review_redis_data:/data
+    networks:
+      - review-network
+
+  notification-redis:
+    image: redis/redis-stack:latest
+    container_name: notification-redis
+    platform: linux/amd64
+    ports:
+      - "${NOTIFICATION_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${NOTIFICATION_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - notification_redis_data:/data
+    networks:
+      - notification-network
+
+  statistics-redis:
+    image: redis/redis-stack:latest
+    container_name: statistics-redis
+    platform: linux/amd64
+    ports:
+      - "${STATISTICS_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${STATISTICS_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - statistics_redis_data:/data
+    networks:
+      - statistics-network
+
+  # zookeeper, kafka, kafka-ui containers
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    platform: linux/amd64
+    ports:
+      - "${ZOOKEEPER_PORT}:${ZOOKEEPER_PORT}"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka-network
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    platform: linux/amd64
+    ports:
+      - "${KAFKA_PORT}:${KAFKA_PORT}"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    platform: linux/amd64
+    ports:
+      - "${KAFKA_UI_PORT}:${KAFKA_UI_PORT}"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_READONLY: "false"
+    depends_on:
+      - kafka
+    networks:
+      - kafka-network
+
+  # monitoring containers
+  auth-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${AUTH_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - auth-network
+
+  recruitment-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${RECRUITMENT_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - recruitment-network
+
+  product-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${PRODUCT_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - product-network
+
+  review-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${REVIEW_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - review-network
+
+  notification-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${NOTIFICATION_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - notification-network
+
+  statistics-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${STATISTICS_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - statistics-network
+
+  auth-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${AUTH_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
+      - auth-network
+
+  recruitment-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${RECRUITMENT_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
+      - recruitment-network
+
+  product-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${PRODUCT_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
+      - product-network
+
+  review-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${REVIEW_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
+      - review-network
+
+  notification-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${NOTIFICATION_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
+      - notification-network
+
+  statistics-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${STATISTICS_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
+      - statistics-network
+
+networks:
+  auth-network:
+    driver: bridge
+
+  recruitment-network:
+    driver: bridge
+
+  product-network:
+    driver: bridge
+
+  review-network:
+    driver: bridge
+
+  notification-network:
+    driver: bridge
+
+  statistics-network:
+    driver: bridge
+
+  kafka-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  auth_redis_data:
+  recruitment_redis_data:
+  product_redis_data:
+  review_redis_data:
+  notification_redis_data:
+  statistics_redis_data:
