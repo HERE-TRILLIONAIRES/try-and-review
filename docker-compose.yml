@@ -10,7 +10,7 @@ services:
       POSTGRESQL_PASSWORD: ${DB_PASSWORD}
       POSTGRESQL_DATABASE: ${DB_DATABASE}
     volumes:
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - ./environment/init-scripts:/docker-entrypoint-initdb.d
       - postgres-data:/postgresql/data
     networks:
       - auth-network
