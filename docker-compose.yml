@@ -151,37 +151,125 @@ services:
       - kafka-network
 
   # monitoring containers
-  prometheus:
+  auth-prometheus:
     image: prom/prometheus:latest
     platform: linux/amd64
     ports:
-      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+      - "${AUTH_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - auth-network
-      - recruitment-network
-      - product-network
-      - review-network
-      - notification-network
-      - statistics-network
-      - kafka-network
 
-  loki:
+  recruitment-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${RECRUITMENT_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - recruitment-network
+
+  product-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${PRODUCT_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - product-network
+
+  review-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${REVIEW_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - review-network
+
+  notification-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${NOTIFICATION_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - notification-network
+
+  statistics-prometheus:
+    image: prom/prometheus:latest
+    platform: linux/amd64
+    ports:
+      - "${STATISTICS_PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - statistics-network
+
+  auth-loki:
     image: grafana/loki:latest
     platform: linux/amd64
     ports:
-      - "${LOKI_PORT}:${LOKI_PORT}"
+      - "${AUTH_LOKI_PORT}:${LOKI_PORT}"
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/config.yaml
     networks:
       - auth-network
+
+  recruitment-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${RECRUITMENT_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
       - recruitment-network
+
+  product-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${PRODUCT_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
       - product-network
+
+  review-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${REVIEW_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
       - review-network
+
+  notification-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${NOTIFICATION_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
       - notification-network
+
+  statistics-loki:
+    image: grafana/loki:latest
+    platform: linux/amd64
+    ports:
+      - "${STATISTICS_LOKI_PORT}:${LOKI_PORT}"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
       - statistics-network
-      - kafka-network
 
 networks:
   auth-network:
