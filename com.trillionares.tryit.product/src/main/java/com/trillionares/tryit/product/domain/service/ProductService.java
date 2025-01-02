@@ -1,12 +1,20 @@
 package com.trillionares.tryit.product.domain.service;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.trillionares.tryit.product.domain.model.product.Product;
+import com.trillionares.tryit.product.domain.model.product.QProduct;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
 import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
+import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +41,38 @@ public class ProductService {
         productRepository.save(product);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
+        return responseDto;
+    }
+
+    public List<ProductInfoResponseDto> getProduct(
+            List<UUID> idList, Predicate predicate, Pageable pageable
+    ) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder(predicate);
+        if(idList != null && !idList.isEmpty()) {
+            booleanBuilder.and(QProduct.product.productId.in(idList));
+        }
+        booleanBuilder.and(QProduct.product.isDelete.eq(false));
+        booleanBuilder.and(QProduct.product.createdAt.gt(QProduct.product.createdAt.min()));
+        Page<Product> productList = productRepository.findAll(predicate, pageable);
+
+
+        List<ProductInfoResponseDto> responseDto = new ArrayList<>();
+        for (Product product : productList) {
+            // TODO: User Service 호출해서 Seller 정보 받아오기
+            String seller = "나판매";
+
+            // TODO: 카테고리 정보 여러개면 문자열 붙이기
+            String allCategory = "카테고리";
+
+            // TODO: 이미지 정보 받아오기
+            String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
+//            List<String> productSubImgDummydummyURLList = List.of("https://dummyimage.com/600x400/000/fff");
+            List<String> contentImgDummydummyURLList = new ArrayList<>();
+            contentImgDummydummyURLList.add("https://dummyimage.com/600x400/000/fff");
+
+            responseDto.add(ProductInfoResponseDto.from(product, seller, allCategory, productMainImgDummydummyURL, contentImgDummydummyURLList));
+        }
+
         return responseDto;
     }
 }
