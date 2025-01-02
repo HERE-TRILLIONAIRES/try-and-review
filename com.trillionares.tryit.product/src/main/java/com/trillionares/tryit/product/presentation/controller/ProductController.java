@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +50,17 @@ public class ProductController {
             List<ProductInfoResponseDto> responseDto = productService.getProduct(
                     idList, predicate, pageable
             );
+
+            return BaseResponseDto.from(200, null, "상품 조회 성공", responseDto);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/{productId}")
+    public BaseResponseDto<ProductInfoResponseDto> getProductById(@PathVariable("productId") UUID productId) {
+        try {
+            ProductInfoResponseDto responseDto = productService.getProductById(productId);
 
             return BaseResponseDto.from(200, null, "상품 조회 성공", responseDto);
         } catch (Exception e) {

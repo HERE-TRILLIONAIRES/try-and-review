@@ -75,4 +75,25 @@ public class ProductService {
 
         return responseDto;
     }
+
+    public ProductInfoResponseDto getProductById(UUID productId) {
+        Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
+        if(product == null) {
+            throw new RuntimeException("상품이 존재하지 않습니다.");
+        }
+
+        // TODO: User Service 호출해서 Seller 정보 받아오기
+        String seller = "나판매";
+
+        // TODO: 카테고리 정보 여러개면 문자열 붙이기
+        String allCategory = "카테고리";
+
+        // TODO: 이미지 정보 받아오기
+        String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
+//            List<String> productSubImgDummydummyURLList = List.of("https://dummyimage.com/600x400/000/fff");
+        List<String> contentImgDummydummyURLList = new ArrayList<>();
+        contentImgDummydummyURLList.add("https://dummyimage.com/600x400/000/fff");
+
+        return ProductInfoResponseDto.from(product, seller, allCategory, productMainImgDummydummyURL, contentImgDummydummyURLList);
+    }
 }

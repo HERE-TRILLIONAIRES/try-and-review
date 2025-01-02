@@ -34,4 +34,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID>,
             return Optional.of(booleanBuilder);
         });
     }
+
+    Optional<Product> findByProductIdAndIsDeleteFalse(UUID productId);
 }
