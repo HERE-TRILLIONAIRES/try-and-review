@@ -26,8 +26,8 @@ services:
     container_name: auth-redis
     platform: linux/amd64
     ports:
-      - "16379:6379"
-      - "18001:8001"
+      - "${AUTH_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${AUTH_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
     environment:
       REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
     volumes:
@@ -40,8 +40,8 @@ services:
     container_name: recruitment-redis
     platform: linux/amd64
     ports:
-      - "16380:6379"
-      - "18002:8001"
+      - "${RECRUITMENT_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${RECRUITMENT_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
     environment:
       REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
     volumes:
@@ -54,8 +54,8 @@ services:
     container_name: product-redis
     platform: linux/amd64
     ports:
-      - "16381:6379"
-      - "18003:8001"
+      - "${PRODUCT_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${PRODUCT_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
     environment:
       REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
     volumes:
@@ -68,8 +68,8 @@ services:
     container_name: review-redis
     platform: linux/amd64
     ports:
-      - "16382:6379"
-      - "18004:8001"
+      - "${REVIEW_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${REVIEW_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
     environment:
       REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
     volumes:
@@ -82,8 +82,8 @@ services:
     container_name: notification-redis
     platform: linux/amd64
     ports:
-      - "16383:6379"
-      - "18005:8001"
+      - "${NOTIFICATION_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${NOTIFICATION_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
     environment:
       REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
     volumes:
@@ -96,8 +96,8 @@ services:
     container_name: statistics-redis
     platform: linux/amd64
     ports:
-      - "16384:6379"
-      - "18006:8001"
+      - "${STATISTICS_REDIS_PORT}:${REDIS_CONTAINER_PORT}"
+      - "${STATISTICS_REDIS_GUI_PORT}:${REDIS_GUI_PORT}"
     environment:
       REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
     volumes:
@@ -110,7 +110,7 @@ services:
     image: wurstmeister/zookeeper:latest
     platform: linux/amd64
     ports:
-      - "2181:2181"
+      - "${ZOOKEEPER_PORT}:${ZOOKEEPER_PORT}"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -121,7 +121,7 @@ services:
     image: wurstmeister/kafka:latest
     platform: linux/amd64
     ports:
-      - "9092:9092"
+      - "${KAFKA_PORT}:${KAFKA_PORT}"
     environment:
       KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
@@ -139,7 +139,7 @@ services:
     image: provectuslabs/kafka-ui:latest
     platform: linux/amd64
     ports:
-      - "8080:8080"
+      - "${KAFKA_UI_PORT}:${KAFKA_UI_PORT}"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
@@ -155,7 +155,7 @@ services:
     image: prom/prometheus:latest
     platform: linux/amd64
     ports:
-      - "9090:9090"
+      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
@@ -171,7 +171,7 @@ services:
     image: grafana/loki:latest
     platform: linux/amd64
     ports:
-      - "3100:3100"
+      - "${LOKI_PORT}:${LOKI_PORT}"
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/config.yaml
     networks:
