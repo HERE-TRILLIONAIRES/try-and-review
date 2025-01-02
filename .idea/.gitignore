@@ -11,3 +11,5 @@
 ./idea/**
 ./env
 ./init-scripts
+./try-and-review-private
+./try-and-review-private/.env
