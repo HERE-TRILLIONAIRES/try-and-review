@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,4 +36,20 @@ public class Product extends BaseEntity {
     private UUID productImgId;
     @Column(name = "content_img_id", nullable = true)
     private UUID contentImgId;
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setProductContent(String productContent) {
+        this.productContent = productContent;
+    }
+
+    public void setProductImgId(UUID productImgId) {
+        this.productImgId = productImgId;
+    }
+
+    public void setContentImgId(UUID contentImgId) {
+        this.contentImgId = contentImgId;
+    }
 }
