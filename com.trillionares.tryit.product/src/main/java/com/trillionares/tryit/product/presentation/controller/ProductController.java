@@ -85,10 +85,8 @@ public class ProductController {
         } catch (ProductNotFoundException pnfe) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pnfe.getMessage(), null);
         } catch (RuntimeException re) {
-            log.error("여기");
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
-            log.error("여기1");
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
     }

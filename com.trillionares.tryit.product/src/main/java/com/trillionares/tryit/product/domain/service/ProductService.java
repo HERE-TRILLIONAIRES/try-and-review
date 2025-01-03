@@ -109,7 +109,6 @@ public class ProductService {
     public ProductInfoResponseDto getProductById(UUID productId) {
         Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
         if(product == null) {
-            log.error("Product Not Found");
             throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
