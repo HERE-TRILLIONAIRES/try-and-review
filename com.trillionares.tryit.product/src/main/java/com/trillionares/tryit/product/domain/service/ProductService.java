@@ -132,4 +132,24 @@ public class ProductService {
 
         return product;
     }
+
+    @Transactional
+    public ProductIdResponseDto deleteProduct(UUID productId) {
+        // TODO: 권한 체크 (관리자, 판매자)
+
+        // TODO: UserId 토큰에서 받아오기
+        UUID userId = UUID.randomUUID();
+        String username = "너판매";
+
+        Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
+        if(product == null) {
+            throw new RuntimeException("상품이 존재하지 않습니다.");
+        }
+
+        product.delete(username);
+        productRepository.save(product);
+
+        ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
+        return responseDto;
+    }
 }
