@@ -42,4 +42,8 @@ public class ProductCategory {
         this.product = product;
         this.category = category;
     }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 }

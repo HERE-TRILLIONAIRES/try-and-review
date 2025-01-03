@@ -12,6 +12,7 @@ import com.trillionares.tryit.product.domain.repository.ProductRepository;
 import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -140,27 +141,70 @@ public class ProductService {
             throw new RuntimeException("상품이 존재하지 않습니다.");
         }
 
-        product = updateProductElement(username, product, requestDto);
-        productRepository.save(product);
+        updateProductElement(username, product, requestDto);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
     }
 
     private Product updateProductElement(String username, Product product, ProductInfoRequestDto requestDto) {
-        product.setProductName(requestDto.getProductName());
-        product.setProductContent(requestDto.getProductContent());
+        compareProductName(username, product, requestDto);
+        compareProductContent(username, product, requestDto);
 
         // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
         UUID productImgId = UUID.randomUUID();
         UUID contentImgId = UUID.randomUUID();
-        product.setProductImgId(productImgId);
-        product.setContentImgId(contentImgId);
+//        product.setProductImgId(productImgId);
+//        product.setContentImgId(contentImgId);
 
-        // TODO: 변경사항 있으면 updatedBy 수정
-        product.setUpdatedBy(username);
+        compareCategory(username, product, requestDto);
 
         return product;
+    }
+
+
+    private void compareProductName(String username, Product product, ProductInfoRequestDto requestDto) {
+        if(product.getProductName().equals(requestDto.getProductName())) {
+//            throw new RuntimeException("상품명이 변경되지 않았습니다.");
+            return;
+        }
+        product.setProductName(requestDto.getProductName());
+
+        product.setUpdatedBy(username);
+        productRepository.save(product);
+    }
+
+    private void compareProductContent(String username, Product product, ProductInfoRequestDto requestDto) {
+        if(product.getProductContent().equals(requestDto.getProductContent())) {
+//            throw new RuntimeException("상품설명이 변경되지 않았습니다.");
+            return;
+        }
+        product.setProductContent(requestDto.getProductContent());
+
+        product.setUpdatedBy(username);
+        productRepository.save(product);
+    }
+
+    private void compareCategory(String username, Product product, ProductInfoRequestDto requestDto) {
+        Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
+        if(!category.isPresent()) {
+            throw new RuntimeException("카테고리가 존재하지 않습니다.");
+        }
+
+        String orginCategory = product.getProductCategory().getCategory().getCategoryName();
+        if(orginCategory.equals(category.get().getCategoryName())) {
+//            throw new RuntimeException("카테고리가 변경되지 않았습니다.");
+            return;
+        }
+
+        ProductCategory productCategory = product.getProductCategory();
+        productCategory.setCategory(category.get());
+
+        productCategoryRepository.save(productCategory);
+
+        product.setUpdatedAt(LocalDateTime.now());
+        product.setUpdatedBy(username);
+        productRepository.save(product);
     }
 
     @Transactional
