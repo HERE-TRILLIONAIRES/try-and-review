@@ -2,6 +2,7 @@ package com.trillionares.tryit.product.domain.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.trillionares.tryit.product.domain.common.message.CategoryMessage;
 import com.trillionares.tryit.product.domain.model.category.Category;
 import com.trillionares.tryit.product.domain.model.category.ProductCategory;
 import com.trillionares.tryit.product.domain.model.product.Product;
@@ -12,6 +13,7 @@ import com.trillionares.tryit.product.domain.repository.ProductRepository;
 import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
+import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +49,7 @@ public class ProductService {
 
         Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
         if(!category.isPresent()) {
-            throw new RuntimeException("카테고리가 존재하지 않습니다.");
+            throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
         }
 
         Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, productImgId, contentImgId);
