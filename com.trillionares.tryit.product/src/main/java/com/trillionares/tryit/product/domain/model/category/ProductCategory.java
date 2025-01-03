@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class ProductCategory {
     @Column(name = "product_category_id", updatable = false, nullable = false)
     private UUID productCategoryId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
@@ -37,4 +38,8 @@ public class ProductCategory {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    public void setProductAndCategory(Product product, Category category) {
+        this.product = product;
+        this.category = category;
+    }
 }

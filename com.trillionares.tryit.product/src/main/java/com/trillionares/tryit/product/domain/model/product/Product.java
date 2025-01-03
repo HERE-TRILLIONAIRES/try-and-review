@@ -6,12 +6,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,8 +39,8 @@ public class Product extends BaseEntity {
     @Column(name = "content_img_id", nullable = true)
     private UUID contentImgId;
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductCategory> productCategoryList = new ArrayList<>();
+    @OneToOne(mappedBy = "product")
+    private ProductCategory productCategory;
 
     public void setProductName(String productName) {
         this.productName = productName;
@@ -66,5 +63,9 @@ public class Product extends BaseEntity {
         this.setDelete(true);
         this.setDeletedAt(now);
         this.setDeletedBy(username);
+    }
+
+    public void setProductCategory(ProductCategory productCategory) {
+        this.productCategory = productCategory;
     }
 }

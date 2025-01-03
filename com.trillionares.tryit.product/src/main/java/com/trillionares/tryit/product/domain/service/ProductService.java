@@ -2,14 +2,19 @@ package com.trillionares.tryit.product.domain.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.trillionares.tryit.product.domain.model.category.Category;
+import com.trillionares.tryit.product.domain.model.category.ProductCategory;
 import com.trillionares.tryit.product.domain.model.product.Product;
 import com.trillionares.tryit.product.domain.model.product.QProduct;
+import com.trillionares.tryit.product.domain.repository.CategoryRepository;
+import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
 import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductCategoryRepository productCategoryRepository;
 
     @Transactional
     public ProductIdResponseDto createProduct(ProductInfoRequestDto requestDto) {
@@ -37,14 +44,29 @@ public class ProductService {
         UUID productImgId = UUID.randomUUID();
         UUID contentImgId = UUID.randomUUID();
 
-        // TODO: 카테고리
-
+        Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
+        if(!category.isPresent()) {
+            throw new RuntimeException("카테고리가 존재하지 않습니다.");
+        }
 
         Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, productImgId, contentImgId);
+
+        ProductCategory productCategory = mappingProductAndCategory(product, category.get());
+
         productRepository.save(product);
+        productCategoryRepository.save(productCategory);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private ProductCategory mappingProductAndCategory(Product product, Category category) {
+        ProductCategory productCategory = new ProductCategory();
+
+        productCategory.setProductAndCategory(product, category);
+        product.setProductCategory(productCategory);
+
+        return productCategory;
     }
 
     public List<ProductInfoResponseDto> getProduct(
