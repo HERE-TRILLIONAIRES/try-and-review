@@ -218,7 +218,7 @@ public class ProductService {
 
         Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
         if(product == null) {
-            throw new RuntimeException("상품이 존재하지 않습니다.");
+            throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
         product.delete(username);

@@ -13,6 +13,8 @@ public class GlobalExceptionHandler {
     public BaseResponseDto handleRuntimeException(RuntimeException e) {
         if (e.getMessage().equals(CategoryMessage.NOT_FOUND_CATEGORY.getMessage())) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, CategoryMessage.NOT_FOUND_CATEGORY.getMessage(), null);
+        } else if (e.getMessage().equals(ProductMessage.NOT_FOUND_PRODUCT.getMessage())) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, ProductMessage.NOT_FOUND_PRODUCT.getMessage(), null);
         } else {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         }
