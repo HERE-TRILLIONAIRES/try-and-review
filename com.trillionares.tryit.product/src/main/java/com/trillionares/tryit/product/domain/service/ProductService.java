@@ -90,7 +90,7 @@ public class ProductService {
             String seller = "나판매";
 
             if(product.getProductCategory().getCategory().getCategoryName() == null) {
-                throw new RuntimeException("카테고리가 존재하지 않습니다.");
+                throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
             }
             String allCategory = product.getProductCategory().getCategory().getCategoryName();
 
@@ -117,7 +117,7 @@ public class ProductService {
 
         // TODO: 카테고리 정보 여러개면 문자열 붙이기
         if(product.getProductCategory().getCategory().getCategoryName() == null) {
-            throw new RuntimeException("카테고리가 존재하지 않습니다.");
+            throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
         }
         String allCategory = product.getProductCategory().getCategory().getCategoryName();
 

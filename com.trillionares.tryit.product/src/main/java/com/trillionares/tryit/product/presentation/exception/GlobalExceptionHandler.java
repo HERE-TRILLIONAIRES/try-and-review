@@ -14,15 +14,11 @@ public class GlobalExceptionHandler {
         if (e.getMessage().equals(CategoryMessage.NOT_FOUND_CATEGORY.getMessage())) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, CategoryMessage.NOT_FOUND_CATEGORY.getMessage(), null);
         } else {
-            return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         }
     }
     @ExceptionHandler(Exception.class)
     public BaseResponseDto handleException(Exception e) {
-        if (e.getMessage().equals(CategoryMessage.NOT_FOUND_CATEGORY.getMessage())) {
-            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, CategoryMessage.NOT_FOUND_CATEGORY.getMessage(), null);
-        } else {
-            return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
-        }
+        return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
     }
 }

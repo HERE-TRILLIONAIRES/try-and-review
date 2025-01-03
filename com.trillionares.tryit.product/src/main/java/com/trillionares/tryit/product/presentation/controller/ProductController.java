@@ -38,9 +38,10 @@ public class ProductController {
     public BaseResponseDto<ProductIdResponseDto> createProduct(@RequestBody ProductInfoRequestDto requestDto) {
         try {
             ProductIdResponseDto responseDto = productService.createProduct(requestDto);
+
             return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, ProductMessage.CREATED_PRODUCT_SUCCESS.getMessage(), responseDto);
         } catch (RuntimeException re){
-            return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, re.getMessage(), null);
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         }
         catch  (Exception e) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
@@ -58,9 +59,11 @@ public class ProductController {
                     idList, predicate, pageable
             );
 
-            return BaseResponseDto.from(200, null, "상품 조회 성공", responseDto);
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, ProductMessage.SEARCH_PRODUCT_LEST_SUCCESS.getMessage(), responseDto);
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
     }
 
@@ -69,9 +72,11 @@ public class ProductController {
         try {
             ProductInfoResponseDto responseDto = productService.getProductById(productId);
 
-            return BaseResponseDto.from(200, null, "상품 조회 성공", responseDto);
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, ProductMessage.SEARCH_PRODUCT_SUCESS.getMessage(), responseDto);
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
     }
 
@@ -80,7 +85,7 @@ public class ProductController {
         try {
             ProductIdResponseDto responseDto = productService.updateProduct(productId, requestDto);
 
-            return BaseResponseDto.from(200, null, "상품 수정 성공", responseDto);
+            return BaseResponseDto.from(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, ProductMessage.MODIFIED_PRODUCT_SUCCESS.getMessage(), responseDto);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +96,7 @@ public class ProductController {
         try {
             ProductIdResponseDto responseDto = productService.deleteProduct(productId);
 
-            return BaseResponseDto.from(200, null, "상품 삭제 성공", responseDto);
+            return BaseResponseDto.from(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, ProductMessage.DELETED_PRODUCT_SUCCESS.getMessage(), responseDto);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
