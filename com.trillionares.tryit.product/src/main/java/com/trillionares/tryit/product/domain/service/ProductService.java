@@ -37,6 +37,9 @@ public class ProductService {
         UUID productImgId = UUID.randomUUID();
         UUID contentImgId = UUID.randomUUID();
 
+        // TODO: 카테고리
+
+
         Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, productImgId, contentImgId);
         productRepository.save(product);
 

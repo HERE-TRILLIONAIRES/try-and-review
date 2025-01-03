@@ -1,12 +1,17 @@
 package com.trillionares.tryit.product.domain.model.product;
 
 import com.trillionares.tryit.product.domain.common.base.BaseEntity;
+import com.trillionares.tryit.product.domain.model.category.ProductCategory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +41,9 @@ public class Product extends BaseEntity {
     private UUID productImgId;
     @Column(name = "content_img_id", nullable = true)
     private UUID contentImgId;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductCategory> productCategoryList = new ArrayList<>();
 
     public void setProductName(String productName) {
         this.productName = productName;
