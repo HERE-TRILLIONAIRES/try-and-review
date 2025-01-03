@@ -38,11 +38,11 @@ public class ProductController {
     public BaseResponseDto<ProductIdResponseDto> createProduct(@RequestBody ProductInfoRequestDto requestDto) {
         try {
             ProductIdResponseDto responseDto = productService.createProduct(requestDto);
-
             return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, ProductMessage.CREATED_PRODUCT_SUCCESS.getMessage(), responseDto);
-        } catch (CategoryNotFoundException cnfe) {
-            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
-        } catch  (Exception e) {
+        } catch (RuntimeException re){
+            return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, re.getMessage(), null);
+        }
+        catch  (Exception e) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
     }
