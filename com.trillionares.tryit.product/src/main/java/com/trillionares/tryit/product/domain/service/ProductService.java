@@ -57,6 +57,7 @@ public class ProductService {
         Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, productImgId, contentImgId);
 
         ProductCategory productCategory = mappingProductAndCategory(product, category.get());
+        product.setProductCategory(productCategory);
 
         productRepository.save(product);
         productCategoryRepository.save(productCategory);
@@ -66,10 +67,7 @@ public class ProductService {
     }
 
     private ProductCategory mappingProductAndCategory(Product product, Category category) {
-        ProductCategory productCategory = new ProductCategory();
-
-        productCategory.setProductAndCategory(product, category);
-        product.setProductCategory(productCategory);
+        ProductCategory productCategory = ProductCategory.setProductAndCategory(product, category);
 
         return productCategory;
     }
@@ -111,7 +109,8 @@ public class ProductService {
     public ProductInfoResponseDto getProductById(UUID productId) {
         Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
         if(product == null) {
-            throw new RuntimeException("상품이 존재하지 않습니다.");
+            log.error("Product Not Found");
+            throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
         // TODO: User Service 호출해서 Seller 정보 받아오기

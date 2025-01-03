@@ -9,9 +9,11 @@ import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
 import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
+import com.trillionares.tryit.product.presentation.exception.ProductNotFoundException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
@@ -40,6 +43,8 @@ public class ProductController {
             ProductIdResponseDto responseDto = productService.createProduct(requestDto);
 
             return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, ProductMessage.CREATED_PRODUCT_SUCCESS.getMessage(), responseDto);
+        } catch (CategoryNotFoundException cnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
         } catch (RuntimeException re){
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         }
@@ -60,6 +65,8 @@ public class ProductController {
             );
 
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, ProductMessage.SEARCH_PRODUCT_LEST_SUCCESS.getMessage(), responseDto);
+        } catch (CategoryNotFoundException cnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
@@ -73,9 +80,15 @@ public class ProductController {
             ProductInfoResponseDto responseDto = productService.getProductById(productId);
 
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, ProductMessage.SEARCH_PRODUCT_SUCESS.getMessage(), responseDto);
+        } catch (CategoryNotFoundException cnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
+        } catch (ProductNotFoundException pnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pnfe.getMessage(), null);
         } catch (RuntimeException re) {
+            log.error("여기");
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
+            log.error("여기1");
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
     }
@@ -86,6 +99,10 @@ public class ProductController {
             ProductIdResponseDto responseDto = productService.updateProduct(productId, requestDto);
 
             return BaseResponseDto.from(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, ProductMessage.MODIFIED_PRODUCT_SUCCESS.getMessage(), responseDto);
+        } catch (CategoryNotFoundException cnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
+        } catch (ProductNotFoundException pnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pnfe.getMessage(), null);
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
@@ -99,6 +116,8 @@ public class ProductController {
             ProductIdResponseDto responseDto = productService.deleteProduct(productId);
 
             return BaseResponseDto.from(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, ProductMessage.DELETED_PRODUCT_SUCCESS.getMessage(), responseDto);
+        } catch (ProductNotFoundException pnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pnfe.getMessage(), null);
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {

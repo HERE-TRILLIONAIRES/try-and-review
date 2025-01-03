@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "p_product_category", schema = "product")
 public class ProductCategory {
@@ -38,9 +39,11 @@ public class ProductCategory {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    public void setProductAndCategory(Product product, Category category) {
-        this.product = product;
-        this.category = category;
+    public static ProductCategory setProductAndCategory(Product product, Category category) {
+        return ProductCategory.builder()
+            .product(product)
+            .category(category)
+            .build();
     }
 
     public void setCategory(Category category) {
