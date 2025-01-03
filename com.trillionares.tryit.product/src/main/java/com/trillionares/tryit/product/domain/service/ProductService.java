@@ -86,8 +86,10 @@ public class ProductService {
             // TODO: User Service 호출해서 Seller 정보 받아오기
             String seller = "나판매";
 
-            // TODO: 카테고리 정보 여러개면 문자열 붙이기
-            String allCategory = "카테고리";
+            if(product.getProductCategory().getCategory().getCategoryName() == null) {
+                throw new RuntimeException("카테고리가 존재하지 않습니다.");
+            }
+            String allCategory = product.getProductCategory().getCategory().getCategoryName();
 
             // TODO: 이미지 정보 받아오기
             String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
