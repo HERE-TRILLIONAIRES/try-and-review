@@ -3,6 +3,7 @@ package com.trillionares.tryit.product.domain.service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.trillionares.tryit.product.domain.common.message.CategoryMessage;
+import com.trillionares.tryit.product.domain.common.message.ProductMessage;
 import com.trillionares.tryit.product.domain.model.category.Category;
 import com.trillionares.tryit.product.domain.model.category.ProductCategory;
 import com.trillionares.tryit.product.domain.model.product.Product;
@@ -14,6 +15,7 @@ import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
 import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
+import com.trillionares.tryit.product.presentation.exception.ProductNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,7 +142,7 @@ public class ProductService {
 
         Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
         if(product == null) {
-            throw new RuntimeException("상품이 존재하지 않습니다.");
+            throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
         updateProductElement(username, product, requestDto);
@@ -167,7 +169,6 @@ public class ProductService {
 
     private void compareProductName(String username, Product product, ProductInfoRequestDto requestDto) {
         if(product.getProductName().equals(requestDto.getProductName())) {
-//            throw new RuntimeException("상품명이 변경되지 않았습니다.");
             return;
         }
         product.setProductName(requestDto.getProductName());
@@ -178,7 +179,6 @@ public class ProductService {
 
     private void compareProductContent(String username, Product product, ProductInfoRequestDto requestDto) {
         if(product.getProductContent().equals(requestDto.getProductContent())) {
-//            throw new RuntimeException("상품설명이 변경되지 않았습니다.");
             return;
         }
         product.setProductContent(requestDto.getProductContent());
@@ -190,12 +190,11 @@ public class ProductService {
     private void compareCategory(String username, Product product, ProductInfoRequestDto requestDto) {
         Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
         if(!category.isPresent()) {
-            throw new RuntimeException("카테고리가 존재하지 않습니다.");
+            throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
         }
 
         String orginCategory = product.getProductCategory().getCategory().getCategoryName();
         if(orginCategory.equals(category.get().getCategoryName())) {
-//            throw new RuntimeException("카테고리가 변경되지 않았습니다.");
             return;
         }
 

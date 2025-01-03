@@ -12,7 +12,8 @@ public enum ProductMessage {
     MODIFIED_PRODUCT_SUCCESS("상품 수정을 성공했습니다."),
     DELETED_PRODUCT_SUCCESS("상품 삭제를 성공했습니다."),
     NOT_DEFINED_SERVER_ERROR("정의되지 않은 서버 에러가 발생했습니다."),
-    NOT_DEFINED_SERVER_RUNTIME_ERROR("실행 중 정의되지 않은 서버 에러가 발생했습니다.");
+    NOT_DEFINED_SERVER_RUNTIME_ERROR("실행 중 정의되지 않은 서버 에러가 발생했습니다."),
+    NOT_FOUND_PRODUCT("상품을 찾을 수 없습니다.");
 
     private final String message;
 }
