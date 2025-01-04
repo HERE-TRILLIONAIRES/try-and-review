@@ -191,12 +191,14 @@ public class ProductService {
         String allCategory = product.getProductCategory().getCategory().getCategoryName();
 
         // TODO: 이미지 정보 받아오기
-        String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
+//        String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
 //            List<String> productSubImgDummydummyURLList = List.of("https://dummyimage.com/600x400/000/fff");
         List<String> contentImgDummydummyURLList = new ArrayList<>();
         contentImgDummydummyURLList.add("https://dummyimage.com/600x400/000/fff");
 
-        return ProductInfoResponseDto.from(product, seller, allCategory, productMainImgDummydummyURL, contentImgDummydummyURLList);
+        ImageUrlDto productMainImgURL = getImageUrlById(product.getProductImgId());
+
+        return ProductInfoResponseDto.from(product, seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
     }
 
     @Transactional
