@@ -230,12 +230,23 @@ public class ProductService {
         UUID contentImgId = UUID.randomUUID();
 //        product.setProductImgId(productImgId);
 //        product.setContentImgId(contentImgId);
-        product = disconnectProductAndProductMainImg(product, username);
-        product = mappingProductAndProductMainImg(product, productMainImage, username);
+
+        String originProductMainImgURL = getImageUrlById(product.getProductImgId()).getImageUrl();
+        if(!compareProductMainImage(originProductMainImgURL, productMainImage.getOriginalFilename())) {
+            product = disconnectProductAndProductMainImg(product, username);
+            product = mappingProductAndProductMainImg(product, productMainImage, username);
+        }
 
         compareCategory(username, product, requestDto);
 
         return product;
+    }
+
+    private Boolean compareProductMainImage(String originURL, String originalFilename) {
+        if(originURL.contains(originalFilename)) {
+            return true;
+        }
+        return false;
     }
 
     private Product disconnectProductAndProductMainImg(Product product, String username) {
