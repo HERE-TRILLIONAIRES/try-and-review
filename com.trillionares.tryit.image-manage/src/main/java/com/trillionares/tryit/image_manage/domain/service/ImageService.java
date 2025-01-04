@@ -6,6 +6,7 @@ import com.trillionares.tryit.image_manage.domain.repository.ProductImageReposit
 import com.trillionares.tryit.image_manage.presentation.dto.ImageIdResponseDto;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageInfoResquestDto;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageUrlDto;
+import com.trillionares.tryit.image_manage.presentation.exception.ImageNotFoundException;
 import com.trillionares.tryit.image_manage.presentation.exception.ImageUrlNotFoundException;
 import com.trillionares.tryit.image_manage.presentation.exception.RequestException;
 import java.util.UUID;
@@ -48,5 +49,19 @@ public class ImageService {
         }
 
         return ImageUrlDto.from(productImage.getProductImgUrl());
+    }
+
+    @Transactional
+    public ImageIdResponseDto deleteImage(UUID productImgId, String username) {
+        ProductImage productImage = productImageRepository.findByProductImageIdAndIsDeleteFalse(productImgId);
+        if(productImage == null) {
+            throw new ImageNotFoundException(ImageMessage.NOT_FOUND_IMAGE.getMessage());
+        }
+
+        productImage.delete(username);
+        productImageRepository.save(productImage);
+
+        ImageIdResponseDto responseDto = ImageIdResponseDto.from(productImage.getProductImageId());
+        return responseDto;
     }
 }

@@ -202,35 +202,51 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductIdResponseDto updateProduct(UUID productId, ProductInfoRequestDto requestDto) {
+    public ProductIdResponseDto updateProduct(UUID productId, ProductInfoRequestDto requestDto,
+                                              MultipartFile productMainImage) {
         // TODO: 권한 체크 (관리자, 판매자)
 
         // TODO: UserId 토큰에서 받아오기
         UUID userId = UUID.randomUUID();
-        String username = "너판매";
+        String username = "상품 수정한 사람";
 
         Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
         if(product == null) {
             throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
-        updateProductElement(username, product, requestDto);
+        updateProductElement(username, product, requestDto, productMainImage);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
     }
 
-    private Product updateProductElement(String username, Product product, ProductInfoRequestDto requestDto) {
+    private Product updateProductElement(String username, Product product, ProductInfoRequestDto requestDto,
+                                         MultipartFile productMainImage) {
         compareProductName(username, product, requestDto);
         compareProductContent(username, product, requestDto);
 
         // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
-        UUID productImgId = UUID.randomUUID();
         UUID contentImgId = UUID.randomUUID();
 //        product.setProductImgId(productImgId);
 //        product.setContentImgId(contentImgId);
+        product = disconnectProductAndProductMainImg(product, username);
+        product = mappingProductAndProductMainImg(product, productMainImage, username);
 
         compareCategory(username, product, requestDto);
+
+        return product;
+    }
+
+    private Product disconnectProductAndProductMainImg(Product product, String username) {
+        UUID orginProductImgId = product.getProductImgId();
+        ImageIdResponseDto imageIdResponseDto = imageClient.deleteImage(product.getProductImgId(), username).getData();
+        if(imageIdResponseDto == null) {
+            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE.getMessage());
+        }
+        if(!orginProductImgId.equals(imageIdResponseDto.getImageId())) {
+            throw new ProductMainImageNotFoundException(ProductMessage.DELETED_PRODUCT_MAIN_IMAGE_FAIL.getMessage());
+        }
 
         return product;
     }

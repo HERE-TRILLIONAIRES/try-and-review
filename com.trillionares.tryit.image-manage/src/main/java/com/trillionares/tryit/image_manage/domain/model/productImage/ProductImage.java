@@ -1,11 +1,14 @@
 package com.trillionares.tryit.image_manage.domain.model.productImage;
 
+import static java.time.LocalDateTime.now;
+
 import com.trillionares.tryit.image_manage.domain.common.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,4 +33,10 @@ public class ProductImage extends BaseEntity {
     private String productImgUrl;
     @Column(name = "is_main_img", nullable = false)
     private Boolean isMainImg;
+
+    public void delete(String username) {
+        this.setDelete(true);
+        this.setDeletedAt(LocalDateTime.now());
+        this.setDeletedBy(username);
+    }
 }

@@ -8,9 +8,11 @@ import com.trillionares.tryit.product.presentation.dto.productImage.ImageUrlDto;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,4 +27,7 @@ public interface ImageClient {
 
     @GetMapping("/api/images/{product_image_id}")
     BaseResponseDto<ImageUrlDto> getImageUrlById(@PathVariable("product_image_id") UUID productImgId);
+
+    @DeleteMapping("/api/images/{product_image_id}")
+    BaseResponseDto<ImageIdResponseDto> deleteImage(@PathVariable("product_image_id") UUID productImgId, @RequestParam("username") String username);
 }
