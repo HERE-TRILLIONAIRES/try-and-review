@@ -35,7 +35,7 @@ public class S3ImageService {
 
     public ImageUrlDto upload(MultipartFile image) {
         //입력받은 이미지 파일이 빈 파일인지 검증
-        if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())){
+        if(image.isEmpty() || Objects.isNull(image.getOriginalFilename()) || image == null){
             throw new S3Exception(S3Message.EMPTY_FILE.getMessage());
         }
         //uploadImage를 호출하여 S3에 저장된 이미지의 public url을 반환한다.

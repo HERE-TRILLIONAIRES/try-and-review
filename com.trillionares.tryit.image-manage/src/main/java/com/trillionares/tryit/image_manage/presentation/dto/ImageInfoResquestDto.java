@@ -13,6 +13,7 @@ public class ImageInfoResquestDto {
     private UUID productId;
     private String productImgUrl;
     private Boolean isMainImg;
+    private String username;
 
     public static ProductImage toCreateEntity(ImageInfoResquestDto requestDto) {
         ProductImage productImage = ProductImage.builder()
@@ -22,8 +23,8 @@ public class ImageInfoResquestDto {
             .build();
 
         productImage.setDelete(false);
-        productImage.setCreatedBy("admin");
-        productImage.setUpdatedBy("admin");
+        productImage.setCreatedBy(requestDto.getUsername());
+        productImage.setUpdatedBy(requestDto.getUsername());
 
         return productImage;
     }
