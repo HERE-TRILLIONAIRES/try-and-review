@@ -138,7 +138,7 @@ public class ProductService {
 
         List<ProductInfoResponseDto> responseDto = new ArrayList<>();
         for (Product product : productList) {
-            // TODO: User Service 호출해서 Seller 정보 받아오기
+            // TODO: User Service 호출해서 userId -> Seller 정보 받아오기
             String seller = "나판매";
 
             if(product.getProductCategory().getCategory().getCategoryName() == null) {
@@ -147,15 +147,32 @@ public class ProductService {
             String allCategory = product.getProductCategory().getCategory().getCategoryName();
 
             // TODO: 이미지 정보 받아오기
-            String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
 //            List<String> productSubImgDummydummyURLList = List.of("https://dummyimage.com/600x400/000/fff");
             List<String> contentImgDummydummyURLList = new ArrayList<>();
             contentImgDummydummyURLList.add("https://dummyimage.com/600x400/000/fff");
 
-            responseDto.add(ProductInfoResponseDto.from(product, seller, allCategory, productMainImgDummydummyURL, contentImgDummydummyURLList));
+            ImageUrlDto productMainImgURL = getImageUrlById(product.getProductImgId());
+
+            // TODO: --------------
+
+            responseDto.add(ProductInfoResponseDto.from(product, seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList));
         }
 
         return responseDto;
+    }
+
+    private ImageUrlDto getImageUrlById(UUID productImgId) {
+        if(productImgId == null) {
+            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE.getMessage());
+        }
+
+        ImageUrlDto productMainImgURL = imageClient.getImageUrlById(productImgId).getData();
+
+        if(productMainImgURL == null) {
+            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE_URL.getMessage());
+        }
+
+        return productMainImgURL;
     }
 
     public ProductInfoResponseDto getProductById(UUID productId) {

@@ -5,7 +5,10 @@ import com.trillionares.tryit.image_manage.domain.model.productImage.ProductImag
 import com.trillionares.tryit.image_manage.domain.repository.ProductImageRepository;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageIdResponseDto;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageInfoResquestDto;
+import com.trillionares.tryit.image_manage.presentation.dto.ImageUrlDto;
+import com.trillionares.tryit.image_manage.presentation.exception.ImageUrlNotFoundException;
 import com.trillionares.tryit.image_manage.presentation.exception.RequestException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,5 +39,14 @@ public class ImageService {
 
         ImageIdResponseDto responseDto = ImageIdResponseDto.from(productImage.getProductImageId());
         return responseDto;
+    }
+
+    public ImageUrlDto getImageUrlById(UUID productImgId) {
+        ProductImage productImage = productImageRepository.findByProductImageIdAndIsDeleteFalse(productImgId);
+        if(productImage == null) {
+            throw new ImageUrlNotFoundException(ImageMessage.NOT_FOUND_IMAGE_URL.getMessage());
+        }
+
+        return ImageUrlDto.from(productImage.getProductImgUrl());
     }
 }

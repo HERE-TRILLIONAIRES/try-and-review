@@ -16,7 +16,8 @@ public enum ProductMessage {
     NOT_FOUND_PRODUCT("상품이 존재하지 않습니다."),
     NOT_FOUND_PRODUCT_MAIN_IMAGE("상품 대표 이미지 ID를 찾을 수 없습니다."),
     CREATED_PRODUCT_MAIN_IMAGE_URL_FAIL("상품 대표 이미지 URL 생성에 실패했습니다."),
-    CREATED_PRODUCT_MAIN_IMAGE_ID_FAIL("상품 대표 이미지 ID 생성에 실패했습니다.");
+    CREATED_PRODUCT_MAIN_IMAGE_ID_FAIL("상품 대표 이미지 ID 생성에 실패했습니다."),
+    NOT_FOUND_PRODUCT_MAIN_IMAGE_URL("상품 대표 이미지 URL를 찾을 수 없습니다.");
 
     private final String message;
 }

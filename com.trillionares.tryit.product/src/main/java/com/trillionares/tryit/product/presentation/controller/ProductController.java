@@ -10,6 +10,7 @@ import com.trillionares.tryit.product.presentation.dto.product.ProductIdResponse
 import com.trillionares.tryit.product.presentation.dto.product.ProductInfoRequestDto;
 import com.trillionares.tryit.product.presentation.dto.product.ProductInfoResponseDto;
 import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
+import com.trillionares.tryit.product.presentation.exception.ProductMainImageNotFoundException;
 import com.trillionares.tryit.product.presentation.exception.ProductNotFoundException;
 import java.util.List;
 import java.util.UUID;
@@ -75,6 +76,8 @@ public class ProductController {
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, ProductMessage.SEARCH_PRODUCT_LEST_SUCCESS.getMessage(), responseDto);
         } catch (CategoryNotFoundException cnfe) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
+        } catch (ProductMainImageNotFoundException pminfe){
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pminfe.getMessage(), null);
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
