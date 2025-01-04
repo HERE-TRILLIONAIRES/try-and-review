@@ -317,6 +317,7 @@ public class ProductService {
             throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
+        product = disconnectProductAndProductMainImg(product, username);
         product.delete(username);
         productRepository.save(product);
 
