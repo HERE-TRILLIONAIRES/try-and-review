@@ -6,6 +6,8 @@ import com.trillionares.tryit.image_manage.presentation.dto.BaseResponseDto;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageIdResponseDto;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageInfoResquestDto;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageUrlDto;
+import com.trillionares.tryit.image_manage.presentation.exception.ImageUrlNotFoundException;
+import com.trillionares.tryit.image_manage.presentation.exception.RequestException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,9 +27,20 @@ public class ImageController {
 
     @PostMapping()
     public BaseResponseDto<ImageIdResponseDto> createImage(@RequestBody ImageInfoResquestDto requestDto) {
-        ImageIdResponseDto responseDto = imageService.createImage(requestDto);
-
-        return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, "이미지가 성공적으로 등록되었습니다.", responseDto);
+        try {
+            ImageIdResponseDto responseDto = imageService.createImage(requestDto);
+            return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED,
+                    ImageMessage.CREATED_IMAGE_SUCCESS.getMessage(), responseDto);
+        } catch (RequestException reqe) {
+            return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST,
+                    reqe.getMessage(), null);
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    ImageMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
+        } catch (Exception e) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    ImageMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
+        }
     }
 
     @GetMapping("/{product_image_id}")
@@ -35,9 +48,13 @@ public class ImageController {
         try{
             ImageUrlDto responseDto = imageService.getImageUrlById(productImgId);
 
-            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, ImageMessage.SEARCH_IMAGE_URL_SUCCESS.getMessage(), responseDto);
-        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK,
+                    ImageMessage.SEARCH_IMAGE_URL_SUCCESS.getMessage(), responseDto);
+        } catch (ImageUrlNotFoundException iunfe) {
             return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST,
+                    iunfe.getMessage(), null);
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR,
                     ImageMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR,
