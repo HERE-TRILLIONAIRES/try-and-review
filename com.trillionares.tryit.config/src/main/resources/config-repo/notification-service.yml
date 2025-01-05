@@ -18,7 +18,9 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#  data:
+    group:
+      notification-service: "notification-service-group"
+  #  data:
 #    redis:
 #      host: ${redis.notification.host}
 #      port: ${redis.notification.port}
