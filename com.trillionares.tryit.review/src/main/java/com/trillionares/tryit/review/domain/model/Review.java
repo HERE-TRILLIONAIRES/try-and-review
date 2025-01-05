@@ -3,12 +3,16 @@ package com.trillionares.tryit.review.domain.model;
 import com.trillionares.tryit.review.domain.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Table(name = "p_review")
+@SQLDelete(sql = "UPDATE p_review SET is_deleted = true WHERE review_id=?")
+@SQLRestriction(value = "is_deleted = false")
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
