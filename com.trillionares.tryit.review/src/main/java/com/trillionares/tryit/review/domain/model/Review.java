@@ -37,6 +37,13 @@ public class Review extends BaseEntity {
     @Column(name = "review_img_url", nullable = false)
     private String reviewImgUrl;
 
+    public void update(String reviewTitle, String reviewContent, int reviewScore, String reviewImgUrl) {
+        this.reviewTitle = reviewTitle;
+        this.reviewContent = reviewContent;
+        this.reviewScore = reviewScore;
+        this.reviewImgUrl = reviewImgUrl;
+    }
+
     public static Review of(UUID userId, UUID productId, String reviewTitle, String reviewContent, int reviewScore, String reviewImgUrl) {
         return Review.builder()
                 .userId(userId)
