@@ -65,6 +65,8 @@ public class GlobalExceptionHandler {
       AccessDeniedException e,
       HttpServletRequest request
   ) {
+    log.error("Access denied: {}", e.getMessage());
+
     return ResponseEntity
         .status(ErrorCode.FORBIDDEN.getStatus())
         .body(ErrorResponse.of(
@@ -78,6 +80,8 @@ public class GlobalExceptionHandler {
       AuthenticationException e,
       HttpServletRequest request
    ) {
+    log.error("Authentication Error: {}", e.getMessage());
+
     return ResponseEntity
         .status(ErrorCode.UNAUTHORIZED.getStatus())
         .body(ErrorResponse.of(
