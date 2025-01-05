@@ -1,6 +1,7 @@
 package com.trillionares.tryit.review.presentation.controller;
 
 import com.trillionares.tryit.review.application.dto.request.ReviewCreateRequestDto;
+import com.trillionares.tryit.review.application.dto.response.ReviewCreateResponseDto;
 import com.trillionares.tryit.review.application.service.ReviewService;
 import com.trillionares.tryit.review.presentation.dto.BaseResponse;
 import com.trillionares.tryit.review.presentation.dto.ReviewCreateRequest;
@@ -17,7 +18,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("/api/reviews")
-    public BaseResponse<ReviewCreateRequestDto> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
+    public BaseResponse<ReviewCreateResponseDto> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
         return BaseResponse.of(201,HttpStatus.CREATED,"리뷰 생성 성공",reviewService.createReview(ReviewCreateRequestDto.from(reviewCreateRequest)));
     }
 }
