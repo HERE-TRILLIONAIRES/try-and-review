@@ -3,6 +3,7 @@ package com.trillionares.tryit.review.presentation.controller;
 import com.trillionares.tryit.review.application.dto.request.ReviewCreateRequestDto;
 import com.trillionares.tryit.review.application.dto.request.ReviewUpdateRequestDto;
 import com.trillionares.tryit.review.application.dto.response.ReviewCreateResponseDto;
+import com.trillionares.tryit.review.application.dto.response.ReviewDeleteResponseDto;
 import com.trillionares.tryit.review.application.dto.response.ReviewGetResponseDto;
 import com.trillionares.tryit.review.application.dto.response.ReviewUpdateResponseDto;
 import com.trillionares.tryit.review.application.service.ReviewService;
@@ -35,5 +36,10 @@ public class ReviewController {
     public BaseResponse<ReviewUpdateResponseDto> updateReview(
             @RequestBody ReviewUpdateRequest reviewUpdateRequest, @PathVariable UUID reviewId) {
         return BaseResponse.of(200,HttpStatus.OK,"리뷰 수정 성공",reviewService.updateReview(ReviewUpdateRequestDto.from(reviewUpdateRequest),reviewId));
+    }
+
+    @DeleteMapping("/api/reviews/{reviewId}")
+    public BaseResponse<ReviewDeleteResponseDto> deleteReview(@PathVariable UUID reviewId) {
+        return BaseResponse.of(200,HttpStatus.OK,"리뷰 삭제 성공",reviewService.deleteReview(reviewId));
     }
 }
