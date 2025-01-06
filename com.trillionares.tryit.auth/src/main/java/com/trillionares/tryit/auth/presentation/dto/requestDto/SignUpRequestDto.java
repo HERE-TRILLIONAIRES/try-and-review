@@ -10,11 +10,11 @@ import lombok.Getter;
 public class SignUpRequestDto {
 
   @NotBlank
-  @Size(min = 1, max = 30, message = "이름(유저네임)은 최소 1자 이상, 30자 이하여야 합니다.")
+  @Size(min = 1, max = 30, message = "유저네임은 최소 1자 이상, 30자 이하여야 합니다.")
   private String username;
 
   @NotBlank
-  @Size(min = 1, max = 30, message = "실명은 최소 1자 이상, 30자 이하여야 합니다.")
+  @Size(min = 1, max = 30, message = "이름(실명)은 최소 1자 이상, 30자 이하여야 합니다.")
   private String fullname;
 
   @NotBlank
