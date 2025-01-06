@@ -31,6 +31,7 @@ public class UserService {
         .slackId(reqDto.getSlackId())
         .role(role)
         .isDeleted(false)
+        .createdBy(reqDto.getUsername()) // createdBy에 username 설정
         .build();
 
     savedUser = userRepository.save(savedUser);

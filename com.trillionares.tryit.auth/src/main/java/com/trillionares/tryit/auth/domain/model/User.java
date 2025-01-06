@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
 
 @Builder
 @AllArgsConstructor
@@ -51,6 +52,9 @@ public class User extends BaseEntity {
 
   @Column(nullable = false)
   private Boolean isDeleted;
+
+  @CreatedBy
+  private String createdBy;
 
   public static User createUser(String username, String fullname, String password, String email, String phoneNumber, String slackId, Role role) {
     return User.builder()
