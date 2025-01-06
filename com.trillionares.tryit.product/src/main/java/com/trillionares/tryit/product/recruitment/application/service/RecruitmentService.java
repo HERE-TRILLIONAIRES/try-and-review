@@ -1,11 +1,14 @@
 package com.trillionares.tryit.product.recruitment.application.service;
 
 import com.trillionares.tryit.product.recruitment.domain.model.Recruitment;
+import com.trillionares.tryit.product.recruitment.domain.model.type.RecruitmentStatus;
 import com.trillionares.tryit.product.recruitment.domain.repository.RecruitmentRepository;
 import com.trillionares.tryit.product.recruitment.presentation.dto.request.CreateRecruitmentRequest;
 import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentRequest;
+import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentStatusRequest;
 import com.trillionares.tryit.product.recruitment.presentation.dto.response.GetRecruitmentResponse;
 import com.trillionares.tryit.product.recruitment.presentation.dto.response.RecruitmentIdResponse;
+import com.trillionares.tryit.product.recruitment.presentation.dto.response.UpdateRecruitmentStatusResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ public class RecruitmentService {
                 .recruitmentDuration(request.during())
                 .recruitmentEndDate(request.endTime())
                 .maxParticipants(request.maxParticipants())
+                .recruitmentStatus(RecruitmentStatus.WAITING)
                 .build();
 
         recruitmentRepository.save(recruitment);
@@ -73,6 +77,19 @@ public class RecruitmentService {
         List<Recruitment> recruitments = recruitmentRepository.findAll();
 
         return recruitments.stream().map(GetRecruitmentResponse::fromEntity).toList();
+    }
+
+    public UpdateRecruitmentStatusResponse updateRecruitmentStatus(UUID recruitmentId,
+                                                                   UpdateRecruitmentStatusRequest request) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new RuntimeException(""));
+
+        recruitment.updateStatus(request.status());
+
+        recruitmentRepository.save(recruitment);
+
+        return new UpdateRecruitmentStatusResponse(recruitment.getRecruitmentId(),
+                recruitment.getRecruitmentStatus());
     }
 
 

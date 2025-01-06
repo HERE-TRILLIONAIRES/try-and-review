@@ -3,6 +3,7 @@ package com.trillionares.tryit.product.recruitment.presentation.controller;
 import com.trillionares.tryit.product.recruitment.application.service.RecruitmentService;
 import com.trillionares.tryit.product.recruitment.presentation.dto.request.CreateRecruitmentRequest;
 import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentRequest;
+import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentStatusRequest;
 import com.trillionares.tryit.product.recruitment.presentation.dto.response.GetRecruitmentResponse;
 import com.trillionares.tryit.product.recruitment.presentation.dto.response.RecruitmentIdResponse;
 import jakarta.validation.Valid;
@@ -60,6 +61,14 @@ public class RecruitmentController {
     @GetMapping
     public ResponseEntity<List<GetRecruitmentResponse>> getRecruitment() {
         return ResponseEntity.ok(recruitmentService.getListRecruitment());
+    }
+
+    @PatchMapping("{recruitmentId}/status")
+    public ResponseEntity<RecruitmentIdResponse> updateRecruitmentStatus(
+            @PathVariable UUID recruitmentId,
+            @RequestBody UpdateRecruitmentStatusRequest request
+    ) {
+        return ResponseEntity.ok(recruitmentService.updateRecruitmentStatus(recruitmentId, request));
     }
 
 

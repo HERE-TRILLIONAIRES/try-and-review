@@ -71,5 +71,9 @@ public class Recruitment {
         }
     }
 
+    public void updateStatus(RecruitmentStatus status) {
+        this.recruitmentStatus = status;
+    }
+
 }
 
