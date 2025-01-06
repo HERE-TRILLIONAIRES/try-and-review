@@ -16,7 +16,7 @@ public class BaseResponseDto<T> {
     private String message;
     private T data;
 
-    public static <T> BaseResponseDto froM(Integer status, HttpStatus code, String message, T data) {
+    public static <T> BaseResponseDto from(Integer status, HttpStatus code, String message, T data) {
         return BaseResponseDto.<T>builder()
             .status(status)
             .code(code)

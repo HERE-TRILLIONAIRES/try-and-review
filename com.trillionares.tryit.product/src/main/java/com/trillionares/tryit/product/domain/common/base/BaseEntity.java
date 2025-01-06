@@ -33,6 +33,6 @@ public abstract class BaseEntity {
     private LocalDateTime deletedAt;
     @Column(name = "deleted_by")
     private String deletedBy;
-    @Column(name = "is_delete", nullable = true)
+    @Column(name = "is_delete", nullable = false)
     private boolean isDelete;
 }
