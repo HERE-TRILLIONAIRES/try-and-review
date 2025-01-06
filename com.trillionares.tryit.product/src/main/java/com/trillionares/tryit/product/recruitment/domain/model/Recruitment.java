@@ -49,4 +49,27 @@ public class Recruitment {
     @Column(name = "max_participants", nullable = false)
     private Long maxParticipants;
 
+    public void updateRecruitment(String title, String description, LocalDateTime startTime,
+                                  Long during, LocalDateTime endTime, Long maxParticipants) {
+        if (title != null) {
+            this.recruitmentTitle = title;
+        }
+        if (description != null) {
+            this.recruitmentDescription = description;
+        }
+        if (startTime != null) {
+            this.recruitmentStartDate = startTime;
+        }
+        if (during != null) {
+            this.recruitmentDuration = during;
+        }
+        if (endTime != null) {
+            this.recruitmentEndDate = endTime;
+        }
+        if (maxParticipants != null) {
+            this.maxParticipants = maxParticipants;
+        }
+    }
+
 }
+
