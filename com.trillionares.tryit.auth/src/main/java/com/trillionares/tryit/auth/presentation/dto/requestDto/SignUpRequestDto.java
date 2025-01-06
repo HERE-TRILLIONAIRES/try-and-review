@@ -4,16 +4,18 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 
+@Getter
 public class SignUpRequestDto {
 
   @NotBlank
-  @Size(min = 1, max = 30, message = "이름은 최소 1자 이상, 30자 이하여야 합니다.")
+  @Size(min = 1, max = 30, message = "이름(유저네임)은 최소 1자 이상, 30자 이하여야 합니다.")
   private String username;
 
   @NotBlank
-  @Size(min = 1, max = 30, message = "닉네임은 최소 1자 이상, 30자 이하여야 합니다.")
-  private String nickname;
+  @Size(min = 1, max = 30, message = "실명은 최소 1자 이상, 30자 이하여야 합니다.")
+  private String fullname;
 
   @NotBlank
   @Email(message = "유효한 이메일 주소를 입력하세요.")
@@ -26,6 +28,8 @@ public class SignUpRequestDto {
   private String password;
 
   @NotBlank
+  @Pattern(regexp = "ADMIN|COMPANY|MEMBER",
+      message = "유효하지 않은 역할입니다.")
   private String role;
 
   @NotBlank
@@ -34,5 +38,6 @@ public class SignUpRequestDto {
   private String phoneNumber;
 
   private String slackId;
+
 
 }

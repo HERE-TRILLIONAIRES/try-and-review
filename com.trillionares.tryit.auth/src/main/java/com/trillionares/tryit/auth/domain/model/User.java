@@ -1,5 +1,6 @@
 package com.trillionares.tryit.auth.domain.model;
 
+import com.trillionares.tryit.auth.domain.common.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,17 +21,17 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "p_user", schema = "auth")
 @Entity
-public class User {
+public class User extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private UUID id;
 
   @Column(nullable = false)
   private String username;
 
   @Column(nullable = false)
-  private String nickname;
+  private String fullname;
 
   @Column(nullable = false)
   private String password;
@@ -49,5 +51,17 @@ public class User {
 
   @Column(nullable = false)
   private Boolean isDeleted;
+
+  public static User createUser(String username, String fullname, String password, String email, String phoneNumber, String slackId, Role role) {
+    return User.builder()
+        .username(username)
+        .fullname(fullname)
+        .password(password)
+        .email(email)
+        .phoneNumber(phoneNumber)
+        .slackId(slackId)
+        .role(role)
+        .build();
+  }
 
 }
