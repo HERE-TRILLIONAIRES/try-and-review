@@ -9,14 +9,15 @@ import lombok.ToString;
 @ToString
 public class SubmissionSelectedEvent {
 
-  private final String eventId;
-  private final LocalDateTime timestamp;
+  private String eventId;
+  private LocalDateTime timestamp;
+  private UUID submissionId;
+  private UUID userId;
+  private String submissionStatus; // TODO : Enum파일 자체 추가 필요할지 확인 필요
 
-  private final UUID submissionId;
-  private final UUID userId;
-  private final String submissionStatus; // TODO : Enum파일 자체 추가 필요할지 확인 필요
+  protected SubmissionSelectedEvent() {}
 
-  public SubmissionSelectedEvent(String eventId, String eventType, LocalDateTime timestamp,
+  public SubmissionSelectedEvent(String eventId, LocalDateTime timestamp,
       UUID submissionId, UUID userId, String submissionStatus) {
     this.eventId = eventId;
     this.timestamp = timestamp;
