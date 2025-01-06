@@ -3,8 +3,10 @@ package com.trillionares.tryit.product.recruitment.presentation.controller;
 import com.trillionares.tryit.product.recruitment.application.service.RecruitmentService;
 import com.trillionares.tryit.product.recruitment.presentation.dto.request.CreateRecruitmentRequest;
 import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentRequest;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.RecruitmentResponse;
+import com.trillionares.tryit.product.recruitment.presentation.dto.response.GetRecruitmentResponse;
+import com.trillionares.tryit.product.recruitment.presentation.dto.response.RecruitmentIdResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +27,14 @@ public class RecruitmentController {
     private final RecruitmentService recruitmentService;
 
     @PostMapping
-    public ResponseEntity<RecruitmentResponse> createRecruitment(
+    public ResponseEntity<RecruitmentIdResponse> createRecruitment(
             @Valid @RequestBody CreateRecruitmentRequest request
     ) {
         return ResponseEntity.status(201).body(recruitmentService.createRecruitment(request));
     }
 
     @PatchMapping("{recruitmentId}")
-    public ResponseEntity<RecruitmentResponse> updateRecruitment(
+    public ResponseEntity<RecruitmentIdResponse> updateRecruitment(
             @PathVariable UUID recruitmentId,
             @Valid @RequestBody UpdateRecruitmentRequest request
     ) {
@@ -41,18 +43,23 @@ public class RecruitmentController {
 
 
     @DeleteMapping("{recruitmentId}")
-    public ResponseEntity<RecruitmentResponse> deleteRecruitment(
+    public ResponseEntity<RecruitmentIdResponse> deleteRecruitment(
             @PathVariable UUID recruitmentId
     ) {
         return ResponseEntity.ok(recruitmentService.deleteRecruitment(recruitmentId));
     }
 
 
-    @GetMapping
-    public ResponseEntity<RecruitmentResponse> getRecruitment(
+    @GetMapping("{recruitmentId}")
+    public ResponseEntity<GetRecruitmentResponse> getRecruitment(
             @PathVariable UUID recruitmentId
     ) {
-        return ResponseEntity.ok(recruitmentService.getListRecruitment(recruitmentId));
+        return ResponseEntity.ok(recruitmentService.getRecruitment(recruitmentId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<GetRecruitmentResponse>> getRecruitment() {
+        return ResponseEntity.ok(recruitmentService.getListRecruitment());
     }
 
 

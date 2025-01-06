@@ -4,7 +4,9 @@ import com.trillionares.tryit.product.recruitment.domain.model.Recruitment;
 import com.trillionares.tryit.product.recruitment.domain.repository.RecruitmentRepository;
 import com.trillionares.tryit.product.recruitment.presentation.dto.request.CreateRecruitmentRequest;
 import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentRequest;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.RecruitmentResponse;
+import com.trillionares.tryit.product.recruitment.presentation.dto.response.GetRecruitmentResponse;
+import com.trillionares.tryit.product.recruitment.presentation.dto.response.RecruitmentIdResponse;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ public class RecruitmentService {
 
 
     @Transactional
-    public RecruitmentResponse createRecruitment(CreateRecruitmentRequest request) {
+    public RecruitmentIdResponse createRecruitment(CreateRecruitmentRequest request) {
         Recruitment recruitment = Recruitment.builder()
                 .recruitmentTitle(request.title())
                 .recruitmentDescription(request.description())
@@ -30,12 +32,12 @@ public class RecruitmentService {
 
         recruitmentRepository.save(recruitment);
 
-        return new RecruitmentResponse(recruitment.getRecruitmentId());
+        return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
 
     @Transactional
-    public RecruitmentResponse updateRecruitment(UUID recruitmentId,
-                                                 UpdateRecruitmentRequest request) {
+    public RecruitmentIdResponse updateRecruitment(UUID recruitmentId,
+                                                   UpdateRecruitmentRequest request) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> new RuntimeException(""));
 
@@ -44,18 +46,34 @@ public class RecruitmentService {
 
         recruitmentRepository.save(recruitment);
 
-        return new RecruitmentResponse(recruitment.getRecruitmentId());
+        return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
 
     @Transactional
-    public RecruitmentResponse deleteRecruitment(UUID recruitmentId) {
+    public RecruitmentIdResponse deleteRecruitment(UUID recruitmentId) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> new RuntimeException(""));
 
         // BaseEntity 구현 후 soft delete 로 변경
         recruitmentRepository.delete(recruitment);
 
-        return new RecruitmentResponse(recruitment.getRecruitmentId());
+        return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
+
+    public GetRecruitmentResponse getRecruitment(UUID recruitmentId) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new RuntimeException(""));
+
+        return GetRecruitmentResponse.fromEntity(recruitment);
+    }
+
+    //TODO: 병합 후 Querydsl 적용
+    public List<GetRecruitmentResponse> getListRecruitment() {
+
+        List<Recruitment> recruitments = recruitmentRepository.findAll();
+
+        return recruitments.stream().map(GetRecruitmentResponse::fromEntity).toList();
+    }
+
 
 }
