@@ -1,0 +1,52 @@
+package com.trillionares.tryit.product.recruitment.domain.model;
+
+import com.trillionares.tryit.product.recruitment.domain.model.type.RecruitmentStatus;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "p_recruitment")
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Recruitment {
+    //TODO: BaseEntity 상속
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "recruitment_id")
+    private UUID recruitmentId;
+
+    @Column(name = "product_id", nullable = false)
+    private UUID productId;
+
+    @Column(name = "recruitment_title", nullable = false)
+    private String recruitmentTitle;
+
+    @Column(name = "recruitment_description", nullable = false, columnDefinition = "TEXT")
+    private String recruitmentDescription;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recruitment_status", nullable = false)
+    private RecruitmentStatus recruitmentStatus;
+
+    @Column(name = "recruitment_start_date", nullable = false)
+    private LocalDateTime recruitmentStartDate;
+
+    @Column(name = "recruitment_duration", nullable = false)
+    private long recruitmentDuration; // 단위: 밀리초
+
+    @Column(name = "recruitment_end_date", nullable = false)
+    private LocalDateTime recruitmentEndDate;
+
+    @Column(name = "current_participants", nullable = false)
+    private long currentParticipants = 0;
+
+    @Column(name = "max_participants", nullable = false)
+    private Long maxParticipants;
+
+}
