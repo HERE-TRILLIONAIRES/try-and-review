@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedBy;
 
 @Builder
@@ -25,8 +26,10 @@ import org.springframework.data.annotation.CreatedBy;
 public class User extends BaseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private UUID id;
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(name = "user_id", updatable = false, nullable = false)
+  private UUID userId;
 
   @Column(nullable = false)
   private String username;
@@ -66,6 +69,10 @@ public class User extends BaseEntity {
         .slackId(slackId)
         .role(role)
         .build();
+  }
+
+  public void updatePassword(String password) {
+    this.password = password;
   }
 
 }

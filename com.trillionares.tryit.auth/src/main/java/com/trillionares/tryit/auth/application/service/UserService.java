@@ -5,11 +5,15 @@ import com.trillionares.tryit.auth.domain.model.User;
 import com.trillionares.tryit.auth.domain.repository.UserRepository;
 import com.trillionares.tryit.auth.libs.exception.ErrorCode;
 import com.trillionares.tryit.auth.libs.exception.GlobalException;
+import com.trillionares.tryit.auth.presentation.dto.requestDto.PasswordUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.SignUpResponseDto;
+import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,10 +44,9 @@ public class UserService {
   }
 
   private void checkUsername(String username) {
-    userRepository.findByUsernameAndIsDeletedFalse(username)
-        .ifPresent(user -> {
-          throw new GlobalException(ErrorCode.USER_ALREADY_EXIST);
-        });
+    if (userRepository.existsByUsernameAndIsDeletedFalse(username)) {
+      throw new GlobalException(ErrorCode.USER_ALREADY_EXIST);
+    }
   }
 
   private Role validateUserRole(String role) {
