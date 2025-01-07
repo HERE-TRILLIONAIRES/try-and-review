@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "p_statistics")
+@Table(name = "p_statistics", schema = "statistics")
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
