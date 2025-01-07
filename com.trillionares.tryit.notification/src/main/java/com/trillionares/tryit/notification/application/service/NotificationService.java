@@ -14,6 +14,7 @@ public class NotificationService {
 
   // private final ExceptionConverter exceptionConverter;
   private final NotificationRepository notificationRepository;
+  private final SlackNotificationSender slackNotificationSender;
 
   @Transactional
   public NotificationResponse createNotificationFromSubmissionEvent(SubmissionSelectedEvent event) {
@@ -23,6 +24,9 @@ public class NotificationService {
     // 알림 엔티티 저장
     Notification notification = createNotificationEvent(event);
     Notification savedNotification = notificationRepository.save(notification);
+
+    // 슬랙 알림 발송
+    slackNotificationSender.sendNotification(savedNotification);
 
     return NotificationResponse.from(savedNotification);
   }
