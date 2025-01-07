@@ -19,6 +19,7 @@ public class ReviewController {
 
     @PostMapping("/api/reviews")
     public BaseResponse<ReviewCreateResponseDto> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
-        return BaseResponse.of(201,HttpStatus.CREATED,"리뷰 생성 성공",reviewService.createReview(ReviewCreateRequestDto.from(reviewCreateRequest)));
+        return BaseResponse.of(HttpStatus.CREATED.value(),HttpStatus.CREATED,"리뷰 생성 성공",
+                reviewService.createReview(ReviewCreateRequestDto.from(reviewCreateRequest)));
     }
 }
