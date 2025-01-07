@@ -1,8 +1,30 @@
 spring:
   application:
-    name: product-service
+    name: review-service
+
   config:
     import: configserver:http://localhost:18080   # Config Server 주소
+
+  datasource: # database
+    url: ${DB_URL}
+    username: ${DB_REVIEW_USERNAME}
+    password: ${DB_REVIEW_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  data: # redis
+    redis:
+      host: ${REVIEW_REDIS_HOST}
+      port: ${REVIEW_REDIS_PORT}
+      username: ${REVIEW_REDIS_USERNAME}
+      password: ${REVIEW_REDIS_PASSWORD}
+
+  jpa: # jpa
+    hibernate:
+      ddl-auto: update
+    properties:
+      show-sql: true
+      format-sql: true
+      use_sql_comments: true
 
 server:
   port: 19040
