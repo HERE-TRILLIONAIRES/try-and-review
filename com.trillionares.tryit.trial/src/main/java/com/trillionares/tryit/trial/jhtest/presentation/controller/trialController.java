@@ -20,10 +20,13 @@ public class trialController {
 
     @PostMapping()
     public BaseResponseDto<TrialIdResponseDto> createTrial(@RequestBody TrialInfoRequestDto requestDto) {
+        try{
+            TrialIdResponseDto responseDto = trialService.createTrial(requestDto);
 
-        TrialIdResponseDto responseDto = trialService.createTrial(requestDto);
-
-        return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, "신청을 완료했습니다.", responseDto);
+            return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, "신청을 완료했습니다.", responseDto);
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
+        }
     }
 
 }
