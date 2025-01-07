@@ -1,0 +1,38 @@
+server:
+  port: 19050
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/trillionaires
+    username: notification
+    password: notification
+    driver-class-name: org.postgresql.Driver
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#  data:
+#    redis:
+#      host: ${redis.notification.host}
+#      port: ${redis.notification.port}
+#      password: ${redis.common.password}
+#
+#management:
+#  server:
+#    port: ${monitoring.prometheus.notification-port}
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
