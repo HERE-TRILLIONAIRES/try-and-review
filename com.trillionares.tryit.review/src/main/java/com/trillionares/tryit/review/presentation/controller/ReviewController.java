@@ -23,7 +23,7 @@ public class ReviewController {
         return BaseResponse.of(201,HttpStatus.CREATED,"리뷰 생성 성공",reviewService.createReview(ReviewCreateRequestDto.from(reviewCreateRequest)));
     }
 
-    @GetMapping("/api/reviews/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewGetResponseDto> getReview(@PathVariable UUID reviewId) {
         return BaseResponse.of(HttpStatus.OK.value(),HttpStatus.OK,"리뷰 단건 조회 성공",reviewService.getReview(reviewId));
     }
