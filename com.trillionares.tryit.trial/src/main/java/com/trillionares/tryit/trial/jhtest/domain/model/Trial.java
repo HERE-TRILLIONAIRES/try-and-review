@@ -43,4 +43,7 @@ public class Trial extends BaseEntity {
     @Column(name = "selected_sequence")
     private Long selectedSequence;
 
+    public void setSubmissionStatus(SubmissionStatus status) {
+        this.submissionStatus = status;
+    }
 }

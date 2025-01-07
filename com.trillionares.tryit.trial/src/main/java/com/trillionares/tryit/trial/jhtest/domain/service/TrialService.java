@@ -1,6 +1,7 @@
 package com.trillionares.tryit.trial.jhtest.domain.service;
 
 import com.trillionares.tryit.trial.jhtest.domain.model.Trial;
+import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
 import com.trillionares.tryit.trial.jhtest.domain.repository.TrialRepository;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialIdResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
@@ -44,5 +45,32 @@ public class TrialService {
         String trialedUser = "신청자";
 
         return TrialInfoResponseDto.from(trial);
+    }
+
+    @Transactional
+    public TrialIdResponseDto changeStatusOfTrial(UUID submissionId, SubmissionStatus status) {
+        // TODO: 권한 체크 (사용자)
+
+        // TODO: UserId토큰에서 받아오기
+        UUID userId = UUID.randomUUID();
+        String username = "신청자";
+
+        Trial trial = trialRepository.findBySubmissionIdIsDeletedFalse(submissionId).orElse(null);
+        if(trial == null){
+            throw new RuntimeException("신청을 찾을 수 없습니다.");
+        }
+
+        // TODO: 변경 전 변경 가능 상태 비교
+        // 신청 -> 당첨, 신청취소, 낙첨
+        // 당첨 -> 리뷰 제출
+        if((trial.getSubmissionStatus() == SubmissionStatus.APPLIED && (
+                status == SubmissionStatus.SELECTED
+                        || status == SubmissionStatus.CANCELED
+                        || status == SubmissionStatus.FAILED))
+        || (trial.getSubmissionStatus() == SubmissionStatus.SELECTED && status == SubmissionStatus.REVIEW_SUBMITTED)) {
+            trial.setSubmissionStatus(status);
+        }
+
+        return TrialIdResponseDto.from(trial.getSubmissionId());
     }
 }
