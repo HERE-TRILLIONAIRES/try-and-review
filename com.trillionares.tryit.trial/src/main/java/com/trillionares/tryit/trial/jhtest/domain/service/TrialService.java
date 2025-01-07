@@ -69,6 +69,7 @@ public class TrialService {
                         || status == SubmissionStatus.FAILED))
         || (trial.getSubmissionStatus() == SubmissionStatus.SELECTED && status == SubmissionStatus.REVIEW_SUBMITTED)) {
             trial.setSubmissionStatus(status);
+            trial.setUpdatedBy(username);
         }
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
