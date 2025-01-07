@@ -19,8 +19,11 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Role role = user.getRole();
-        String authority = role.getAuthority();
 
+        // 단순 열거형을 권한 문자열로 변환
+        String authority = "ROLE_" + role.name(); // "ROLE_ADMIN", "ROLE_COMPANY", "ROLE_MEMBER"
+
+        // 권한 생성
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(simpleGrantedAuthority);
@@ -39,7 +42,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public UUID getUserId() {
-        return user.getId();
+        return user.getUserId();
     }
 
     public Role getRole() { return user.getRole();}
