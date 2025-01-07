@@ -11,6 +11,11 @@ public enum Role {
   MEMBER;
 
   public String getAuthority() { // 권한문자열 메서드입니다
-    return "ROLE_" + name();
+    return name();
+  }
+
+  @Override
+  public String toString() {
+    return "ROLE_" + name(); // Enum의 이름을 "ROLE_" 접두사와 함께 반환
   }
 }
