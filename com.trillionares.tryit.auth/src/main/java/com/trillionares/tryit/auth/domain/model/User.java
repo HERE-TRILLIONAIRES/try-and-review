@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
@@ -13,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 @Builder
 @AllArgsConstructor
@@ -24,8 +24,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class User extends BaseEntity {
 
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "user_id", updatable = false, nullable = false)
   private UUID userId;
 
