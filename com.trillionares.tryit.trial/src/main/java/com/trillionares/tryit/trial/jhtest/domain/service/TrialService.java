@@ -70,6 +70,7 @@ public class TrialService {
         || (trial.getSubmissionStatus() == SubmissionStatus.SELECTED && status == SubmissionStatus.REVIEW_SUBMITTED)) {
             trial.setSubmissionStatus(status);
             trial.setUpdatedBy(username);
+            trialRepository.save(trial);
         }
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
