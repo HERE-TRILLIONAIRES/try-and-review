@@ -20,8 +20,8 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Role role = user.getRole();
 
-        // 단순 열거형을 권한 문자열로 변환
-        String authority = "ROLE_" + role.name(); // "ROLE_ADMIN", "ROLE_COMPANY", "ROLE_MEMBER"
+        // Role에서 권한문자열 가져오기
+        String authority = role.getAuthority();
 
         // 권한 생성
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);

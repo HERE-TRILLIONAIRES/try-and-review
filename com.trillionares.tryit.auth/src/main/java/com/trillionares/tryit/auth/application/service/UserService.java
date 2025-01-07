@@ -34,7 +34,6 @@ public class UserService {
         .phoneNumber(reqDto.getPhoneNumber())
         .slackId(reqDto.getSlackId())
         .role(role)
-        .isDeleted(false)
         .build();
 
     savedUser.setCreatedBy(reqDto.getUsername());
