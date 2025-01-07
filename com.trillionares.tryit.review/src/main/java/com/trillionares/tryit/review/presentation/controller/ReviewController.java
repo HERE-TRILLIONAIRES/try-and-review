@@ -25,6 +25,6 @@ public class ReviewController {
 
     @GetMapping("/api/reviews/{reviewId}")
     public BaseResponse<ReviewGetResponseDto> getReview(@PathVariable UUID reviewId) {
-        return BaseResponse.of(200,HttpStatus.OK,"리뷰 단건 조회 성공",reviewService.getReview(reviewId));
+        return BaseResponse.of(HttpStatus.OK.value(),HttpStatus.OK,"리뷰 단건 조회 성공",reviewService.getReview(reviewId));
     }
 }
