@@ -31,19 +31,15 @@ public class Statistics extends BaseEntity {
     @Column(name = "review_count", nullable = false)
     private int reviewCount;
 
-    @Column(name = "hot_keyword")
-    private String hotKeyword;
-
     @Column(name = "duration_time", nullable = false)
     private long durationTime;
 
-    public static Statistics of(UUID productId, int highestScore, int lowestScore, int reviewCount, String hotKeyword, long durationTime) {
+    public static Statistics of(UUID productId, int highestScore, int lowestScore, int reviewCount, long durationTime) {
         return Statistics.builder()
                 .productId(productId)
                 .highestScore(highestScore)
                 .lowestScore(lowestScore)
                 .reviewCount(reviewCount)
-                .hotKeyword(hotKeyword)
                 .durationTime(durationTime)
                 .build();
     }
