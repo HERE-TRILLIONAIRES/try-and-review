@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class ProductInfoRequestDto {
     private String productName;
     private String productContent;
+//    private String productCategory;
     private String productImgFilename;
 //    private List<String> subImgFilenameList;
     private List<String> contentImgFilenameList;

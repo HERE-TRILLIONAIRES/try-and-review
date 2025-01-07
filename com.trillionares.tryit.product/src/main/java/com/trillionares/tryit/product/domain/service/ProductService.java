@@ -96,4 +96,40 @@ public class ProductService {
 
         return ProductInfoResponseDto.from(product, seller, allCategory, productMainImgDummydummyURL, contentImgDummydummyURLList);
     }
+
+    @Transactional
+    public ProductIdResponseDto updateProduct(UUID productId, ProductInfoRequestDto requestDto) {
+        // TODO: 권한 체크 (관리자, 판매자)
+
+        // TODO: UserId 토큰에서 받아오기
+        UUID userId = UUID.randomUUID();
+        String username = "너판매";
+
+        Product originProduct = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
+        if(originProduct == null) {
+            throw new RuntimeException("상품이 존재하지 않습니다.");
+        }
+
+        Product product = updateProductElement(username, originProduct, requestDto);
+        productRepository.save(product);
+
+        ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
+        return responseDto;
+    }
+
+    private Product updateProductElement(String username, Product originProduct, ProductInfoRequestDto requestDto) {
+        originProduct.setProductName(requestDto.getProductName());
+        originProduct.setProductContent(requestDto.getProductContent());
+
+        // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
+        UUID productImgId = UUID.randomUUID();
+        UUID contentImgId = UUID.randomUUID();
+        originProduct.setProductImgId(productImgId);
+        originProduct.setContentImgId(contentImgId);
+
+        // TODO: 변경사항 있으면 updatedBy 수정
+        originProduct.setUpdatedBy(username);
+
+        return originProduct;
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,6 +64,17 @@ public class ProductController {
             ProductInfoResponseDto responseDto = productService.getProductById(productId);
 
             return BaseResponseDto.from(200, null, "상품 조회 성공", responseDto);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PutMapping("/{productId}")
+    public BaseResponseDto<ProductIdResponseDto> updateProduct(@PathVariable("productId") UUID productId, @RequestBody ProductInfoRequestDto requestDto) {
+        try {
+            ProductIdResponseDto responseDto = productService.updateProduct(productId, requestDto);
+
+            return BaseResponseDto.from(200, null, "상품 수정 성공", responseDto);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
