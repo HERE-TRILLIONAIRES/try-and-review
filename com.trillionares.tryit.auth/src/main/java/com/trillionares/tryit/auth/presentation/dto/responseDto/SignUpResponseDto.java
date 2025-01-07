@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SignUpResponseDto {
-  private UUID id;
+  private UUID userId;
   private String username;
   private String fullname;
   private String email;
@@ -18,7 +18,7 @@ public class SignUpResponseDto {
   private Role role;
 
   public SignUpResponseDto(User user) {
-    this.id = user.getId();
+    this.userId = user.getUserId();
     this.username = user.getUsername();
     this.fullname = user.getFullname();
     this.email = user.getEmail();

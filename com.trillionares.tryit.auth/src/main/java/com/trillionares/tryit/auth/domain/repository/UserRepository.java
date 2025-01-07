@@ -1,18 +1,12 @@
 package com.trillionares.tryit.auth.domain.repository;
 
 import com.trillionares.tryit.auth.domain.model.User;
-import com.trillionares.tryit.auth.infrastructure.persistence.UserRepositoryCustom;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
-
 public interface UserRepository extends JpaRepository<User, UUID>{
 
-  Optional<User> findByUsername(String username);
+  Optional<User> findByUsernameAndIsDeletedFalse(String username);
 
   boolean existsByUsernameAndIsDeletedFalse(String username);
 
