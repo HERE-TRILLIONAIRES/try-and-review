@@ -41,6 +41,6 @@ public class BaseEntity {
   private String deletedBy;
 
   @Column(name = "is_deleted", nullable = false)
-  private boolean isDeleted;
+  private boolean isDeleted = false;
 
 }

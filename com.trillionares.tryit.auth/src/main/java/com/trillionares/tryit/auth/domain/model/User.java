@@ -50,8 +50,6 @@ public class User extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @Column(name = "is_deleted",nullable = false)
-  private Boolean isDeleted;
 
   public static User createUser(String username, String fullname, String password, String email, String phoneNumber, String slackId, Role role) {
     return User.builder()
