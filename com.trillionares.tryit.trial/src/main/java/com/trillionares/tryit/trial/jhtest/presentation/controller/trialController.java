@@ -4,11 +4,16 @@ import com.trillionares.tryit.trial.jhtest.domain.service.TrialService;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialIdResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.common.base.BaseResponseDto;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.trial.TrialInfoResponseDto;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,4 +34,18 @@ public class trialController {
         }
     }
 
+    @GetMapping("/{submissionId}")
+    public BaseResponseDto<TrialInfoResponseDto> getTrialById(
+            @PathVariable("submissionId") UUID submissionId
+    ) {
+        try {
+
+            TrialInfoResponseDto responseDto = trialService.getTrialById(submissionId);
+
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 조회했습니다.", responseDto);
+
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
+        }
+    }
 }

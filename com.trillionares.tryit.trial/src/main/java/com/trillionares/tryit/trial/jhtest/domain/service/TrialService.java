@@ -4,6 +4,7 @@ import com.trillionares.tryit.trial.jhtest.domain.model.Trial;
 import com.trillionares.tryit.trial.jhtest.domain.repository.TrialRepository;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialIdResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.trial.TrialInfoResponseDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,17 @@ public class TrialService {
         trialRepository.save(trial);
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    public TrialInfoResponseDto getTrialById(UUID submissionId) {
+        Trial trial = trialRepository.findBySubmissionIdIsDeletedFalse(submissionId).orElse(null);
+        if(trial == null){
+            throw new RuntimeException("신청을 찾을 수 없습니다.");
+        }
+
+        // TODO: User Service 호출해서 신청자 정보 받아오기, 내가 신청한건지 확인
+        String trialedUser = "신청자";
+
+        return TrialInfoResponseDto.from(trial);
     }
 }
