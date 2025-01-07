@@ -34,6 +34,6 @@ public class ReviewController {
     @PutMapping("/api/reviews/{reviewId}")
     public BaseResponse<ReviewUpdateResponseDto> updateReview(
             @RequestBody ReviewUpdateRequest reviewUpdateRequest, @PathVariable UUID reviewId) {
-        return BaseResponse.of(200,HttpStatus.OK,"리뷰 수정 성공",reviewService.updateReview(ReviewUpdateRequestDto.from(reviewUpdateRequest),reviewId));
+        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"리뷰 수정 성공",reviewService.updateReview(ReviewUpdateRequestDto.from(reviewUpdateRequest),reviewId));
     }
 }
