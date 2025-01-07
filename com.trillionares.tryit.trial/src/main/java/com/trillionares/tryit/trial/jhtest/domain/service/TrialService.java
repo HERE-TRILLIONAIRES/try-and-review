@@ -8,6 +8,7 @@ import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.trial.TrialInfoResponseDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.support.CustomSQLErrorCodesTranslation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,8 @@ public class TrialService {
         // TODO: UserId토큰에서 받아오기
         UUID userId = UUID.randomUUID();
         String username = "신청자";
+        
+        // TODO: 이전 신청내역없는지 검증
 
         // TODO: recruitmentID 존재하는지 검증
 
@@ -74,5 +77,33 @@ public class TrialService {
         }
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    @Transactional
+    public TrialIdResponseDto deleteTrial(UUID submissionId) {
+        // TODO: 권한 체크 (사용자) 본인인지 확인
+
+        // TODO: UserId 토큰에서 받아오기
+        UUID userId = UUID.randomUUID();
+        String username = "나신청";
+
+        Trial trial = trialRepository.findBySubmissionIdIsDeletedFalse(submissionId).orElse(null);
+        if(trial == null){
+            throw new RuntimeException("신청을 찾을 수 없습니다.");
+        }
+
+        trial = toDeletedStatusOfTrial(trial, SubmissionStatus.CANCELED, username);
+
+        return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    private Trial toDeletedStatusOfTrial(Trial trial, SubmissionStatus submissionStatus, String username) {
+        if(trial.getSubmissionStatus() == SubmissionStatus.APPLIED) {
+            trial.setSubmissionStatus(submissionStatus);
+            trial.delete(username);
+            trialRepository.save(trial);
+        }
+
+        return trial;
     }
 }

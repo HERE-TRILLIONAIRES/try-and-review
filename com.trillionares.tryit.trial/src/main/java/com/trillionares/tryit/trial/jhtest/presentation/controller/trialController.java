@@ -9,6 +9,7 @@ import com.trillionares.tryit.trial.jhtest.presentation.dto.trial.TrialInfoRespo
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,6 +61,20 @@ public class trialController {
             TrialIdResponseDto responseDto = trialService.changeStatusOfTrial(submissionId, status);
 
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 변경했습니다. 신청 상태 : " + status, responseDto);
+
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
+        }
+    }
+
+    @DeleteMapping("/{submissionId}")
+    public BaseResponseDto<TrialIdResponseDto> deleteTrial(
+            @PathVariable("submissionId") UUID submissionId
+    ) {
+        try {
+            TrialIdResponseDto responseDto = trialService.deleteTrial(submissionId);
+
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 취소했습니다.", responseDto);
 
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
