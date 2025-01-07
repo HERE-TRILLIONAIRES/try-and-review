@@ -14,10 +14,9 @@ public interface UserRepository extends JpaRepository<User, UUID>{
 
   Optional<User> findByUsername(String username);
 
-  boolean existsByUsernameAndIsDeletedFalse(
-      @NotBlank @Size(min = 1, max = 30, message = "이름은 최소 1자 이상, 30자 이하여야 합니다.") String username);
+  boolean existsByUsernameAndIsDeletedFalse(String username);
 
-  Optional<User> findByIdAndIsDeletedFalse(UUID userId);
+  Optional<User> findByUserIdAndIsDeletedFalse(UUID userId);
 
   Optional<User> findByEmail(String email);
 
