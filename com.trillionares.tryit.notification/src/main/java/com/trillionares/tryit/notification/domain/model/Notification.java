@@ -31,7 +31,7 @@ public class Notification extends BaseEntity {
   private UUID submissionId;
 
   @Column(name = "notification_status")
-  private NotificationStatus notificationStatus;
+  private NotificationStatus notificationStatus = NotificationStatus.PENDING; // 초기상태 설정
 
   @Column(name = "attempt_count")
   private Integer attemptCount = 0;
@@ -45,6 +45,10 @@ public class Notification extends BaseEntity {
     if (this.attemptCount >= 3) { // 0, 1, 2 최대 3회
       this.notificationStatus = NotificationStatus.FAILED;
     }
+  }
+
+  public void markAsDelivered() {
+    this.notificationStatus = NotificationStatus.SENT;
   }
 
   @Builder

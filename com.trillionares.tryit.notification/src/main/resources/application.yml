@@ -26,3 +26,7 @@ logging:
 openapi:
   service:
     url: http://localhost:19091 # API Gateway 포트
+
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_URL:http://default-webhook-url} # 임시 가짜 URL
