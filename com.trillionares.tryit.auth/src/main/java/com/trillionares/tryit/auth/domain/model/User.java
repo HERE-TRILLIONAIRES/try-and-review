@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
@@ -15,7 +14,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.CreatedBy;
 
 @Builder
 @AllArgsConstructor
@@ -40,24 +38,21 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   private String password;
 
-  @Column(nullable = false)
+  @Column(name = "phone_number", nullable = false)
   private String phoneNumber;
 
   @Column(nullable = false)
   private String email;
 
-  @Column(nullable = false)
+  @Column(name = "slack_id", nullable = false)
   private String slackId;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  @Column(nullable = false)
+  @Column(name = "is_deleted",nullable = false)
   private Boolean isDeleted;
-
-  @CreatedBy
-  private String createdBy;
 
   public static User createUser(String username, String fullname, String password, String email, String phoneNumber, String slackId, Role role) {
     return User.builder()
