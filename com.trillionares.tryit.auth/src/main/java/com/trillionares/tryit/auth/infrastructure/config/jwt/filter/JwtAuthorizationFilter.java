@@ -3,6 +3,7 @@ package com.trillionares.tryit.auth.infrastructure.config.jwt.filter;
 
 import com.trillionares.tryit.auth.infrastructure.config.CustomUserDetails;
 import com.trillionares.tryit.auth.infrastructure.config.CustomUserDetailsService;
+import com.trillionares.tryit.auth.infrastructure.config.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,24 +21,28 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
-        String username = request.getHeader("X-User-Name");
-        String role = request.getHeader("X-User-Role");
-        log.info("username {}, role {}", username, role);
+        // 1. Authorization 헤더에서 JWT 토큰 추출
+        String token = jwtUtil.resolveToken(request);
 
+        if (token != null && jwtUtil.validateToken(token)) {
+            // 2. JWT 토큰에서 클레임 정보 추출
+            String username = jwtUtil.getUsernameFromToken(token);
+            String role = jwtUtil.getRoleFromToken(token);
+            log.info("Extracted from JWT - username: {}, role: {}", username, role);
 
-        if (username != null && role != null) {
+            // 3. 사용자 정보 로드 및 역할 검증
             CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
-
-            if(!role.equals(userDetails.getRole())) {
-                log.info("userDetails role {}", userDetails.getRole());
-                response.setContentType("application/json; charset=UTF-8"); // UTF-8 설정
-                response.setCharacterEncoding("UTF-8"); // 추가 설정
-                response.setStatus(HttpStatus.FORBIDDEN.value()); // 403 상태 코드
+            if (!role.equals(userDetails.getRole())) {
+                log.info("User role mismatch: expected {}, found {}", role, userDetails.getRole());
+                response.setContentType("application/json; charset=UTF-8");
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(HttpStatus.FORBIDDEN.value());
                 response.getWriter().write("{\"code\": -1, \"message\": \"Role 정보가 일치하지 않습니다\", \"data\": null}");
                 return;
             }
