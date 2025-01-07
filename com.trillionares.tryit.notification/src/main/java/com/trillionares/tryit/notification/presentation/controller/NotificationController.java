@@ -1,6 +1,7 @@
 package com.trillionares.tryit.notification.presentation.controller;
 
 import com.trillionares.tryit.notification.application.dto.NotificationResponse;
+import com.trillionares.tryit.notification.application.service.NotificationService;
 import com.trillionares.tryit.notification.domain.repository.NotificationRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class NotificationController {
 
-  private final NotificationRepository notificationRepository;
+  private final NotificationService notificationService;
 
   @GetMapping("/{notificationId}")
   public ResponseEntity<NotificationResponse> getNotification(@PathVariable UUID notificationId) {
 
-    return notificationRepository.findById(notificationId) // 테스트용 임의 응답
-        .map(notification -> ResponseEntity.ok(NotificationResponse.from(notification)))
-        .orElse(ResponseEntity.notFound().build());
+    NotificationResponse response = notificationService.getNotification(notificationId);
+
+    return ResponseEntity.ok(response);
   }
 
 

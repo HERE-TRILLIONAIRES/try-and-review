@@ -20,7 +20,11 @@ public enum ErrorCode {
   INVALID_LENGTH(400, "길이가 올바르지 않습니다"),
   INVALID_FORMAT(400, "형식이 올바르지 않습니다"),
   INVALID_RANGE(400, "범위가 올바르지 않습니다"),
-  INVALID_DATE(400, "날짜가 올바르지 않습니다");
+  INVALID_DATE(400, "날짜가 올바르지 않습니다"),
+
+  // notification
+  INVALID_SUBMISSION_STATUS(400, "허용되지 않는 체험단 신청 상태입니다."),
+  NOTIFICATION_NOT_FOUND(404, "해당 알림은 존재하지 않습니다.");
 
   private final int status;
   private final String message;
