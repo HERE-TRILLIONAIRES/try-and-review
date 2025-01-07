@@ -38,7 +38,7 @@ public class ReviewController {
         return BaseResponse.of(200,HttpStatus.OK,"리뷰 수정 성공",reviewService.updateReview(ReviewUpdateRequestDto.from(reviewUpdateRequest),reviewId));
     }
 
-    @DeleteMapping("/api/reviews/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewDeleteResponseDto> deleteReview(@PathVariable UUID reviewId) {
         return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"리뷰 삭제 성공",reviewService.deleteReview(reviewId));
     }
