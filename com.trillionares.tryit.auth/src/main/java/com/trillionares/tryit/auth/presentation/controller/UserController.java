@@ -2,9 +2,7 @@ package com.trillionares.tryit.auth.presentation.controller;
 
 
 import com.trillionares.tryit.auth.application.service.UserService;
-import com.trillionares.tryit.auth.infrastructure.config.CustomUserDetails;
 import com.trillionares.tryit.auth.presentation.dto.BaseResponse;
-import com.trillionares.tryit.auth.presentation.dto.requestDto.PasswordUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

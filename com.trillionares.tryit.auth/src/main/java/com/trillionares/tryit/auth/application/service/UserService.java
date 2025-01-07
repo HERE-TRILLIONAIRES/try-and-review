@@ -5,15 +5,11 @@ import com.trillionares.tryit.auth.domain.model.User;
 import com.trillionares.tryit.auth.domain.repository.UserRepository;
 import com.trillionares.tryit.auth.libs.exception.ErrorCode;
 import com.trillionares.tryit.auth.libs.exception.GlobalException;
-import com.trillionares.tryit.auth.presentation.dto.requestDto.PasswordUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.SignUpResponseDto;
-import jakarta.validation.Valid;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
