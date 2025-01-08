@@ -20,7 +20,7 @@ public class TrialService {
     private final TrialRepository trialRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-
+    @Transactional
     public TrialIdResponseDto createTrial(String topic, String key, String message, TrialInfoRequestDto requestDto) {
         // TODO: 권한 체크 (사용자)
 
