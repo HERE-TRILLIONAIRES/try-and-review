@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "p_review")
+@Table(name = "p_review", schema = "review")
 @SQLDelete(sql = "UPDATE p_review SET is_deleted = true WHERE review_id=?")
 @SQLRestriction(value = "is_deleted = false")
 @Builder(access = AccessLevel.PRIVATE)
