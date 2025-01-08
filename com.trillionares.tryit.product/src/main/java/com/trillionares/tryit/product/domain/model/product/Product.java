@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,5 +51,12 @@ public class Product extends BaseEntity {
 
     public void setContentImgId(UUID contentImgId) {
         this.contentImgId = contentImgId;
+    }
+
+    public void delete(String username) {
+        LocalDateTime now = LocalDateTime.now();
+        this.setDelete(true);
+        this.setDeletedAt(now);
+        this.setDeletedBy(username);
     }
 }

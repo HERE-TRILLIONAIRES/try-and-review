@@ -105,31 +105,51 @@ public class ProductService {
         UUID userId = UUID.randomUUID();
         String username = "너판매";
 
-        Product originProduct = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
-        if(originProduct == null) {
+        Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
+        if(product == null) {
             throw new RuntimeException("상품이 존재하지 않습니다.");
         }
 
-        Product product = updateProductElement(username, originProduct, requestDto);
+        product = updateProductElement(username, product, requestDto);
         productRepository.save(product);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
     }
 
-    private Product updateProductElement(String username, Product originProduct, ProductInfoRequestDto requestDto) {
-        originProduct.setProductName(requestDto.getProductName());
-        originProduct.setProductContent(requestDto.getProductContent());
+    private Product updateProductElement(String username, Product product, ProductInfoRequestDto requestDto) {
+        product.setProductName(requestDto.getProductName());
+        product.setProductContent(requestDto.getProductContent());
 
         // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
         UUID productImgId = UUID.randomUUID();
         UUID contentImgId = UUID.randomUUID();
-        originProduct.setProductImgId(productImgId);
-        originProduct.setContentImgId(contentImgId);
+        product.setProductImgId(productImgId);
+        product.setContentImgId(contentImgId);
 
         // TODO: 변경사항 있으면 updatedBy 수정
-        originProduct.setUpdatedBy(username);
+        product.setUpdatedBy(username);
 
-        return originProduct;
+        return product;
+    }
+
+    @Transactional
+    public ProductIdResponseDto deleteProduct(UUID productId) {
+        // TODO: 권한 체크 (관리자, 판매자)
+
+        // TODO: UserId 토큰에서 받아오기
+        UUID userId = UUID.randomUUID();
+        String username = "너판매";
+
+        Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
+        if(product == null) {
+            throw new RuntimeException("상품이 존재하지 않습니다.");
+        }
+
+        product.delete(username);
+        productRepository.save(product);
+
+        ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
+        return responseDto;
     }
 }

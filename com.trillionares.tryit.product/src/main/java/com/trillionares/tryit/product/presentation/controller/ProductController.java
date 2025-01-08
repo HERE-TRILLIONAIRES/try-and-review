@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,6 +76,17 @@ public class ProductController {
             ProductIdResponseDto responseDto = productService.updateProduct(productId, requestDto);
 
             return BaseResponseDto.from(200, null, "상품 수정 성공", responseDto);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/{productId}")
+    public BaseResponseDto<ProductIdResponseDto> deleteProduct(@PathVariable("productId") UUID productId) {
+        try {
+            ProductIdResponseDto responseDto = productService.deleteProduct(productId);
+
+            return BaseResponseDto.from(200, null, "상품 삭제 성공", responseDto);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
