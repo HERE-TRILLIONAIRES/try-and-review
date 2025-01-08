@@ -19,6 +19,9 @@ public class Statistics extends BaseEntity {
     @Column(name = "statistics_id")
     private UUID statisticsId;
 
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
+
     @Column(name = "product_id", nullable = false)
     private UUID productId;
 
@@ -34,8 +37,9 @@ public class Statistics extends BaseEntity {
     @Column(name = "duration_time", nullable = false)
     private long durationTime;
 
-    public static Statistics of(UUID productId, int highestScore, int lowestScore, int reviewCount, long durationTime) {
+    public static Statistics of(UUID userId, UUID productId, int highestScore, int lowestScore, int reviewCount, long durationTime) {
         return Statistics.builder()
+                .userId(userId)
                 .productId(productId)
                 .highestScore(highestScore)
                 .lowestScore(lowestScore)

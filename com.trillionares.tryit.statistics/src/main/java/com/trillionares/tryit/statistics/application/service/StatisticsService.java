@@ -16,7 +16,8 @@ public class StatisticsService {
 
     @Transactional
     public StatisticsCreateResponseDto createStatistics(StatisticsCreateRequestDto statisticsCreateRequestDto) {
-        Statistics statistics =  statisticsRepository.save(Statistics.of(statisticsCreateRequestDto.productId(),statisticsCreateRequestDto.highestScore(),
+        Statistics statistics =  statisticsRepository.save(Statistics.of(statisticsCreateRequestDto.userId(),
+                statisticsCreateRequestDto.productId(),statisticsCreateRequestDto.highestScore(),
                 statisticsCreateRequestDto.lowestScore(),statisticsCreateRequestDto.reviewCount(),statisticsCreateRequestDto.durationTime()));
         return StatisticsCreateResponseDto.of(statistics.getStatisticsId(),statistics.getCreatedAt());
     }

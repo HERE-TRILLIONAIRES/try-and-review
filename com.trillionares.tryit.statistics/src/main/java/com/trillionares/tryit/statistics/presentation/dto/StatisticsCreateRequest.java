@@ -7,6 +7,7 @@ import java.util.UUID;
 @Getter
 public class StatisticsCreateRequest {
 
+    private UUID userId;
     private UUID productId;
     private Integer highestScore;
     private Integer lowestScore;

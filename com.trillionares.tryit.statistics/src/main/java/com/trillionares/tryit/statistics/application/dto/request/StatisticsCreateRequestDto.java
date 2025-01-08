@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record StatisticsCreateRequestDto(
+        UUID userId,
         UUID productId,
         Integer highestScore,
         Integer lowestScore,
@@ -17,6 +18,7 @@ public record StatisticsCreateRequestDto(
 
     public static StatisticsCreateRequestDto from(StatisticsCreateRequest statisticsCreateRequest) {
         return StatisticsCreateRequestDto.builder()
+                .userId(statisticsCreateRequest.getUserId())
                 .productId(statisticsCreateRequest.getProductId())
                 .highestScore(statisticsCreateRequest.getHighestScore())
                 .lowestScore(statisticsCreateRequest.getLowestScore())
