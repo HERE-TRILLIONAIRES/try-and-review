@@ -8,7 +8,7 @@ import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.trial.TrialInfoResponseDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.support.CustomSQLErrorCodesTranslation;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class TrialService {
 
     private final TrialRepository trialRepository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
 
-    public TrialIdResponseDto createTrial(TrialInfoRequestDto requestDto) {
+    public TrialIdResponseDto createTrial(String topic, String key, String message, TrialInfoRequestDto requestDto) {
         // TODO: 권한 체크 (사용자)
 
         // TODO: UserId토큰에서 받아오기
@@ -34,12 +35,15 @@ public class TrialService {
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
 
         trialRepository.save(trial);
+        kafkaTemplate.send(topic,
+                key + "-recruitmentId:" + String.valueOf(requestDto.getRecruitmentId()),
+                message + 1);
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
     }
 
     public TrialInfoResponseDto getTrialById(UUID submissionId) {
-        Trial trial = trialRepository.findBySubmissionIdIsDeletedFalse(submissionId).orElse(null);
+        Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
@@ -58,7 +62,7 @@ public class TrialService {
         UUID userId = UUID.randomUUID();
         String username = "신청자";
 
-        Trial trial = trialRepository.findBySubmissionIdIsDeletedFalse(submissionId).orElse(null);
+        Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
@@ -87,7 +91,7 @@ public class TrialService {
         UUID userId = UUID.randomUUID();
         String username = "나신청";
 
-        Trial trial = trialRepository.findBySubmissionIdIsDeletedFalse(submissionId).orElse(null);
+        Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
