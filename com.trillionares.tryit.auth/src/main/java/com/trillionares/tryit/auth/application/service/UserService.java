@@ -1,5 +1,6 @@
 package com.trillionares.tryit.auth.application.service;
 
+import com.trillionares.tryit.auth.application.dto.UserAuthorityResponseDto;
 import com.trillionares.tryit.auth.domain.model.Role;
 import com.trillionares.tryit.auth.domain.model.User;
 import com.trillionares.tryit.auth.domain.repository.UserRepository;
@@ -72,7 +73,7 @@ public class UserService {
 
   @Transactional
   public void deleteUser(UUID userId) {
-    User user = userRepository.findById(userId)
+    User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
     if (user.isDeleted()) {
@@ -81,6 +82,14 @@ public class UserService {
 
     user.deleteUser(); // 소프트 삭제 처리
     userRepository.save(user); // 변경 사항 저장
+  }
+
+  public UserAuthorityResponseDto getUserByUsername(String username) {
+    User user = userRepository.findByUsernameAndIsDeletedFalse(username)
+        .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+    // 권한과 ID를 포함한 응답 DTO 생성
+    return new UserAuthorityResponseDto(user.getUserId(), user.getUsername(), user.getRole());
   }
 
   private void checkUsername(String username) {

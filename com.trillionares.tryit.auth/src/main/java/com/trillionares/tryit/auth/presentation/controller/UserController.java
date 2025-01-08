@@ -1,6 +1,7 @@
 package com.trillionares.tryit.auth.presentation.controller;
 
 
+import com.trillionares.tryit.auth.application.dto.UserAuthorityResponseDto;
 import com.trillionares.tryit.auth.application.service.UserService;
 import com.trillionares.tryit.auth.infrastructure.config.CustomUserDetails;
 import com.trillionares.tryit.auth.presentation.dto.BaseResponse;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -59,6 +61,13 @@ public class UserController {
 
     return BaseResponse.of(204, HttpStatus.NO_CONTENT, "회원탈퇴 완료", null);
 
+  }
+
+  @GetMapping("/{username}")
+  public BaseResponse getUserByUsername(@PathVariable String username,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    UserAuthorityResponseDto resDto = userService.getUserByUsername(username);
+    return BaseResponse.of(200, HttpStatus.OK, "사용자 정보 조회 성공", resDto);
   }
 
 
