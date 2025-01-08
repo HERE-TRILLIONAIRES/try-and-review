@@ -7,7 +7,8 @@ import com.trillionares.tryit.auth.libs.exception.ErrorCode;
 import com.trillionares.tryit.auth.libs.exception.GlobalException;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.PasswordUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
-import com.trillionares.tryit.auth.presentation.dto.responseDto.SignUpResponseDto;
+import com.trillionares.tryit.auth.presentation.dto.requestDto.UserInfoUpdateReqDto;
+import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public SignUpResponseDto signup(SignUpRequestDto reqDto) {
+  public UserResponseDto signup(SignUpRequestDto reqDto) {
     checkUsername(reqDto.getUsername());
     Role role = validateUserRole(reqDto.getRole());
 
@@ -40,7 +41,7 @@ public class UserService {
 
     savedUser = userRepository.save(savedUser);
 
-    return new SignUpResponseDto(savedUser);
+    return new UserResponseDto(savedUser);
   }
 
   @Transactional
@@ -57,6 +58,16 @@ public class UserService {
       throw new IllegalArgumentException("새 비밀번호는 현재 비밀번호와 다르게 설정해야 합니다.");
     }
     user.updatePassword(passwordEncoder.encode(reqDto.getNewPassword()));
+  }
+
+  @Transactional
+  public UserResponseDto updateUserInfo(@Valid UUID userId, UserInfoUpdateReqDto reqDto) {
+    User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
+        .orElseThrow(() -> new GlobalException(ErrorCode.ID_NOT_FOUND));
+
+    user.updateUserInfo(reqDto.getFullname(), reqDto.getEmail(), reqDto.getPhoneNumber(), reqDto.getSlackId());
+
+    return new UserResponseDto(user);
   }
 
 

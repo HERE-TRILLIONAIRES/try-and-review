@@ -67,4 +67,20 @@ public class User extends BaseEntity {
     this.password = password;
   }
 
+  public void updateUserInfo(String fullname, String email, String phoneNumber, String slackId) {
+    if (fullname != null && !fullname.isEmpty()) {
+      this.fullname = fullname;
+    }
+    if (email != null && !email.isEmpty()) {
+      this.email = email;
+    }
+    if (phoneNumber != null && !phoneNumber.isEmpty()) {
+      this.phoneNumber = phoneNumber;
+    }
+    if (slackId != null && !slackId.isEmpty()) {
+      this.slackId = slackId;
+    }
+  }
+
+
 }

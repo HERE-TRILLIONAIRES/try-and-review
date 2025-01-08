@@ -6,10 +6,14 @@ import com.trillionares.tryit.auth.infrastructure.config.CustomUserDetails;
 import com.trillionares.tryit.auth.presentation.dto.BaseResponse;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.PasswordUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
+import com.trillionares.tryit.auth.presentation.dto.requestDto.UserInfoUpdateReqDto;
+import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +39,16 @@ public class UserController {
     userService.updatePassword(reqDto, userDetails.getUserId());
 
     return BaseResponse.of(201, HttpStatus.ACCEPTED, "비밀번호가 수정되었습니다.", null);
+  }
+
+  @PutMapping("/{userId}")
+  public BaseResponse updateUserInfo(@PathVariable UUID userId,
+      @Valid @RequestBody UserInfoUpdateReqDto reqDto) {
+    userService.updateUserInfo(userId, reqDto);
+
+    UserResponseDto updatedUserInfo = userService.updateUserInfo(userId, reqDto);
+
+    return BaseResponse.of(201, HttpStatus.ACCEPTED, "회원정보가 수정되었습니다.", updatedUserInfo);
   }
 
 }
