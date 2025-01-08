@@ -25,6 +25,7 @@ public class RecruitmentService {
     @Transactional
     public RecruitmentIdResponse createRecruitment(CreateRecruitmentRequest request) {
         Recruitment recruitment = Recruitment.builder()
+                .productId(request.productId())
                 .recruitmentTitle(request.title())
                 .recruitmentDescription(request.description())
                 .recruitmentStartDate(request.startTime())
