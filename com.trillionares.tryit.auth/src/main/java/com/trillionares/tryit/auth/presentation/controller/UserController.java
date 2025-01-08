@@ -13,6 +13,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,8 +35,7 @@ public class UserController {
 
   @PutMapping("/password")
   public BaseResponse updatePassword(@RequestBody @Valid PasswordUpdateReqDto reqDto,
-      @AuthenticationPrincipal
-      CustomUserDetails userDetails) {
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
     userService.updatePassword(reqDto, userDetails.getUserId());
 
     return BaseResponse.of(201, HttpStatus.ACCEPTED, "비밀번호가 수정되었습니다.", null);
@@ -43,12 +43,23 @@ public class UserController {
 
   @PutMapping("/{userId}")
   public BaseResponse updateUserInfo(@PathVariable UUID userId,
-      @Valid @RequestBody UserInfoUpdateReqDto reqDto) {
-    userService.updateUserInfo(userId, reqDto);
+      @Valid @RequestBody UserInfoUpdateReqDto reqDto,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    userService.updateUserInfo(userDetails.getUserId(), reqDto);
 
-    UserResponseDto updatedUserInfo = userService.updateUserInfo(userId, reqDto);
+    UserResponseDto updatedUserInfo = userService.updateUserInfo(userDetails.getUserId(), reqDto);
 
     return BaseResponse.of(201, HttpStatus.ACCEPTED, "회원정보가 수정되었습니다.", updatedUserInfo);
   }
+
+  @DeleteMapping("/{userId}")
+  public BaseResponse deleteUser(@PathVariable UUID userId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    userService.deleteUser(userDetails.getUserId());
+
+    return BaseResponse.of(204, HttpStatus.NO_CONTENT, "회원탈퇴 완료", null);
+
+  }
+
 
 }

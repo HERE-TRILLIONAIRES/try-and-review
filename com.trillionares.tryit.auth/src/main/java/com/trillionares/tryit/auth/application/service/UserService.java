@@ -70,8 +70,18 @@ public class UserService {
     return new UserResponseDto(user);
   }
 
+  @Transactional
+  public void deleteUser(UUID userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
+    if (user.isDeleted()) {
+      throw new GlobalException(ErrorCode.USER_ALREADY_DELETED);
+    }
 
+    user.deleteUser(); // 소프트 삭제 처리
+    userRepository.save(user); // 변경 사항 저장
+  }
 
   private void checkUsername(String username) {
     if (userRepository.existsByUsernameAndIsDeletedFalse(username)) {
