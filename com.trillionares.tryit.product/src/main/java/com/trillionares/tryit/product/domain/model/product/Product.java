@@ -1,10 +1,12 @@
 package com.trillionares.tryit.product.domain.model.product;
 
 import com.trillionares.tryit.product.domain.common.base.BaseEntity;
+import com.trillionares.tryit.product.domain.model.category.ProductCategory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -37,6 +39,9 @@ public class Product extends BaseEntity {
     @Column(name = "content_img_id", nullable = true)
     private UUID contentImgId;
 
+    @OneToOne(mappedBy = "product")
+    private ProductCategory productCategory;
+
     public void setProductName(String productName) {
         this.productName = productName;
     }
@@ -58,5 +63,9 @@ public class Product extends BaseEntity {
         this.setDelete(true);
         this.setDeletedAt(now);
         this.setDeletedBy(username);
+    }
+
+    public void setProductCategory(ProductCategory productCategory) {
+        this.productCategory = productCategory;
     }
 }

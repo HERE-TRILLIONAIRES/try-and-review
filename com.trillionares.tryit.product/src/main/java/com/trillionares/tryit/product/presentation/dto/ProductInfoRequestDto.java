@@ -1,6 +1,8 @@
 package com.trillionares.tryit.product.presentation.dto;
 
+import com.trillionares.tryit.product.domain.model.category.Category;
 import com.trillionares.tryit.product.domain.model.product.Product;
+import com.trillionares.tryit.product.domain.service.CategoryService;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class ProductInfoRequestDto {
     private String productName;
     private String productContent;
-//    private String productCategory;
+    private String productCategory;
     private String productImgFilename;
 //    private List<String> subImgFilenameList;
     private List<String> contentImgFilenameList;

@@ -2,14 +2,20 @@ package com.trillionares.tryit.product.domain.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.trillionares.tryit.product.domain.model.category.Category;
+import com.trillionares.tryit.product.domain.model.category.ProductCategory;
 import com.trillionares.tryit.product.domain.model.product.Product;
 import com.trillionares.tryit.product.domain.model.product.QProduct;
+import com.trillionares.tryit.product.domain.repository.CategoryRepository;
+import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
 import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductCategoryRepository productCategoryRepository;
 
     @Transactional
     public ProductIdResponseDto createProduct(ProductInfoRequestDto requestDto) {
@@ -37,11 +45,29 @@ public class ProductService {
         UUID productImgId = UUID.randomUUID();
         UUID contentImgId = UUID.randomUUID();
 
+        Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
+        if(!category.isPresent()) {
+            throw new RuntimeException("카테고리가 존재하지 않습니다.");
+        }
+
         Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, productImgId, contentImgId);
+
+        ProductCategory productCategory = mappingProductAndCategory(product, category.get());
+
         productRepository.save(product);
+        productCategoryRepository.save(productCategory);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private ProductCategory mappingProductAndCategory(Product product, Category category) {
+        ProductCategory productCategory = new ProductCategory();
+
+        productCategory.setProductAndCategory(product, category);
+        product.setProductCategory(productCategory);
+
+        return productCategory;
     }
 
     public List<ProductInfoResponseDto> getProduct(
@@ -61,8 +87,10 @@ public class ProductService {
             // TODO: User Service 호출해서 Seller 정보 받아오기
             String seller = "나판매";
 
-            // TODO: 카테고리 정보 여러개면 문자열 붙이기
-            String allCategory = "카테고리";
+            if(product.getProductCategory().getCategory().getCategoryName() == null) {
+                throw new RuntimeException("카테고리가 존재하지 않습니다.");
+            }
+            String allCategory = product.getProductCategory().getCategory().getCategoryName();
 
             // TODO: 이미지 정보 받아오기
             String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
@@ -86,7 +114,10 @@ public class ProductService {
         String seller = "나판매";
 
         // TODO: 카테고리 정보 여러개면 문자열 붙이기
-        String allCategory = "카테고리";
+        if(product.getProductCategory().getCategory().getCategoryName() == null) {
+            throw new RuntimeException("카테고리가 존재하지 않습니다.");
+        }
+        String allCategory = product.getProductCategory().getCategory().getCategoryName();
 
         // TODO: 이미지 정보 받아오기
         String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
@@ -110,27 +141,70 @@ public class ProductService {
             throw new RuntimeException("상품이 존재하지 않습니다.");
         }
 
-        product = updateProductElement(username, product, requestDto);
-        productRepository.save(product);
+        updateProductElement(username, product, requestDto);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
     }
 
     private Product updateProductElement(String username, Product product, ProductInfoRequestDto requestDto) {
-        product.setProductName(requestDto.getProductName());
-        product.setProductContent(requestDto.getProductContent());
+        compareProductName(username, product, requestDto);
+        compareProductContent(username, product, requestDto);
 
         // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
         UUID productImgId = UUID.randomUUID();
         UUID contentImgId = UUID.randomUUID();
-        product.setProductImgId(productImgId);
-        product.setContentImgId(contentImgId);
+//        product.setProductImgId(productImgId);
+//        product.setContentImgId(contentImgId);
 
-        // TODO: 변경사항 있으면 updatedBy 수정
-        product.setUpdatedBy(username);
+        compareCategory(username, product, requestDto);
 
         return product;
+    }
+
+
+    private void compareProductName(String username, Product product, ProductInfoRequestDto requestDto) {
+        if(product.getProductName().equals(requestDto.getProductName())) {
+//            throw new RuntimeException("상품명이 변경되지 않았습니다.");
+            return;
+        }
+        product.setProductName(requestDto.getProductName());
+
+        product.setUpdatedBy(username);
+        productRepository.save(product);
+    }
+
+    private void compareProductContent(String username, Product product, ProductInfoRequestDto requestDto) {
+        if(product.getProductContent().equals(requestDto.getProductContent())) {
+//            throw new RuntimeException("상품설명이 변경되지 않았습니다.");
+            return;
+        }
+        product.setProductContent(requestDto.getProductContent());
+
+        product.setUpdatedBy(username);
+        productRepository.save(product);
+    }
+
+    private void compareCategory(String username, Product product, ProductInfoRequestDto requestDto) {
+        Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
+        if(!category.isPresent()) {
+            throw new RuntimeException("카테고리가 존재하지 않습니다.");
+        }
+
+        String orginCategory = product.getProductCategory().getCategory().getCategoryName();
+        if(orginCategory.equals(category.get().getCategoryName())) {
+//            throw new RuntimeException("카테고리가 변경되지 않았습니다.");
+            return;
+        }
+
+        ProductCategory productCategory = product.getProductCategory();
+        productCategory.setCategory(category.get());
+
+        productCategoryRepository.save(productCategory);
+
+        product.setUpdatedAt(LocalDateTime.now());
+        product.setUpdatedBy(username);
+        productRepository.save(product);
     }
 
     @Transactional
