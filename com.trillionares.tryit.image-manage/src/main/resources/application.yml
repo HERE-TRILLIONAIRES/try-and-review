@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: image-manage-service
+  #  config:
+  #    import: configserver:http://localhost:18080   # Config Server ??
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_PRODUCT_USERNAME}
+    password: ${DB_PRODUCT_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      show-sql: true
+      format-sql: true
+      use_sql_comments: true
+  # Image File Size
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# S3
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+    stack:
+        auto: false
+    region:
+      static: ${AWS_S3_REGION}
+      auto: false
+    credentials:
+      access-key: ${AWS_S3_ACCESS_KEY}
+      secret-key: ${AWS_S3_SECRET_KEY}
+
+
+server:
+  port: 19070
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+
+openapi:
+  service:
+    url: http://localhost:19091 # API Gateway ??
