@@ -2,11 +2,14 @@ package com.trillionares.tryit.notification.application.service;
 
 import com.trillionares.tryit.notification.application.dto.NotificationResponse;
 import com.trillionares.tryit.notification.domain.model.Notification;
-import com.trillionares.tryit.notification.domain.repository.NotificationRepository;
+import com.trillionares.tryit.notification.domain.model.NotificationStatus;
 import com.trillionares.tryit.notification.infrastructure.messaging.event.SubmissionSelectedEvent;
+import com.trillionares.tryit.notification.infrastructure.persistence.NotificationRepository;
 import com.trillionares.tryit.notification.libs.exception.ErrorCode;
 import com.trillionares.tryit.notification.libs.exception.ExceptionConverter;
 import com.trillionares.tryit.notification.libs.exception.GlobalException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +29,7 @@ public class NotificationService {
     validateSubmissionStatus(event.getSubmissionStatus());
 
     // 알림 엔티티 저장
-    Notification notification = createNotificationEvent(event);
+    Notification notification = convertEventToNotification(event);
     Notification savedNotification = notificationRepository.save(notification);
 
     // 슬랙 알림 발송
@@ -41,7 +44,7 @@ public class NotificationService {
     }
   }
 
-  private Notification createNotificationEvent(SubmissionSelectedEvent event) {
+  private Notification convertEventToNotification(SubmissionSelectedEvent event) {
     return Notification.builder()
         .userId(event.getUserId())
         .submissionId(event.getSubmissionId())
@@ -55,5 +58,14 @@ public class NotificationService {
         .orElseThrow(() -> new GlobalException(ErrorCode.NOTIFICATION_NOT_FOUND));
 
     return NotificationResponse.from(notification);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<NotificationResponse>getNotificationByStatus(NotificationStatus status, Pageable pageable) {
+
+    Page<NotificationResponse> notifications = notificationRepository.findByNotificationStatus(status, pageable);
+
+    return notificationRepository.findByNotificationStatus(status, pageable);
+
   }
 }
