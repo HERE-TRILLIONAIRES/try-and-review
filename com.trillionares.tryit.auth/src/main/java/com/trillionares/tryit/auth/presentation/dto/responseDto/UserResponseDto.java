@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class SignUpResponseDto {
+public class UserResponseDto {
   private UUID userId;
   private String username;
   private String fullname;
@@ -17,7 +17,7 @@ public class SignUpResponseDto {
   private String slackId;
   private Role role;
 
-  public SignUpResponseDto(User user) {
+  public UserResponseDto(User user) {
     this.userId = user.getUserId();
     this.username = user.getUsername();
     this.fullname = user.getFullname();

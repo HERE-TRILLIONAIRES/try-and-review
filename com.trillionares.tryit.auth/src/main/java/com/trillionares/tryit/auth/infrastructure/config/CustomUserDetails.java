@@ -45,5 +45,7 @@ public class CustomUserDetails implements UserDetails {
         return user.getUserId();
     }
 
-    public Role getRole() { return user.getRole();}
+    public String getRole() {
+        return user.getRole().toString(); // Role의 toString 호출
+    }
 }

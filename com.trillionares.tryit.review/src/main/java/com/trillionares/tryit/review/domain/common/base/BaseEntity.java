@@ -39,6 +39,6 @@ public abstract class BaseEntity {
     @Column(name = "deleted_by")
     private String deletedBy;
 
-    @Column(name = "is_delete", nullable = false)
-    private boolean isDelete;
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 }

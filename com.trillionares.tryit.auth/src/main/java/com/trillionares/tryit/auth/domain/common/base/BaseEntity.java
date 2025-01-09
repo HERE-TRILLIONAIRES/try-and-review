@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Getter
 @Setter
@@ -43,4 +44,9 @@ public class BaseEntity {
   @Column(name = "is_deleted", nullable = false)
   private boolean isDeleted = false;
 
+  public void deleteUser() {
+    this.isDeleted = true;
+    this.deletedAt = LocalDateTime.now();
+    this.deletedBy = SecurityContextHolder.getContext().getAuthentication().getName();
+  }
 }
