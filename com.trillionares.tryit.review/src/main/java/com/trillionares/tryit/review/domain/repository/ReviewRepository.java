@@ -12,4 +12,6 @@ public interface ReviewRepository {
     Review save(Review review);
 
     Optional<Review> findById(UUID reviewId);
+
+    void deleteById(UUID reviewId);
 }

@@ -2,21 +2,42 @@ package com.trillionares.tryit.product.domain.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.trillionares.tryit.product.domain.client.ImageClient;
+import com.trillionares.tryit.product.domain.common.message.CategoryMessage;
+import com.trillionares.tryit.product.domain.common.message.ProductMessage;
+import com.trillionares.tryit.product.domain.model.category.Category;
+import com.trillionares.tryit.product.domain.model.category.ProductCategory;
 import com.trillionares.tryit.product.domain.model.product.Product;
 import com.trillionares.tryit.product.domain.model.product.QProduct;
+import com.trillionares.tryit.product.domain.repository.CategoryRepository;
+import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
-import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
-import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
-import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
+import com.trillionares.tryit.product.presentation.dto.product.ProductIdResponseDto;
+import com.trillionares.tryit.product.presentation.dto.product.ProductInfoRequestDto;
+import com.trillionares.tryit.product.presentation.dto.product.ProductInfoResponseDto;
+import com.trillionares.tryit.product.presentation.dto.productImage.ImageIdResponseDto;
+import com.trillionares.tryit.product.presentation.dto.productImage.ImageInfoResquestDto;
+import com.trillionares.tryit.product.presentation.dto.productImage.ImageUrlDto;
+import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
+import com.trillionares.tryit.product.presentation.exception.CreateProductMainImageIdException;
+import com.trillionares.tryit.product.presentation.exception.CreateProductMainImageUrlException;
+import com.trillionares.tryit.product.presentation.exception.ProductMainImageNotFoundException;
+import com.trillionares.tryit.product.presentation.exception.ProductNotFoundException;
+import feign.codec.Encoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -24,24 +45,83 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ProductService {
 
+    @Autowired
+    private Encoder encoder;
+
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductCategoryRepository productCategoryRepository;
+
+    private final ImageClient imageClient;
+
+    private String defaultProductImgUrl = "https://trillionaires-s3.s3.ap-northeast-2.amazonaws.com/empty_product.png";
 
     @Transactional
-    public ProductIdResponseDto createProduct(ProductInfoRequestDto requestDto) {
+    public ProductIdResponseDto createProduct(ProductInfoRequestDto requestDto, MultipartFile productMainImage) {
         // TODO: 권한 체크 (관리자, 판매자)
 
         // TODO: UserId 토큰에서 받아오기
         UUID userId = UUID.randomUUID();
+        String username = "상품 만든 사람";
+
+        Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
+        if(!category.isPresent()) {
+            throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
+        }
+
+        Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, username);
+
+        ProductCategory productCategory = mappingProductAndCategory(product, category.get());
+        product.setProductCategory(productCategory);
 
         // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
-        UUID productImgId = UUID.randomUUID();
-        UUID contentImgId = UUID.randomUUID();
+        product = mappingProductAndProductMainImg(product, productMainImage, username);
+//        UUID contentImgId = UUID.randomUUID();
 
-        Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, productImgId, contentImgId);
+        // TODO: ----------------------------
+
         productRepository.save(product);
+        productCategoryRepository.save(productCategory);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private Product mappingProductAndProductMainImg(Product product, MultipartFile productMainImage, String username) {
+        UUID dummyProductImgId = UUID.randomUUID();
+        product.setProductImgId(dummyProductImgId);
+        productRepository.save(product);
+
+        ImageUrlDto productMainImageUrl = new ImageUrlDto();
+        if(!productMainImage.isEmpty() && !Objects.isNull(productMainImage.getOriginalFilename()) && productMainImage != null){
+            productMainImageUrl = imageClient.upload(productMainImage).getData();
+            if(productMainImageUrl == null) {
+                throw new CreateProductMainImageUrlException(ProductMessage.CREATED_PRODUCT_MAIN_IMAGE_URL_FAIL.getMessage());
+            }
+        } else {
+            productMainImageUrl.setDefaultImage(defaultProductImgUrl);
+        }
+
+        ImageInfoResquestDto imageInfoResquestDto = ImageInfoResquestDto.from(product.getProductId(), productMainImageUrl.getImageUrl(), true, username);
+        // TODO: usertoken에서 이미지 생성한 사람 정보 같이 넘겨주기
+        ImageIdResponseDto productMainImageResponseDto = imageClient.createImage(imageInfoResquestDto).getData();
+        if(productMainImageResponseDto == null) {
+            throw new CreateProductMainImageIdException(ProductMessage.CREATED_PRODUCT_MAIN_IMAGE_ID_FAIL.getMessage());
+        }
+
+        product.setProductImgId(productMainImageResponseDto.getImageId());
+
+        if(dummyProductImgId.equals(product.getProductImgId())) {
+            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE.getMessage());
+        }
+
+        return product;
+    }
+
+    private ProductCategory mappingProductAndCategory(Product product, Category category) {
+        ProductCategory productCategory = ProductCategory.setProductAndCategory(product, category);
+
+        return productCategory;
     }
 
     public List<ProductInfoResponseDto> getProduct(
@@ -58,78 +138,190 @@ public class ProductService {
 
         List<ProductInfoResponseDto> responseDto = new ArrayList<>();
         for (Product product : productList) {
-            // TODO: User Service 호출해서 Seller 정보 받아오기
+            // TODO: User Service 호출해서 userId -> Seller 정보 받아오기
             String seller = "나판매";
 
-            // TODO: 카테고리 정보 여러개면 문자열 붙이기
-            String allCategory = "카테고리";
+            if(product.getProductCategory().getCategory().getCategoryName() == null) {
+                throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
+            }
+            String allCategory = product.getProductCategory().getCategory().getCategoryName();
 
             // TODO: 이미지 정보 받아오기
-            String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
 //            List<String> productSubImgDummydummyURLList = List.of("https://dummyimage.com/600x400/000/fff");
             List<String> contentImgDummydummyURLList = new ArrayList<>();
             contentImgDummydummyURLList.add("https://dummyimage.com/600x400/000/fff");
 
-            responseDto.add(ProductInfoResponseDto.from(product, seller, allCategory, productMainImgDummydummyURL, contentImgDummydummyURLList));
+            ImageUrlDto productMainImgURL = getImageUrlById(product.getProductImgId());
+
+            // TODO: --------------
+
+            responseDto.add(ProductInfoResponseDto.from(product, seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList));
         }
 
         return responseDto;
     }
 
+    private ImageUrlDto getImageUrlById(UUID productImgId) {
+        if(productImgId == null) {
+            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE.getMessage());
+        }
+
+        ImageUrlDto productMainImgURL = imageClient.getImageUrlById(productImgId).getData();
+
+        if(productMainImgURL == null) {
+            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE_URL.getMessage());
+        }
+
+        return productMainImgURL;
+    }
+
     public ProductInfoResponseDto getProductById(UUID productId) {
         Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
         if(product == null) {
-            throw new RuntimeException("상품이 존재하지 않습니다.");
+            throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
         // TODO: User Service 호출해서 Seller 정보 받아오기
         String seller = "나판매";
 
         // TODO: 카테고리 정보 여러개면 문자열 붙이기
-        String allCategory = "카테고리";
+        if(product.getProductCategory().getCategory().getCategoryName() == null) {
+            throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
+        }
+        String allCategory = product.getProductCategory().getCategory().getCategoryName();
 
         // TODO: 이미지 정보 받아오기
-        String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
+//        String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
 //            List<String> productSubImgDummydummyURLList = List.of("https://dummyimage.com/600x400/000/fff");
         List<String> contentImgDummydummyURLList = new ArrayList<>();
         contentImgDummydummyURLList.add("https://dummyimage.com/600x400/000/fff");
 
-        return ProductInfoResponseDto.from(product, seller, allCategory, productMainImgDummydummyURL, contentImgDummydummyURLList);
+        ImageUrlDto productMainImgURL = getImageUrlById(product.getProductImgId());
+
+        return ProductInfoResponseDto.from(product, seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
     }
 
     @Transactional
-    public ProductIdResponseDto updateProduct(UUID productId, ProductInfoRequestDto requestDto) {
+    public ProductIdResponseDto updateProduct(UUID productId, ProductInfoRequestDto requestDto,
+                                              MultipartFile productMainImage) {
+        // TODO: 권한 체크 (관리자, 판매자)
+
+        // TODO: UserId 토큰에서 받아오기
+        UUID userId = UUID.randomUUID();
+        String username = "상품 수정한 사람";
+
+        Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
+        if(product == null) {
+            throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
+        }
+
+        updateProductElement(username, product, requestDto, productMainImage);
+
+        ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
+        return responseDto;
+    }
+
+    private Product updateProductElement(String username, Product product, ProductInfoRequestDto requestDto,
+                                         MultipartFile productMainImage) {
+        compareProductName(username, product, requestDto);
+        compareProductContent(username, product, requestDto);
+
+        // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
+        UUID contentImgId = UUID.randomUUID();
+//        product.setProductImgId(productImgId);
+//        product.setContentImgId(contentImgId);
+
+        String originProductMainImgURL = getImageUrlById(product.getProductImgId()).getImageUrl();
+        if(!compareProductMainImage(originProductMainImgURL, productMainImage.getOriginalFilename())) {
+            product = disconnectProductAndProductMainImg(product, username);
+            product = mappingProductAndProductMainImg(product, productMainImage, username);
+        }
+
+        compareCategory(username, product, requestDto);
+
+        return product;
+    }
+
+    private Boolean compareProductMainImage(String originURL, String originalFilename) {
+        if(originURL.contains(originalFilename)) {
+            return true;
+        }
+        return false;
+    }
+
+    private Product disconnectProductAndProductMainImg(Product product, String username) {
+        UUID orginProductImgId = product.getProductImgId();
+        ImageIdResponseDto imageIdResponseDto = imageClient.deleteImage(product.getProductImgId(), username).getData();
+        if(imageIdResponseDto == null) {
+            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE.getMessage());
+        }
+        if(!orginProductImgId.equals(imageIdResponseDto.getImageId())) {
+            throw new ProductMainImageNotFoundException(ProductMessage.DELETED_PRODUCT_MAIN_IMAGE_FAIL.getMessage());
+        }
+
+        return product;
+    }
+
+
+    private void compareProductName(String username, Product product, ProductInfoRequestDto requestDto) {
+        if(product.getProductName().equals(requestDto.getProductName())) {
+            return;
+        }
+        product.setProductName(requestDto.getProductName());
+
+        product.setUpdatedBy(username);
+        productRepository.save(product);
+    }
+
+    private void compareProductContent(String username, Product product, ProductInfoRequestDto requestDto) {
+        if(product.getProductContent().equals(requestDto.getProductContent())) {
+            return;
+        }
+        product.setProductContent(requestDto.getProductContent());
+
+        product.setUpdatedBy(username);
+        productRepository.save(product);
+    }
+
+    private void compareCategory(String username, Product product, ProductInfoRequestDto requestDto) {
+        Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
+        if(!category.isPresent()) {
+            throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
+        }
+
+        String orginCategory = product.getProductCategory().getCategory().getCategoryName();
+        if(orginCategory.equals(category.get().getCategoryName())) {
+            return;
+        }
+
+        ProductCategory productCategory = product.getProductCategory();
+        productCategory.setCategory(category.get());
+
+        productCategoryRepository.save(productCategory);
+
+        product.setUpdatedAt(LocalDateTime.now());
+        product.setUpdatedBy(username);
+        productRepository.save(product);
+    }
+
+    @Transactional
+    public ProductIdResponseDto deleteProduct(UUID productId) {
         // TODO: 권한 체크 (관리자, 판매자)
 
         // TODO: UserId 토큰에서 받아오기
         UUID userId = UUID.randomUUID();
         String username = "너판매";
 
-        Product originProduct = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
-        if(originProduct == null) {
-            throw new RuntimeException("상품이 존재하지 않습니다.");
+        Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
+        if(product == null) {
+            throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
-        Product product = updateProductElement(username, originProduct, requestDto);
+        product = disconnectProductAndProductMainImg(product, username);
+        product.delete(username);
         productRepository.save(product);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
-    }
-
-    private Product updateProductElement(String username, Product originProduct, ProductInfoRequestDto requestDto) {
-        originProduct.setProductName(requestDto.getProductName());
-        originProduct.setProductContent(requestDto.getProductContent());
-
-        // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
-        UUID productImgId = UUID.randomUUID();
-        UUID contentImgId = UUID.randomUUID();
-        originProduct.setProductImgId(productImgId);
-        originProduct.setContentImgId(contentImgId);
-
-        // TODO: 변경사항 있으면 updatedBy 수정
-        originProduct.setUpdatedBy(username);
-
-        return originProduct;
     }
 }
