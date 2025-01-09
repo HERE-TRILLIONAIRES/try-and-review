@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RecruitmentEndpoint {
 
-    private final RecruitmentRepository recruitmentRepository;
     private final RecruitmentService recruitmentService;
 
     @KafkaListener(groupId = "processRecruitmentCheck", topics = "recruitmentExistenceCheck")
@@ -28,5 +27,12 @@ public class RecruitmentEndpoint {
         }
 
         return false;
+    }
+
+    @KafkaListener(groupId = "inventoryManagement", topics = "minusProduct")
+    public void minusProduct(String message) {
+        log.info("minusProduct: {}", message);
+
+        // TODO: 구매수량 넘겨주면, 재고에서 수량만큼 빼고, 현재 인원 늘려주기
     }
 }
