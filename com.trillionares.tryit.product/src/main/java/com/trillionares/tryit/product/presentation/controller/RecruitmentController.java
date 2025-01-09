@@ -1,12 +1,12 @@
-package com.trillionares.tryit.product.recruitment.presentation.controller;
+package com.trillionares.tryit.product.presentation.controller;
 
-import com.trillionares.tryit.product.recruitment.application.service.RecruitmentService;
-import com.trillionares.tryit.product.recruitment.presentation.dto.request.CreateRecruitmentRequest;
-import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentRequest;
-import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentStatusRequest;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.GetRecruitmentResponse;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.RecruitmentIdResponse;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.UpdateRecruitmentStatusResponse;
+import com.trillionares.tryit.product.application.service.RecruitmentService;
+import com.trillionares.tryit.product.presentation.dto.request.CreateRecruitmentRequest;
+import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentRequest;
+import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentStatusRequest;
+import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
+import com.trillionares.tryit.product.presentation.dto.response.RecruitmentIdResponse;
+import com.trillionares.tryit.product.presentation.dto.response.UpdateRecruitmentStatusResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;

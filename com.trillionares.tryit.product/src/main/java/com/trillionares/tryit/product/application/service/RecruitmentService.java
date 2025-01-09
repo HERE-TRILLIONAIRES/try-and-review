@@ -1,14 +1,14 @@
-package com.trillionares.tryit.product.recruitment.application.service;
+package com.trillionares.tryit.product.application.service;
 
-import com.trillionares.tryit.product.recruitment.domain.model.Recruitment;
-import com.trillionares.tryit.product.recruitment.domain.model.type.RecruitmentStatus;
-import com.trillionares.tryit.product.recruitment.domain.repository.RecruitmentRepository;
-import com.trillionares.tryit.product.recruitment.presentation.dto.request.CreateRecruitmentRequest;
-import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentRequest;
-import com.trillionares.tryit.product.recruitment.presentation.dto.request.UpdateRecruitmentStatusRequest;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.GetRecruitmentResponse;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.RecruitmentIdResponse;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.UpdateRecruitmentStatusResponse;
+import com.trillionares.tryit.product.domain.model.recruitment.Recruitment;
+import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
+import com.trillionares.tryit.product.domain.repository.RecruitmentRepository;
+import com.trillionares.tryit.product.presentation.dto.request.CreateRecruitmentRequest;
+import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentRequest;
+import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentStatusRequest;
+import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
+import com.trillionares.tryit.product.presentation.dto.response.RecruitmentIdResponse;
+import com.trillionares.tryit.product.presentation.dto.response.UpdateRecruitmentStatusResponse;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,7 @@ public class RecruitmentService {
     @Transactional
     public RecruitmentIdResponse createRecruitment(CreateRecruitmentRequest request) {
         Recruitment recruitment = Recruitment.builder()
+                .productId(request.productId())
                 .recruitmentTitle(request.title())
                 .recruitmentDescription(request.description())
                 .recruitmentStartDate(request.startTime())

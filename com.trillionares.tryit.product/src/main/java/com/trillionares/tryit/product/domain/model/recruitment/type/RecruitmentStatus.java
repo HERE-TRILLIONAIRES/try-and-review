@@ -1,4 +1,4 @@
-package com.trillionares.tryit.product.recruitment.domain.model.type;
+package com.trillionares.tryit.product.domain.model.recruitment.type;
 
 public enum RecruitmentStatus {
     WAITING, // 대기중

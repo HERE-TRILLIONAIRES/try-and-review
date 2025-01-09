@@ -1,4 +1,4 @@
-package com.trillionares.tryit.product.domain.service;
+package com.trillionares.tryit.product.application.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
@@ -11,9 +11,9 @@ import com.trillionares.tryit.product.domain.model.product.QProduct;
 import com.trillionares.tryit.product.domain.repository.CategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
-import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
-import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
-import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
+import com.trillionares.tryit.product.presentation.dto.response.ProductIdResponseDto;
+import com.trillionares.tryit.product.presentation.dto.request.ProductInfoRequestDto;
+import com.trillionares.tryit.product.presentation.dto.response.ProductInfoResponseDto;
 import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
 import com.trillionares.tryit.product.presentation.exception.ProductNotFoundException;
 import java.time.LocalDateTime;

@@ -1,7 +1,6 @@
-package com.trillionares.tryit.product.recruitment.domain.repository;
+package com.trillionares.tryit.product.domain.repository;
 
-import com.trillionares.tryit.product.recruitment.domain.model.Recruitment;
-import java.util.List;
+import com.trillionares.tryit.product.domain.model.recruitment.Recruitment;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 

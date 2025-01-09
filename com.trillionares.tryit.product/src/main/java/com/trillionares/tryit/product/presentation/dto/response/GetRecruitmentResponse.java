@@ -1,7 +1,7 @@
-package com.trillionares.tryit.product.recruitment.presentation.dto.response;
+package com.trillionares.tryit.product.presentation.dto.response;
 
-import com.trillionares.tryit.product.recruitment.domain.model.Recruitment;
-import com.trillionares.tryit.product.recruitment.domain.model.type.RecruitmentStatus;
+import com.trillionares.tryit.product.domain.model.recruitment.Recruitment;
+import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

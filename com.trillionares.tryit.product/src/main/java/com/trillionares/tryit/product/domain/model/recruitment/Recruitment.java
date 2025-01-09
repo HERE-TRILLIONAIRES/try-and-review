@@ -1,6 +1,6 @@
-package com.trillionares.tryit.product.recruitment.domain.model;
+package com.trillionares.tryit.product.domain.model.recruitment;
 
-import com.trillionares.tryit.product.recruitment.domain.model.type.RecruitmentStatus;
+import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

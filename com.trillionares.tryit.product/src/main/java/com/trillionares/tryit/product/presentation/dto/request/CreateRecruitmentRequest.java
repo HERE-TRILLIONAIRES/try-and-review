@@ -1,4 +1,4 @@
-package com.trillionares.tryit.product.recruitment.presentation.dto.request;
+package com.trillionares.tryit.product.presentation.dto.request;
 
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;

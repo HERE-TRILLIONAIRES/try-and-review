@@ -1,4 +1,4 @@
-package com.trillionares.tryit.product.recruitment.presentation.dto.response;
+package com.trillionares.tryit.product.presentation.dto.response;
 
 import java.util.UUID;
 
