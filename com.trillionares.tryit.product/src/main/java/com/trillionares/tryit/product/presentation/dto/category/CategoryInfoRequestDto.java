@@ -1,4 +1,4 @@
-package com.trillionares.tryit.product.presentation.dto;
+package com.trillionares.tryit.product.presentation.dto.category;
 
 import com.trillionares.tryit.product.domain.model.category.Category;
 import lombok.AllArgsConstructor;

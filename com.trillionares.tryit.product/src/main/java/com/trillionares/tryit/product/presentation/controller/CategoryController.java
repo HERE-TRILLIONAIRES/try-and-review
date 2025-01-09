@@ -1,9 +1,9 @@
 package com.trillionares.tryit.product.presentation.controller;
 
 import com.trillionares.tryit.product.domain.service.CategoryService;
-import com.trillionares.tryit.product.presentation.dto.BaseResponseDto;
-import com.trillionares.tryit.product.presentation.dto.CategoryIdResponseDto;
-import com.trillionares.tryit.product.presentation.dto.CategoryInfoRequestDto;
+import com.trillionares.tryit.product.presentation.dto.common.base.BaseResponseDto;
+import com.trillionares.tryit.product.presentation.dto.category.CategoryIdResponseDto;
+import com.trillionares.tryit.product.presentation.dto.category.CategoryInfoRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

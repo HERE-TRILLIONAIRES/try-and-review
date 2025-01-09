@@ -2,8 +2,8 @@ package com.trillionares.tryit.product.domain.service;
 
 import com.trillionares.tryit.product.domain.model.category.Category;
 import com.trillionares.tryit.product.domain.repository.CategoryRepository;
-import com.trillionares.tryit.product.presentation.dto.CategoryIdResponseDto;
-import com.trillionares.tryit.product.presentation.dto.CategoryInfoRequestDto;
+import com.trillionares.tryit.product.presentation.dto.category.CategoryIdResponseDto;
+import com.trillionares.tryit.product.presentation.dto.category.CategoryInfoRequestDto;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

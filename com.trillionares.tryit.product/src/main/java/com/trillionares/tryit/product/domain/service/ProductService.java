@@ -2,6 +2,7 @@ package com.trillionares.tryit.product.domain.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import com.trillionares.tryit.product.domain.client.ImageClient;
 import com.trillionares.tryit.product.domain.common.message.CategoryMessage;
 import com.trillionares.tryit.product.domain.common.message.ProductMessage;
 import com.trillionares.tryit.product.domain.model.category.Category;
@@ -11,22 +12,32 @@ import com.trillionares.tryit.product.domain.model.product.QProduct;
 import com.trillionares.tryit.product.domain.repository.CategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
-import com.trillionares.tryit.product.presentation.dto.ProductIdResponseDto;
-import com.trillionares.tryit.product.presentation.dto.ProductInfoRequestDto;
-import com.trillionares.tryit.product.presentation.dto.ProductInfoResponseDto;
+import com.trillionares.tryit.product.presentation.dto.product.ProductIdResponseDto;
+import com.trillionares.tryit.product.presentation.dto.product.ProductInfoRequestDto;
+import com.trillionares.tryit.product.presentation.dto.product.ProductInfoResponseDto;
+import com.trillionares.tryit.product.presentation.dto.productImage.ImageIdResponseDto;
+import com.trillionares.tryit.product.presentation.dto.productImage.ImageInfoResquestDto;
+import com.trillionares.tryit.product.presentation.dto.productImage.ImageUrlDto;
 import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
+import com.trillionares.tryit.product.presentation.exception.CreateProductMainImageIdException;
+import com.trillionares.tryit.product.presentation.exception.CreateProductMainImageUrlException;
+import com.trillionares.tryit.product.presentation.exception.ProductMainImageNotFoundException;
 import com.trillionares.tryit.product.presentation.exception.ProductNotFoundException;
+import feign.codec.Encoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -34,36 +45,77 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ProductService {
 
+    @Autowired
+    private Encoder encoder;
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
 
+    private final ImageClient imageClient;
+
+    private String defaultProductImgUrl = "https://trillionaires-s3.s3.ap-northeast-2.amazonaws.com/empty_product.png";
+
     @Transactional
-    public ProductIdResponseDto createProduct(ProductInfoRequestDto requestDto) {
+    public ProductIdResponseDto createProduct(ProductInfoRequestDto requestDto, MultipartFile productMainImage) {
         // TODO: 권한 체크 (관리자, 판매자)
 
         // TODO: UserId 토큰에서 받아오기
         UUID userId = UUID.randomUUID();
-
-        // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
-        UUID productImgId = UUID.randomUUID();
-        UUID contentImgId = UUID.randomUUID();
+        String username = "상품 만든 사람";
 
         Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
         if(!category.isPresent()) {
             throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
         }
 
-        Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, productImgId, contentImgId);
+        Product product = ProductInfoRequestDto.toCreateEntity(requestDto, userId, username);
 
         ProductCategory productCategory = mappingProductAndCategory(product, category.get());
         product.setProductCategory(productCategory);
+
+        // TODO: ProductImgId, ContentImgId aws s3, DB에 저장 후 받아오기
+        product = mappingProductAndProductMainImg(product, productMainImage, username);
+//        UUID contentImgId = UUID.randomUUID();
+
+        // TODO: ----------------------------
 
         productRepository.save(product);
         productCategoryRepository.save(productCategory);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private Product mappingProductAndProductMainImg(Product product, MultipartFile productMainImage, String username) {
+        UUID dummyProductImgId = UUID.randomUUID();
+        product.setProductImgId(dummyProductImgId);
+        productRepository.save(product);
+
+        ImageUrlDto productMainImageUrl = new ImageUrlDto();
+        if(!productMainImage.isEmpty() && !Objects.isNull(productMainImage.getOriginalFilename()) && productMainImage != null){
+            productMainImageUrl = imageClient.upload(productMainImage).getData();
+            if(productMainImageUrl == null) {
+                throw new CreateProductMainImageUrlException(ProductMessage.CREATED_PRODUCT_MAIN_IMAGE_URL_FAIL.getMessage());
+            }
+        } else {
+            productMainImageUrl.setDefaultImage(defaultProductImgUrl);
+        }
+
+        ImageInfoResquestDto imageInfoResquestDto = ImageInfoResquestDto.from(product.getProductId(), productMainImageUrl.getImageUrl(), true, username);
+        // TODO: usertoken에서 이미지 생성한 사람 정보 같이 넘겨주기
+        ImageIdResponseDto productMainImageResponseDto = imageClient.createImage(imageInfoResquestDto).getData();
+        if(productMainImageResponseDto == null) {
+            throw new CreateProductMainImageIdException(ProductMessage.CREATED_PRODUCT_MAIN_IMAGE_ID_FAIL.getMessage());
+        }
+
+        product.setProductImgId(productMainImageResponseDto.getImageId());
+
+        if(dummyProductImgId.equals(product.getProductImgId())) {
+            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE.getMessage());
+        }
+
+        return product;
     }
 
     private ProductCategory mappingProductAndCategory(Product product, Category category) {

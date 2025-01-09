@@ -1,4 +1,4 @@
-package com.trillionares.tryit.product.presentation.dto;
+package com.trillionares.tryit.product.presentation.dto.product;
 
 import com.trillionares.tryit.product.domain.model.product.Product;
 import java.util.List;
