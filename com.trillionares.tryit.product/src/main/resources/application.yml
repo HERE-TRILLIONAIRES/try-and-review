@@ -52,3 +52,11 @@ openapi:
 logging:
   level:
     org.springframework.cloud.openfeign: DEBUG
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  tracing:
+    sampling:
+      probability: 1.0
