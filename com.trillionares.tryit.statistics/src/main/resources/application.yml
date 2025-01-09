@@ -1,8 +1,30 @@
 spring:
   application:
-    name: product-service
+    name: statistics-service
+
   config:
     import: configserver:http://localhost:18080   # Config Server 주소
+
+  datasource: # database
+    url: ${DB_URL}
+    username: ${STATISTICS_USERNAME}
+    password: ${STATISTICS_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  data: # redis
+    redis:
+      host: ${STATISTICS_REDIS_HOST}
+      port: ${STATISTICS_REDIS_PORT}
+      username: ${STATISTICS_REDIS_USERNAME}
+      password: ${STATISTICS_REDIS_PASSWORD}
+
+  jpa: # jpa
+    hibernate:
+      ddl-auto: update
+    properties:
+      show-sql: true
+      format-sql: true
+      use_sql_comments: true
 
 server:
   port: 19060
