@@ -10,6 +10,7 @@ import com.trillionares.tryit.product.presentation.dto.product.ProductIdResponse
 import com.trillionares.tryit.product.presentation.dto.product.ProductInfoRequestDto;
 import com.trillionares.tryit.product.presentation.dto.product.ProductInfoResponseDto;
 import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
+import com.trillionares.tryit.product.presentation.exception.ProductMainImageNotFoundException;
 import com.trillionares.tryit.product.presentation.exception.ProductNotFoundException;
 import java.util.List;
 import java.util.UUID;
@@ -55,8 +56,7 @@ public class ProductController {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
         } catch (RuntimeException re){
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
-        }
-        catch  (Exception e) {
+        } catch  (Exception e) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
     }
@@ -75,6 +75,8 @@ public class ProductController {
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, ProductMessage.SEARCH_PRODUCT_LEST_SUCCESS.getMessage(), responseDto);
         } catch (CategoryNotFoundException cnfe) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
+        } catch (ProductMainImageNotFoundException pminfe){
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pminfe.getMessage(), null);
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
@@ -92,6 +94,8 @@ public class ProductController {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
         } catch (ProductNotFoundException pnfe) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pnfe.getMessage(), null);
+        } catch (ProductMainImageNotFoundException pminfe){
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pminfe.getMessage(), null);
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {
@@ -100,9 +104,14 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public BaseResponseDto<ProductIdResponseDto> updateProduct(@PathVariable("productId") UUID productId, @RequestBody ProductInfoRequestDto requestDto) {
+    public BaseResponseDto<ProductIdResponseDto> updateProduct(
+            @PathVariable("productId") UUID productId,
+            @RequestPart("productInfoRequestDto") String requestDto,
+            @RequestPart(value = "productMainImage") MultipartFile productMainImage
+    ) {
         try {
-            ProductIdResponseDto responseDto = productService.updateProduct(productId, requestDto);
+            ProductInfoRequestDto productInfoRequestDto = JsonUtils.fromJson(requestDto, ProductInfoRequestDto.class);
+            ProductIdResponseDto responseDto = productService.updateProduct(productId, productInfoRequestDto, productMainImage);
 
             return BaseResponseDto.from(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, ProductMessage.MODIFIED_PRODUCT_SUCCESS.getMessage(), responseDto);
         } catch (CategoryNotFoundException cnfe) {
