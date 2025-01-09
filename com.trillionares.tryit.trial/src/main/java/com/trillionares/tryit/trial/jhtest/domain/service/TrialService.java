@@ -33,14 +33,20 @@ public class TrialService {
         // TODO: 이전 신청내역없는지 검증
 
         // TODO: recruitmentID 존재하는지 검증
-        if(!checkExistRecruitment(requestDto.getRecruitmentId())) {
-            log.error("해당 모집이 없습니다.");
-            throw new RuntimeException("해당 모집이 없습니다.");
-        }
+//        if(!checkExistRecruitment(requestDto.getRecruitmentId())) {
+//            log.error("해당 모집이 없습니다.");
+//            throw new RuntimeException("해당 모집이 없습니다.");
+//        }
 
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
 
         trialRepository.save(trial);
+
+        // TODO: 재고 빼기, 신청시간 담기, 신청자 정보 담기
+//        SendNotificationDto sendDto = SendNotificationDto.of(trial.getSubmissionId(), userId);
+        kafkaTemplate.send("minusProduct", "quantity", String.valueOf(trial.getQuantity()));
+
+        // TODO: 알람 보내기 (신청되었다는 알람만, 몇번째인지? 당첨되었는지?는 재고와 모집마감시간 비교후 적용)
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
     }
