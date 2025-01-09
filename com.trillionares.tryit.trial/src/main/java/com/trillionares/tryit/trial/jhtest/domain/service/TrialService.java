@@ -8,10 +8,12 @@ import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.trial.TrialInfoResponseDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -21,7 +23,7 @@ public class TrialService {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Transactional
-    public TrialIdResponseDto createTrial(String topic, String key, String message, TrialInfoRequestDto requestDto) {
+    public TrialIdResponseDto createTrial(TrialInfoRequestDto requestDto) {
         // TODO: 권한 체크 (사용자)
 
         // TODO: UserId토큰에서 받아오기
@@ -31,15 +33,23 @@ public class TrialService {
         // TODO: 이전 신청내역없는지 검증
 
         // TODO: recruitmentID 존재하는지 검증
+        if(!checkExistRecruitment(requestDto.getRecruitmentId())) {
+            log.error("해당 모집이 없습니다.");
+            throw new RuntimeException("해당 모집이 없습니다.");
+        }
 
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
 
         trialRepository.save(trial);
-        kafkaTemplate.send(topic,
-                key + "-recruitmentId:" + String.valueOf(requestDto.getRecruitmentId()),
-                message + 1);
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    private Boolean checkExistRecruitment(UUID recruitmentId) {
+        kafkaTemplate.send("recruitmentExistenceCheck",
+                "recruitmentId", String.valueOf(recruitmentId));
+
+        return true;
     }
 
     public TrialInfoResponseDto getTrialById(UUID submissionId) {

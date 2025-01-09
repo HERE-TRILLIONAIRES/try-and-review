@@ -28,13 +28,10 @@ public class trialController {
 
     @PostMapping()
     public BaseResponseDto<TrialIdResponseDto> createTrial(
-            @RequestParam("topic") String topic,
-            @RequestParam("key") String key,
-            @RequestParam("message") String message,
             @RequestBody TrialInfoRequestDto requestDto
     ) {
         try{
-            TrialIdResponseDto responseDto = trialService.createTrial(topic, key, message, requestDto);
+            TrialIdResponseDto responseDto = trialService.createTrial(requestDto);
 
             return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, "신청을 완료했습니다.", responseDto);
         } catch (RuntimeException re) {
