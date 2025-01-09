@@ -56,3 +56,11 @@ eureka:
 openapi:
   service:
     url: http://localhost:19091 # API Gateway ??
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  tracing:
+    sampling:
+      probability: 1.0
