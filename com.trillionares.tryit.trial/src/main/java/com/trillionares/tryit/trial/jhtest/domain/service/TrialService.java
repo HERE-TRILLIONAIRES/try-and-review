@@ -1,10 +1,13 @@
 package com.trillionares.tryit.trial.jhtest.domain.service;
 
+import com.trillionares.tryit.trial.jhtest.domain.common.json.JsonUtils;
 import com.trillionares.tryit.trial.jhtest.domain.model.Trial;
 import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
 import com.trillionares.tryit.trial.jhtest.domain.repository.TrialRepository;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.SendNotificationDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialIdResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.common.kafka.KafkaMessage;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.trial.TrialInfoResponseDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,10 +46,19 @@ public class TrialService {
         trialRepository.save(trial);
 
         // TODO: 재고 빼기, 신청시간 담기, 신청자 정보 담기
-//        SendNotificationDto sendDto = SendNotificationDto.of(trial.getSubmissionId(), userId);
         kafkaTemplate.send("minusProduct", "quantity", String.valueOf(trial.getQuantity()));
 
         // TODO: 알람 보내기 (신청되었다는 알람만, 몇번째인지? 당첨되었는지?는 재고와 모집마감시간 비교후 적용)
+        SendNotificationDto sendDto = SendNotificationDto.of(trial.getSubmissionId(), userId, requestDto.getRecruitmentId(), trial.getCreatedAt());
+        try {
+            String sendPayloadJson = JsonUtils.toJson(sendDto);
+            KafkaMessage sendMessage = KafkaMessage.from(sendPayloadJson);
+            String sendMessageJson = JsonUtils.toJson(sendMessage);
+
+            kafkaTemplate.send("tryit-completed", "mesage", sendMessageJson);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
     }
