@@ -8,6 +8,9 @@ import com.trillionares.tryit.review.application.dto.response.ReviewGetResponseD
 import com.trillionares.tryit.review.application.dto.response.ReviewUpdateResponseDto;
 import com.trillionares.tryit.review.domain.model.Review;
 import com.trillionares.tryit.review.domain.repository.ReviewRepository;
+import com.trillionares.tryit.review.libs.exception.ErrorCode;
+import com.trillionares.tryit.review.libs.exception.GlobalException;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +37,8 @@ public class ReviewService {
 
     @Transactional
     public ReviewUpdateResponseDto updateReview(ReviewUpdateRequestDto reviewUpdateRequestDto, UUID reviewId) {
-        Review review = reviewRepository.findById(reviewId).get();
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.ENTITY_NOT_FOUND));
         review.update(reviewUpdateRequestDto.reviewTitle(),reviewUpdateRequestDto.reviewContent(),reviewUpdateRequestDto.reviewScore(),reviewUpdateRequestDto.reviewImgUrl());
         return ReviewUpdateResponseDto.from(review);
     }
