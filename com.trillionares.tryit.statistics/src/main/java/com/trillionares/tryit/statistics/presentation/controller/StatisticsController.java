@@ -6,6 +6,7 @@ import com.trillionares.tryit.statistics.application.dto.response.StatisticsGetR
 import com.trillionares.tryit.statistics.application.service.StatisticsService;
 import com.trillionares.tryit.statistics.presentation.dto.BaseResponse;
 import com.trillionares.tryit.statistics.presentation.dto.StatisticsCreateRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class StatisticsController {
     private final StatisticsService statisticsService;
 
     @PostMapping("/statistics")
-    public BaseResponse<StatisticsCreateResponseDto> createReview(@RequestBody StatisticsCreateRequest statisticsCreateRequest) {
+    public BaseResponse<StatisticsCreateResponseDto> createReview(@RequestBody @Valid StatisticsCreateRequest statisticsCreateRequest) {
         return BaseResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED,"통계 생성 성공",statisticsService.createStatistics(StatisticsCreateRequestDto.from(statisticsCreateRequest)));
     }
 
