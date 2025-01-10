@@ -1,8 +1,8 @@
 spring:
   application:
     name: product-service
-#  config:
-#    import: configserver:http://localhost:18080   # Config Server 주소
+  #  config:
+  #    import: configserver:http://localhost:18080   # Config Server 주소
   datasource:
     url: ${DB_URL}
     username: ${DB_PRODUCT_USERNAME}
@@ -15,12 +15,28 @@ spring:
       username: ${HUB_REDIS_USERNAME}
       password: ${HUB_REDIS_PASSWORD}
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     properties:
       show-sql: true
       format-sql: true
       use_sql_comments: true
+  # Image File Size
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
 
 server:
   port: 19030
@@ -33,3 +49,15 @@ eureka:
 openapi:
   service:
     url: http://localhost:19091 # API Gateway 포트
+
+logging:
+  level:
+    org.springframework.cloud.openfeign: DEBUG
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  tracing:
+    sampling:
+      probability: 1.0

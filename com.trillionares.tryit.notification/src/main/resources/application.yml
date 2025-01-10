@@ -3,13 +3,17 @@ spring:
     name: notification-service
   config:
     import: configserver:http://localhost:18080   # Config Server 주소
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ${spring.application.name}-group
 
 server:
   port: 19050
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:18080/eureka/
+      defaultZone: http://localhost:19090/eureka/
 
 logging:
   level:
@@ -22,3 +26,7 @@ logging:
 openapi:
   service:
     url: http://localhost:19091 # API Gateway 포트
+
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_URL:http://default-webhook-url} # 임시 가짜 URL
