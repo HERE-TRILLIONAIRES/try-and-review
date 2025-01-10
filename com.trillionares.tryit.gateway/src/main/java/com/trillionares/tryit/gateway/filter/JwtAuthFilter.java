@@ -75,8 +75,8 @@ public class JwtAuthFilter implements GatewayFilter {
   private ServerWebExchange addHeaders(ServerWebExchange exchange, String userName, String userRole) {
     return exchange.mutate()
         .request(exchange.getRequest().mutate()
-            .header("X-User-Name", userName)
-            .header("X-User-Role", userRole)
+            .header("X-Auth-Username", userName)
+            .header("X-Auth-Role", userRole)
             .build())
         .build();
   }
