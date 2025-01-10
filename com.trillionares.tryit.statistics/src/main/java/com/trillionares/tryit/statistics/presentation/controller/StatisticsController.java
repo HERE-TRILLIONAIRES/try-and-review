@@ -8,12 +8,10 @@ import com.trillionares.tryit.statistics.presentation.dto.BaseResponse;
 import com.trillionares.tryit.statistics.presentation.dto.StatisticsCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +27,10 @@ public class StatisticsController {
     @GetMapping("/statistics")
     public BaseResponse<List<StatisticsGetResponseDto>> getAllStatistics() {
         return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"통계 전체 조회",statisticsService.getAllStatistics());
+    }
+
+    @GetMapping("/statistics/{userId}")
+    public BaseResponse<List<StatisticsGetResponseDto>> getStatistics(@PathVariable("userId") UUID userId) {
+        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"통계 목록 조회",statisticsService.getStatistics(userId));
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +31,13 @@ public class StatisticsService {
         return statisticsRepository.findAll().stream().map(statistics -> StatisticsGetResponseDto.of(
                 statistics.getStatisticsId(),statistics.getUserId(),statistics.getProductId(),
                 statistics.getHighestScore(),statistics.getLowestScore(), statistics.getReviewCount(),
-                        statistics.getDurationTime(),statistics.getCreatedAt())).collect(Collectors.toList());
+                statistics.getDurationTime(),statistics.getCreatedAt())).collect(Collectors.toList());
+    }
+
+    public List<StatisticsGetResponseDto> getStatistics(UUID userId) {
+        return statisticsRepository.findAllByUserId(userId).stream().map(statistics -> StatisticsGetResponseDto.of(
+                statistics.getStatisticsId(),statistics.getUserId(),statistics.getProductId(),
+                statistics.getHighestScore(),statistics.getLowestScore(), statistics.getReviewCount(),
+                statistics.getDurationTime(),statistics.getCreatedAt())).collect(Collectors.toList());
     }
 }
