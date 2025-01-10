@@ -17,9 +17,9 @@ public class SendNotificationDto {
     private UUID userId;
     private UUID recruitmentId;
     private String status;
-    private LocalDateTime submissionTime;
+    private String submissionTime;
 
-    public static SendNotificationDto of(UUID submissionId, UUID userId, UUID recruitmentId, LocalDateTime createdAt) {
+    public static SendNotificationDto of(UUID submissionId, UUID userId, UUID recruitmentId, String createdAt) {
         return SendNotificationDto.builder()
                 .submissionId(submissionId)
                 .userId(userId)
