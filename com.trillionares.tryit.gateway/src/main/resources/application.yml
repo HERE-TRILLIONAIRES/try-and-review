@@ -16,6 +16,35 @@ spring:
           predicates:
             - Path=/auth/**,/users/**,/auth-service/**
 
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**
+            - Path=/api/categories/**
+            - Path=/recruitments/**
+
+        - id: review-service
+          uri: lb://review-service
+          predicates:
+            - Path=/api/reviews/**
+            - Path=/reviews/**
+
+        - id: image-manage-service
+          uri: lb://image-manage-service
+          predicates:
+            - Path=/api/images/**
+            - Path=/api/s3/**
+
+        - id: statistics-service
+          uri: lb://statistics-service
+          predicates:
+            - Path=/statistics/**
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/notifications/**
+
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
