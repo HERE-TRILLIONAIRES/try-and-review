@@ -27,7 +27,9 @@ public class trialController {
     private final TrialService trialService;
 
     @PostMapping()
-    public BaseResponseDto<TrialIdResponseDto> createTrial(@RequestBody TrialInfoRequestDto requestDto) {
+    public BaseResponseDto<TrialIdResponseDto> createTrial(
+            @RequestBody TrialInfoRequestDto requestDto
+    ) {
         try{
             TrialIdResponseDto responseDto = trialService.createTrial(requestDto);
 
