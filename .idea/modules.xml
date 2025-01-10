@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.trillionares.tryit.product.iml" filepath="$PROJECT_DIR$/.idea/modules/com.trillionares.tryit.product.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.trillionares.tryit.product.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.trillionares.tryit.product.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.trillionares.tryit.product.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.trillionares.tryit.product.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/tryit-project.iml" filepath="$PROJECT_DIR$/.idea/tryit-project.iml" />
     </modules>
   </component>
