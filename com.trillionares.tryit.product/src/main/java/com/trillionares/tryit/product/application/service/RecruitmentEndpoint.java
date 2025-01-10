@@ -1,8 +1,8 @@
-package com.trillionares.tryit.product.domain.service;
+package com.trillionares.tryit.product.application.service;
 
-import com.trillionares.tryit.product.recruitment.application.service.RecruitmentService;
-import com.trillionares.tryit.product.recruitment.domain.repository.RecruitmentRepository;
-import com.trillionares.tryit.product.recruitment.presentation.dto.response.GetRecruitmentResponse;
+import com.trillionares.tryit.product.application.service.RecruitmentService;
+import com.trillionares.tryit.product.domain.repository.RecruitmentRepository;
+import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

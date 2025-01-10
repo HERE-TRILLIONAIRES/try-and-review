@@ -1,4 +1,4 @@
-package com.trillionares.tryit.product.domain.service;
+package com.trillionares.tryit.product.application.service;
 
 import com.trillionares.tryit.product.domain.common.json.JsonUtils;
 import com.trillionares.tryit.product.domain.model.product.Product;
