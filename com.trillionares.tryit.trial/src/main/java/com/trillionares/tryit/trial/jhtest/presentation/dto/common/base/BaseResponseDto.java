@@ -1,4 +1,4 @@
-package com.trillionares.tryit.product.presentation.dto;
+package com.trillionares.tryit.trial.jhtest.presentation.dto.common.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +18,10 @@ public class BaseResponseDto<T> {
 
     public static <T> BaseResponseDto from(Integer status, HttpStatus code, String message, T data) {
         return BaseResponseDto.<T>builder()
-            .status(status)
-            .code(code)
-            .message(message)
-            .data(data)
-            .build();
+                .status(status)
+                .code(code)
+                .message(message)
+                .data(data)
+                .build();
     }
 }
