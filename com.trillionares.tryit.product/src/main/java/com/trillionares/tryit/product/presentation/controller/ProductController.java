@@ -4,11 +4,11 @@ import com.querydsl.core.types.Predicate;
 import com.trillionares.tryit.product.domain.common.json.JsonUtils;
 import com.trillionares.tryit.product.domain.common.message.ProductMessage;
 import com.trillionares.tryit.product.domain.model.product.Product;
-import com.trillionares.tryit.product.domain.service.ProductService;
+import com.trillionares.tryit.product.application.service.ProductService;
 import com.trillionares.tryit.product.presentation.dto.common.base.BaseResponseDto;
-import com.trillionares.tryit.product.presentation.dto.product.ProductIdResponseDto;
-import com.trillionares.tryit.product.presentation.dto.product.ProductInfoRequestDto;
-import com.trillionares.tryit.product.presentation.dto.product.ProductInfoResponseDto;
+import com.trillionares.tryit.product.presentation.dto.response.ProductIdResponseDto;
+import com.trillionares.tryit.product.presentation.dto.request.ProductInfoRequestDto;
+import com.trillionares.tryit.product.presentation.dto.response.ProductInfoResponseDto;
 import com.trillionares.tryit.product.presentation.exception.CategoryNotFoundException;
 import com.trillionares.tryit.product.presentation.exception.ProductMainImageNotFoundException;
 import com.trillionares.tryit.product.presentation.exception.ProductNotFoundException;
@@ -50,6 +50,25 @@ public class ProductController {
         try {
             ProductInfoRequestDto productInfoRequestDto = JsonUtils.fromJson(requestDto, ProductInfoRequestDto.class);
             ProductIdResponseDto responseDto = productService.createProduct(productInfoRequestDto, productMainImage);
+
+            return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, ProductMessage.CREATED_PRODUCT_SUCCESS.getMessage(), responseDto);
+        } catch (CategoryNotFoundException cnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
+        } catch (RuntimeException re){
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
+        } catch  (Exception e) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
+        }
+    }
+
+    @PostMapping(value = "/kafka", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponseDto<ProductIdResponseDto> createProductUsingKafka(
+            @RequestPart("productInfoRequestDto") String requestDto,
+            @RequestPart(value = "productMainImage") MultipartFile productMainImage
+    ) {
+        try {
+            ProductInfoRequestDto productInfoRequestDto = JsonUtils.fromJson(requestDto, ProductInfoRequestDto.class);
+            ProductIdResponseDto responseDto = productService.createProductUsingkafka(productInfoRequestDto, productMainImage);
 
             return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, ProductMessage.CREATED_PRODUCT_SUCCESS.getMessage(), responseDto);
         } catch (CategoryNotFoundException cnfe) {

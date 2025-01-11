@@ -1,8 +1,34 @@
 spring:
   application:
-    name: product-service
-  config:
-    import: configserver:http://localhost:18080   # Config Server 주소
+    name: recruitment-service
+#  config:
+#    import: configserver:http://localhost:18080   # Config Server 주소
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_RECRUITMENT_USERNAME}
+    password: ${DB_RECRUITMENT_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${RECRUITMENT_REDIS_HOST}
+      port: ${RECRUITMENT_REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      show-sql: true
+      format-sql: true
+      use_sql_comments: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 server:
   port: 19020
@@ -15,3 +41,4 @@ eureka:
 openapi:
   service:
     url: http://localhost:19091 # API Gateway 포트
+

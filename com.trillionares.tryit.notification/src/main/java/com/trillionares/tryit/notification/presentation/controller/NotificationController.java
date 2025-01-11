@@ -20,31 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notifications")
 @RestController
 public class NotificationController {
+    private final NotificationService notificationService;
 
-  private final NotificationService notificationService;
+    @GetMapping("/{notificationId}")
+    public ResponseEntity<NotificationResponse> getNotification(@PathVariable UUID notificationId) {
+        NotificationResponse response = notificationService.getNotification(notificationId);
+        return ResponseEntity.ok(response);
+    }
 
-  @GetMapping("/{notificationId}")
-  public ResponseEntity<NotificationResponse> getNotification(@PathVariable UUID notificationId) {
-
-    NotificationResponse response = notificationService.getNotification(notificationId);
-
-    return ResponseEntity.ok(response);
-  }
-
-
-  @GetMapping
-  public ResponseEntity<Page<NotificationResponse>> searchNotifications(
-      @RequestParam(required = false) NotificationStatus status,
-      @PageableDefault(size = 20, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
-
-    Page<NotificationResponse> notifications = notificationService.getNotificationByStatus(status,
-        pageable);
-
-    return notifications.isEmpty()
-        ? ResponseEntity.noContent().build()
-        : ResponseEntity.ok(notifications); // 조회 결과 있을때만 보여주도록
-  }
+    @GetMapping
+    public ResponseEntity<Page<NotificationResponse>> searchNotifications(
+        @RequestParam(required = false) NotificationStatus status,
+        @PageableDefault(size = 20, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+        Page<NotificationResponse> notifications = notificationService.getNotificationByStatus(status,
+            pageable);
+        return notifications.isEmpty()
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.ok(notifications); // 조회 결과 있을때만 보여주도록
+    }
 }
-
-
-

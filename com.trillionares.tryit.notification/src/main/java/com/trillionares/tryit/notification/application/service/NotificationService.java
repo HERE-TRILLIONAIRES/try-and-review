@@ -18,54 +18,45 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class NotificationService {
+    private final ExceptionConverter exceptionConverter;
+    private final NotificationRepository notificationRepository;
+    private final SlackNotificationSender slackNotificationSender;
 
-  private final ExceptionConverter exceptionConverter;
-  private final NotificationRepository notificationRepository;
-  private final SlackNotificationSender slackNotificationSender;
-
-  @Transactional
-  public void createNotificationFromSubmissionEvent(SubmissionSelectedEvent event) {
-    // 상태값 검증
-    validateSubmissionStatus(event.getSubmissionStatus());
-
-    // 알림 엔티티 저장
-    Notification notification = convertEventToNotification(event);
-    Notification savedNotification = notificationRepository.save(notification);
-
-    // 슬랙 알림 발송
-    slackNotificationSender.sendNotification(savedNotification);
-
-    NotificationResponse.from(savedNotification);
-  }
-
-  private void validateSubmissionStatus(String status) {
-    if (!"SELECTED".equals(status)) {
-       throw new GlobalException(ErrorCode.INVALID_SUBMISSION_STATUS);
+    @Transactional
+    public void createNotificationFromSubmissionEvent(SubmissionSelectedEvent event) {
+        // 상태값 검증
+        validateSubmissionStatus(event.getSubmissionStatus());
+        // 알림 엔티티 저장
+        Notification notification = convertEventToNotification(event);
+        Notification savedNotification = notificationRepository.save(notification);
+        // 슬랙 알림 발송
+        slackNotificationSender.sendNotification(savedNotification);
+        NotificationResponse.from(savedNotification);
     }
-  }
 
-  private Notification convertEventToNotification(SubmissionSelectedEvent event) {
-    return Notification.builder()
-        .userId(event.getUserId())
-        .submissionId(event.getSubmissionId())
-        .build();
-  }
+    private void validateSubmissionStatus(String status) {
+        if (!"SELECTED".equals(status)) {
+            throw new GlobalException(ErrorCode.INVALID_SUBMISSION_STATUS);
+        }
+    }
 
-  @Transactional(readOnly = true)
-  public NotificationResponse getNotification(UUID notificationId) {
+    private Notification convertEventToNotification(SubmissionSelectedEvent event) {
+        return Notification.builder()
+                .userId(event.getUserId())
+                .submissionId(event.getSubmissionId())
+                .build();
+    }
 
-    Notification notification = notificationRepository.findById(notificationId)
-        .orElseThrow(() -> new GlobalException(ErrorCode.NOTIFICATION_NOT_FOUND));
+    @Transactional(readOnly = true)
+    public NotificationResponse getNotification(UUID notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.NOTIFICATION_NOT_FOUND));
+        return NotificationResponse.from(notification);
+    }
 
-    return NotificationResponse.from(notification);
-  }
-
-  @Transactional(readOnly = true)
-  public Page<NotificationResponse>getNotificationByStatus(NotificationStatus status, Pageable pageable) {
-
-    Page<NotificationResponse> notifications = notificationRepository.findByNotificationStatus(status, pageable);
-
-    return notificationRepository.findByNotificationStatus(status, pageable);
-
-  }
+    @Transactional(readOnly = true)
+    public Page<NotificationResponse> getNotificationByStatus(NotificationStatus status, Pageable pageable) {
+        Page<NotificationResponse> notifications = notificationRepository.findByNotificationStatus(status, pageable);
+        return notificationRepository.findByNotificationStatus(status, pageable);
+    }
 }
