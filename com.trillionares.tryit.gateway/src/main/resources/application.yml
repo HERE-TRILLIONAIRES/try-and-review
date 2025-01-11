@@ -8,11 +8,42 @@ spring:
     name: gateway-service  # 애플리케이션 이름을 'gateway-service'로 설정
   cloud:
     gateway:
+      auth:
+        excluded-paths: /users/signup,/auth/signin
       routes:  # Spring Cloud Gateway의 라우팅 설정
         - id: auth-service           # 라우트 식별자
           uri: lb://auth-service    # 'auth-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
-            - Path=/auth/**,/users/**,/auth-service/**          # 해당 경로로 들어오는 요청을 이 라우트로 처리
+            - Path=/auth/**,/users/**,/auth-service/**
+
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**
+            - Path=/api/categories/**
+            - Path=/recruitments/**
+
+        - id: review-service
+          uri: lb://review-service
+          predicates:
+            - Path=/api/reviews/**
+            - Path=/reviews/**
+
+        - id: image-manage-service
+          uri: lb://image-manage-service
+          predicates:
+            - Path=/api/images/**
+            - Path=/api/s3/**
+
+        - id: statistics-service
+          uri: lb://statistics-service
+          predicates:
+            - Path=/statistics/**
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/notifications/**
 
       discovery:
         locator:
@@ -34,7 +65,7 @@ eureka:
 
 service:
   jwt:
-    secret-key:
+    secret-key: ${service.jwt.secret-key} # 환경변수에서 가져옴
 
 springdoc:
   enable-native-support: true

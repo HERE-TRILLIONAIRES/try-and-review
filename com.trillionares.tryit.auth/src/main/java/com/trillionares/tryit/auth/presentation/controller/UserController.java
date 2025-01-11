@@ -31,7 +31,7 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("/signup")
-  public BaseResponse signup(@RequestBody @Valid SignUpRequestDto reqDto) {
+  public BaseResponse<UserResponseDto> signup(@RequestBody @Valid SignUpRequestDto reqDto) {
     return BaseResponse.of(201, HttpStatus.CREATED, "회원가입에 성공했습니다.",userService.signup(reqDto));
   }
 
@@ -44,7 +44,7 @@ public class UserController {
   }
 
   @PutMapping("/{userId}")
-  public BaseResponse updateUserInfo(@PathVariable UUID userId,
+  public BaseResponse<UserResponseDto> updateUserInfo(@PathVariable UUID userId,
       @Valid @RequestBody UserInfoUpdateReqDto reqDto,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     userService.updateUserInfo(userDetails.getUserId(), reqDto);
@@ -63,12 +63,18 @@ public class UserController {
 
   }
 
-  @GetMapping("/{username}")
-  public BaseResponse getUserByUsername(@PathVariable String username,
+  @GetMapping("/username/{username}")
+  public BaseResponse<UserAuthorityResponseDto> getUserByUsername(@PathVariable String username,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     UserAuthorityResponseDto resDto = userService.getUserByUsername(username);
     return BaseResponse.of(200, HttpStatus.OK, "사용자 정보 조회 성공", resDto);
   }
 
+  @GetMapping("/{userId}")
+  public BaseResponse<UserResponseDto> getUser(@PathVariable UUID userId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    UserResponseDto resDto = userService.getUser(userDetails.getUserId());
+    return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
+  }
 
 }
