@@ -29,4 +29,4 @@ openapi:
 
 slack:
   webhook:
-    url: ${SLACK_WEBHOOK_URL:http://default-webhook-url} # 임시 가짜 URL
+    url: https://hooks.slack.com/ # 임시 가짜 URL

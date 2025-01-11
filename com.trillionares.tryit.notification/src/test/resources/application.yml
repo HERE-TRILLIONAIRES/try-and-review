@@ -1,12 +1,16 @@
-server:
-  port: 19050
-
 spring:
+  cloud:
+    config:
+      enabled: false    # 테스트에서 Config Server 비활성화
+    discovery:
+      enabled: false    # Eureka Discovery 비활성화
+
   datasource:
     url: jdbc:postgresql://localhost:5432/trillionaires
     username: notification
     password: notification
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create  # 개발 환경에서만 create 사용
@@ -14,11 +18,12 @@ spring:
       hibernate:
         default_schema: notification
         format_sql: true
-    show-sql: true
+    show-sql: true  # SQL 로그 확인을 위해
 
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
+      group-id: notification-test-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -27,16 +32,14 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    group:
-      notification-service: "notification-service-group"
-    admin:
-      auto-create-topics: true # 테스트 위해서 토픽 자동으로 생성하도록 설정
-  #  data:
-#    redis:
-#      host: ${redis.notification.host}
-#      port: ${redis.notification.port}
-#      password: ${redis.common.password}
-#
-#management:
-#  server:
-#    port: ${monitoring.prometheus.notification-port}
+
+eureka:
+  client:
+    enabled: false     # Eureka Client 비활성화
+    register-with-eureka: false
+    fetch-registry: false
+
+slack:
+  webhook:
+    url: https://hooks.slack.com/services/ # 임시
+
