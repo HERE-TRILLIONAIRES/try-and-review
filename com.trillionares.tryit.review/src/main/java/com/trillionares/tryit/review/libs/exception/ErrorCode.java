@@ -23,7 +23,10 @@ public enum ErrorCode {
     INVALID_LENGTH(400, "길이가 올바르지 않습니다"),
     INVALID_FORMAT(400, "형식이 올바르지 않습니다"),
     INVALID_RANGE(400, "범위가 올바르지 않습니다"),
-    INVALID_DATE(400, "날짜가 올바르지 않습니다");
+    INVALID_DATE(400, "날짜가 올바르지 않습니다"),
+
+    // Review
+    REVIEW_ID_NOT_FOUND(404, "리뷰를 찾을 수 없습니다.");
 
     private final int status;
     private final String message;

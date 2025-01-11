@@ -31,14 +31,14 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ReviewGetResponseDto getReview(UUID reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.REVIEW_ID_NOT_FOUND));
         return ReviewGetResponseDto.from(review);
     }
 
     @Transactional
     public ReviewUpdateResponseDto updateReview(ReviewUpdateRequestDto reviewUpdateRequestDto, UUID reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new GlobalException(ErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(ErrorCode.REVIEW_ID_NOT_FOUND));
         review.update(reviewUpdateRequestDto.reviewTitle(),reviewUpdateRequestDto.reviewContent(),reviewUpdateRequestDto.reviewScore(),reviewUpdateRequestDto.reviewImgUrl());
         return ReviewUpdateResponseDto.from(review);
     }
