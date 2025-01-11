@@ -24,7 +24,7 @@ public class SlackNotificationSender {
   private final NotificationRepository notificationRepository;
 
   @Transactional
-  public void sendNotification(Notification notification) {
+  public void sendNotification(Notification notification, String slackId) {
 
     SlackMessage message = SlackMessage.from(notification); // 슬랙 메세지 생성
 

@@ -23,6 +23,8 @@ public class GlobalExceptionHandler {
     log.error("GlobalException occurred : ErrorCode = {} message = {} path = {}",
         errorCode.name(), errorCode.getMessage(), request.getRequestURI());
 
+
+
     return ResponseEntity
         .status(errorCode.getStatus())
         .body(ErrorResponse.of(errorCode, request.getRequestURI()));

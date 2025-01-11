@@ -25,7 +25,9 @@ public enum ErrorCode {
   // notification
   INVALID_SUBMISSION_STATUS(400, "허용되지 않는 체험단 신청 상태입니다."),
   NOTIFICATION_NOT_FOUND(404, "해당 알림은 존재하지 않습니다."),
-  SLACK_NOTIFICATION_FAILED(500, "알림 생성이 실패되었습니다.");
+  SLACK_NOTIFICATION_FAILED(500, "알림 생성이 실패되었습니다."),
+  SLACK_ID_NOT_FOUND(404, "해당 슬랙 ID는 존재하지 않습니다")
+  ;
 
   private final int status;
   private final String message;
