@@ -4,6 +4,25 @@ spring:
   config:
     import: configserver:http://localhost:18080   # Config Server 주소
 
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      show-sql: true
+      format-sql: true
+      use_sql_comments: true
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_AUTH_USERNAME}
+    password: ${DB_AUTH_PASSWORD}
+
+service:
+  jwt:
+    access-expiration: 86400000  # 24시간
+    secret-key: ${service.jwt.secret-key} # 환경변수에서 가져옴
+
 server:
   port: 19010
 

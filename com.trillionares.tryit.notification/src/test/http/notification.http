@@ -1,0 +1,23 @@
+### 변수 설정
+@host = http://localhost:19050
+@notificationId = 123e4567-e89b-12d3-a456-426614174000
+
+### 알림 전체 조회
+GET {{host}}/notifications?status=PENDING
+
+### 단건 조회
+GET {{host}}/notifications/{{notificationId}}
+
+### 테스트용 이벤트 발생
+POST {{host}}/notifications/test/event
+Content-Type: application/json
+
+{
+  "submissionId": "123e4567-e89b-12d3-a456-426614174000",
+  "userId": "123e4567-e89b-12d3-a456-426614174111",
+  "recruitmentId": "123e4567-e89b-12d3-a456-426614174222",
+  "status": "APPLIED",
+  "submissionTime": "2024-01-06T10:00:00",
+  "messageId": "123e4567-e89b-12d3-a456-426614174333",
+  "eventTimestamp": "2024-01-06T10:00:00"
+}

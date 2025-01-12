@@ -1,0 +1,45 @@
+spring:
+  cloud:
+    config:
+      enabled: false    # 테스트에서 Config Server 비활성화
+    discovery:
+      enabled: false    # Eureka Discovery 비활성화
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/trillionaires
+    username: notification
+    password: notification
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create  # 개발 환경에서만 create 사용
+    properties:
+      hibernate:
+        default_schema: notification
+        format_sql: true
+    show-sql: true  # SQL 로그 확인을 위해
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification-test-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+eureka:
+  client:
+    enabled: false     # Eureka Client 비활성화
+    register-with-eureka: false
+    fetch-registry: false
+
+slack:
+  webhook:
+    url: https://hooks.slack.com/services/ # 임시
+
