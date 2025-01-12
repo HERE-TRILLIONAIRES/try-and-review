@@ -11,6 +11,9 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,8 +63,9 @@ public class RecruitmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetRecruitmentResponse>> getRecruitment() {
-        return ResponseEntity.ok(recruitmentService.getListRecruitment());
+    public ResponseEntity<Slice<GetRecruitmentResponse>> getListRecruitment(
+            @PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(recruitmentService.getListRecruitment(pageable));
     }
 
     @PatchMapping("{recruitmentId}/status")
