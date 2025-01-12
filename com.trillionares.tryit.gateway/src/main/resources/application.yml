@@ -65,7 +65,8 @@ eureka:
 
 service:
   jwt:
-    secret-key: ${service.jwt.secret-key} # 환경변수에서 가져옴
+    access-expiration: 86400000  # 24시간
+    secret-key: ${SECRET-KEY} # 환경변수에서 가져옴
 
 springdoc:
   enable-native-support: true
