@@ -2,8 +2,8 @@ spring:
   application:
     name: statistics-service
 
-  config:
-    import: configserver:http://localhost:18080   # Config Server 주소
+#  config:
+#    import: configserver:http://localhost:18080   # Config Server 주소
 
   datasource: # database
     url: ${DB_URL}
