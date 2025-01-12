@@ -16,6 +16,7 @@ spring:
         format_sql: true
     show-sql: true
 
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -24,13 +25,14 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: '*'
+      group-id: notification-service-group
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     group:
       notification-service: "notification-service-group"
     admin:
-      auto-create-topics: true # 테스트 위해서 토픽 자동으로 생성하도록 설정
+      auto-create-topics: false # 테스트 위해서 토픽 자동으로 생성하도록 설정
   #  data:
 #    redis:
 #      host: ${redis.notification.host}

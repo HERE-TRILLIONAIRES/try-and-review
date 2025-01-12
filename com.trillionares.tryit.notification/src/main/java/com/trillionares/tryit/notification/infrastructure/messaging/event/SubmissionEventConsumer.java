@@ -14,7 +14,7 @@ public class SubmissionEventConsumer {
   private final NotificationService notificationService;
 
   @KafkaListener(
-      topics = "submission-selected",
+      topics = "tryit-completed",
       groupId = "${spring.kafka.consumer.group-id}",
       containerFactory = "kafkaListenerContainerFactory"
   )

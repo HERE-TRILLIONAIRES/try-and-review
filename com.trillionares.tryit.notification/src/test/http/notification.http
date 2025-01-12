@@ -13,9 +13,11 @@ POST {{host}}/notifications/test/event
 Content-Type: application/json
 
 {
-  "eventId": "test-event-1",
-  "timestamp": "2024-01-06T10:00:00",
   "submissionId": "123e4567-e89b-12d3-a456-426614174000",
   "userId": "123e4567-e89b-12d3-a456-426614174111",
-  "submissionStatus": "SELECTED"
+  "recruitmentId": "123e4567-e89b-12d3-a456-426614174222",
+  "status": "APPLIED",
+  "submissionTime": "2024-01-06T10:00:00",
+  "messageId": "123e4567-e89b-12d3-a456-426614174333",
+  "eventTimestamp": "2024-01-06T10:00:00"
 }
