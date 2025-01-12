@@ -92,6 +92,14 @@ public class UserService {
     return new UserAuthorityResponseDto(user.getUserId(), user.getUsername(), user.getRole());
   }
 
+  public UserResponseDto getUser(UUID userId) {
+    User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
+        .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+    return new UserResponseDto(user);
+  }
+
+
   private void checkUsername(String username) {
     if (userRepository.existsByUsernameAndIsDeletedFalse(username)) {
       throw new GlobalException(ErrorCode.USER_ALREADY_EXIST);

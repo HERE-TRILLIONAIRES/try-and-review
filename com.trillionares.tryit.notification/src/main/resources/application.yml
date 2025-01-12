@@ -9,16 +9,20 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:18080/eureka/
+      defaultZone: http://localhost:19090/eureka/
 
 logging:
   level:
+    root: INFO
+    com.trillionares.tryit: DEBUG
+    org.springframework.web: DEBUG
     feign: DEBUG
     feign.Logger: DEBUG
-    com.sparta.logistics.delivery.infrastructure.client: DEBUG
-    com.sparta.logistics.delivery: DEBUG
-    org.springframework.web: DEBUG
 
 openapi:
   service:
     url: http://localhost:19091 # API Gateway 포트
+
+slack:
+  webhook:
+    url: https://hooks.slack.com/ # 임시 가짜 URL

@@ -13,30 +13,53 @@ java {
 	}
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
 	mavenCentral()
 }
 
 ext {
 	set('springCloudVersion', "2024.0.0")
+	set('querydslVersion', "5.0.0")  // querydsl 버전 추가
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// Spring Boot Starters
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Spring Cloud
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+	// Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// QueryDSL
+	implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+	implementation "com.querydsl:querydsl-apt:${querydslVersion}:jakarta"
+
+	annotationProcessor(
+			"com.querydsl:querydsl-apt:${querydslVersion}:jakarta",
+			"jakarta.annotation:jakarta.annotation-api",
+			"jakarta.persistence:jakarta.persistence-api"
+	)
+
+	// Database
 	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'com.h2database:h2'
+
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -44,6 +67,20 @@ dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
+}
+
+def querydslDir = "src/main/generated"
+
+sourceSets {
+	main.java.srcDir querydslDir
+}
+
+tasks.withType(JavaCompile) {
+	options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
+}
+
+clean {
+	delete file(querydslDir)
 }
 
 tasks.named('test') {
