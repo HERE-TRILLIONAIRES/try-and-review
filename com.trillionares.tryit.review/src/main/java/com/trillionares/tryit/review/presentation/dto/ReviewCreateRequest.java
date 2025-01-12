@@ -1,5 +1,6 @@
 package com.trillionares.tryit.review.presentation.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -7,9 +8,18 @@ import java.util.UUID;
 @Getter
 public class ReviewCreateRequest {
 
+    @NotNull
     private UUID userId;
+
+    @NotNull
     private UUID productId;
+
+    @NotBlank
     private String reviewTitle;
+
+    @NotBlank
     private String reviewContent;
-    private int reviewScore;
+
+    @NotNull @Min(value=1) @Max(value=5)
+    private Integer reviewScore;
 }
