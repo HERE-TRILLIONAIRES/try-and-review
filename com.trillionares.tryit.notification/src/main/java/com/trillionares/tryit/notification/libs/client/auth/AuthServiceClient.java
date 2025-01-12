@@ -13,6 +13,6 @@ public interface AuthServiceClient {
   @GetMapping("/users/{userId}")
   BaseResponse<UserResponseDto> getUser(
   @PathVariable UUID userId,
-  @RequestHeader("X-Username") String h_username,
-  @RequestHeader("X-Role") String role);
+  @RequestHeader("X-Auth-Username") String h_username,
+  @RequestHeader("X-Auth-Role") String role);
 }
