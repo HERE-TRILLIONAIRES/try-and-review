@@ -1,7 +1,7 @@
 package com.trillionares.tryit.product.presentation.controller;
 
 import com.trillionares.tryit.product.application.service.CategoryService;
-import com.trillionares.tryit.product.presentation.dto.BaseResponseDto;
+import com.trillionares.tryit.product.presentation.dto.common.base.BaseResponseDto;
 import com.trillionares.tryit.product.presentation.dto.response.CategoryIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.request.CategoryInfoRequestDto;
 import lombok.RequiredArgsConstructor;

@@ -12,6 +12,8 @@ import com.trillionares.tryit.product.presentation.dto.response.UpdateRecruitmen
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,12 +74,8 @@ public class RecruitmentService {
         return GetRecruitmentResponse.fromEntity(recruitment);
     }
 
-    //TODO: 병합 후 Querydsl 적용
-    public List<GetRecruitmentResponse> getListRecruitment() {
-
-        List<Recruitment> recruitments = recruitmentRepository.findAll();
-
-        return recruitments.stream().map(GetRecruitmentResponse::fromEntity).toList();
+    public Slice<GetRecruitmentResponse> getListRecruitment(Pageable pageable) {
+        return recruitmentRepository.getRecruitmentList(pageable);
     }
 
     public UpdateRecruitmentStatusResponse updateRecruitmentStatus(UUID recruitmentId,

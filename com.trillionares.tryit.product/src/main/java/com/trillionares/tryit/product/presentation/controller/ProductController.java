@@ -61,6 +61,25 @@ public class ProductController {
         }
     }
 
+    @PostMapping(value = "/kafka", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponseDto<ProductIdResponseDto> createProductUsingKafka(
+            @RequestPart("productInfoRequestDto") String requestDto,
+            @RequestPart(value = "productMainImage") MultipartFile productMainImage
+    ) {
+        try {
+            ProductInfoRequestDto productInfoRequestDto = JsonUtils.fromJson(requestDto, ProductInfoRequestDto.class);
+            ProductIdResponseDto responseDto = productService.createProductUsingkafka(productInfoRequestDto, productMainImage);
+
+            return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, ProductMessage.CREATED_PRODUCT_SUCCESS.getMessage(), responseDto);
+        } catch (CategoryNotFoundException cnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
+        } catch (RuntimeException re){
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
+        } catch  (Exception e) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
+        }
+    }
+
     @GetMapping()
     public BaseResponseDto<List<ProductInfoResponseDto>> getProduct(
             @RequestParam(required = false)List<UUID> idList,

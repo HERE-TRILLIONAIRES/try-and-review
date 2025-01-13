@@ -2,7 +2,7 @@ package com.trillionares.tryit.notification.infrastructure.messaging.kafka;
 
 public enum NotificationTopic {
 
-  NOTIFICATION_CREATED("notification_created"); // 알림 생성
+  TRYIT_COMPLETED("tryit-completed"); // 알림 생성
 
 
   private final String topic;

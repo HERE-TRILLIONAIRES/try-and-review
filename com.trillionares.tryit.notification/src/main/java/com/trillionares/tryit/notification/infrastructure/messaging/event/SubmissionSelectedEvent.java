@@ -9,20 +9,33 @@ import lombok.ToString;
 @ToString
 public class SubmissionSelectedEvent {
 
-  private String eventId;
-  private LocalDateTime timestamp;
   private UUID submissionId;
   private UUID userId;
-  private String submissionStatus; // TODO : Enum파일 자체 추가 필요할지 확인 필요
+  private UUID recruitmentId;
+  private String status;
+  private LocalDateTime submissionTime;
+  private UUID messageId;
+  private LocalDateTime eventTimestamp;
 
   protected SubmissionSelectedEvent() {}
 
-  public SubmissionSelectedEvent(String eventId, LocalDateTime timestamp,
-      UUID submissionId, UUID userId, String submissionStatus) {
-    this.eventId = eventId;
-    this.timestamp = timestamp;
+  public SubmissionSelectedEvent(
+      UUID submissionId,
+      UUID userId,
+      UUID recruitmentId,
+      String status,
+      LocalDateTime submissionTime,
+      UUID messageId,
+      LocalDateTime eventTimestamp
+      ) {
     this.submissionId = submissionId;
     this.userId = userId;
-    this.submissionStatus = submissionStatus;
+    this.recruitmentId = recruitmentId;
+    this.status = status;
+    this.submissionTime = submissionTime;
+    this.messageId = messageId;
+    this.eventTimestamp = eventTimestamp;
+
+
   }
 }

@@ -7,6 +7,16 @@ spring:
     username: notification
     password: notification
     driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create  # 개발 환경에서만 create 사용
+    properties:
+      hibernate:
+        default_schema: notification
+        format_sql: true
+    show-sql: true
+
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -15,13 +25,14 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: '*'
+      group-id: notification-service-group
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     group:
       notification-service: "notification-service-group"
     admin:
-      auto-create-topics: true # 테스트 위해서 토픽 자동으로 생성하도록 설정
+      auto-create-topics: false # 테스트 위해서 토픽 자동으로 생성하도록 설정
   #  data:
 #    redis:
 #      host: ${redis.notification.host}
@@ -31,12 +42,3 @@ spring:
 #management:
 #  server:
 #    port: ${monitoring.prometheus.notification-port}
-
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true

@@ -3,10 +3,6 @@ spring:
     name: notification-service
   config:
     import: configserver:http://localhost:18080   # Config Server 주소
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: ${spring.application.name}-group
 
 server:
   port: 19050
@@ -17,11 +13,11 @@ eureka:
 
 logging:
   level:
+    root: INFO
+    com.trillionares.tryit: DEBUG
+    org.springframework.web: DEBUG
     feign: DEBUG
     feign.Logger: DEBUG
-    com.sparta.logistics.delivery.infrastructure.client: DEBUG
-    com.sparta.logistics.delivery: DEBUG
-    org.springframework.web: DEBUG
 
 openapi:
   service:
@@ -29,4 +25,4 @@ openapi:
 
 slack:
   webhook:
-    url: ${SLACK_WEBHOOK_URL:http://default-webhook-url} # 임시 가짜 URL
+    url: https://hooks.slack.com/ # 임시 가짜 URL
