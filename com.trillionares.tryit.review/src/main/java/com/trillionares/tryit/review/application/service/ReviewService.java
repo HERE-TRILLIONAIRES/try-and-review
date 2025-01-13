@@ -6,6 +6,7 @@ import com.trillionares.tryit.review.application.dto.response.ReviewCreateRespon
 import com.trillionares.tryit.review.application.dto.response.ReviewDeleteResponseDto;
 import com.trillionares.tryit.review.application.dto.response.ReviewGetResponseDto;
 import com.trillionares.tryit.review.application.dto.response.ReviewUpdateResponseDto;
+import com.trillionares.tryit.review.domain.client.TrialClient;
 import com.trillionares.tryit.review.domain.model.Review;
 import com.trillionares.tryit.review.domain.repository.ReviewRepository;
 import com.trillionares.tryit.review.libs.exception.ErrorCode;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final TrialClient trialClient;
 
     @Transactional
     public ReviewCreateResponseDto createReview(ReviewCreateRequestDto reviewCreateRequestDto) {
