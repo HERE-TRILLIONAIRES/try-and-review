@@ -5,6 +5,7 @@ import com.trillionares.tryit.trial.jhtest.domain.model.Trial;
 import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
 import com.trillionares.tryit.trial.jhtest.domain.repository.TrialRepository;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SendNotificationDto;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.SendRecruitmentDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialIdResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.common.kafka.KafkaMessage;
@@ -47,7 +48,16 @@ public class TrialService {
 
 
         // TODO: 재고 빼기, 신청시간 담기, 신청자 정보 담기
-        kafkaTemplate.send("minusProduct", "quantity", String.valueOf(trial.getQuantity()));
+        SendRecruitmentDto sendRecruitmentDto = SendRecruitmentDto.of(trial.getSubmissionId(), requestDto.getRecruitmentId(), userId, trial.getQuantity(), String.valueOf(trial.getCreatedAt()));
+        try {
+            String sendPayloadJson = JsonUtils.toJson(sendRecruitmentDto);
+            KafkaMessage sendMessage = KafkaMessage.from(sendPayloadJson);
+            String sendMessageJson = JsonUtils.toJson(sendMessage);
+
+            kafkaTemplate.send("checkPossible", "ValidatedRecruitment-req", sendMessageJson);
+        } catch (Exception e){
+            throw new RuntimeException("Recruitment로 메시지 생성 실패");
+        }
 
         // TODO: 알람 보내기 (신청되었다는 알람만, 몇번째인지? 당첨되었는지?는 재고와 모집마감시간 비교후 적용)
         SendNotificationDto sendDto = SendNotificationDto.of(trial.getSubmissionId(), userId, requestDto.getRecruitmentId(),
@@ -57,9 +67,9 @@ public class TrialService {
             KafkaMessage sendMessage = KafkaMessage.from(sendPayloadJson);
             String sendMessageJson = JsonUtils.toJson(sendMessage);
 
-            kafkaTemplate.send("tryit-completed", "mesage", sendMessageJson);
+            kafkaTemplate.send("tryit-completed", "NotificationInfo-req", sendMessageJson);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Notification으로 메시지 생성 실패");
         }
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
