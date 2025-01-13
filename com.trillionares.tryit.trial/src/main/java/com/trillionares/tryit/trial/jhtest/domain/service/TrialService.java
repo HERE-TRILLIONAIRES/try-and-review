@@ -57,7 +57,7 @@ public class TrialService {
             KafkaMessage sendMessage = KafkaMessage.from(sendPayloadJson);
             String sendMessageJson = JsonUtils.toJson(sendMessage);
 
-            kafkaTemplate.send("tryit-completed", "mesage", sendMessageJson);
+            kafkaTemplate.send("tryit-completed", "NotificationInfo-req", sendMessageJson);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
