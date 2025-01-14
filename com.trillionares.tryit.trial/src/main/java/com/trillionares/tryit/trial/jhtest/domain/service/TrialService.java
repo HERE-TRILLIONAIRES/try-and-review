@@ -59,9 +59,25 @@ public class TrialService {
             throw new RuntimeException("Recruitment로 메시지 생성 실패");
         }
 
+        sendMessageToNotification(trial.getSubmissionId());
+
+        return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    public void sendMessageToNotification(UUID submissionId) {
+        Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
+        if(trial == null){
+            throw new RuntimeException("신청을 찾을 수 없습니다.");
+        }
+
         // TODO: 알람 보내기 (신청되었다는 알람만, 몇번째인지? 당첨되었는지?는 재고와 모집마감시간 비교후 적용)
-        SendNotificationDto sendDto = SendNotificationDto.of(trial.getSubmissionId(), userId, requestDto.getRecruitmentId(),
-                String.valueOf(trial.getCreatedAt()));
+        SendNotificationDto sendDto = SendNotificationDto.of(
+                trial.getSubmissionId(),
+                trial.getUserId(),
+                trial.getRecruitmentId(),
+                trial.getSubmissionStatus(),
+                String.valueOf(trial.getCreatedAt())
+        );
         try {
             String sendPayloadJson = JsonUtils.toJson(sendDto);
             KafkaMessage sendMessage = KafkaMessage.from(sendPayloadJson);
@@ -71,8 +87,6 @@ public class TrialService {
         } catch (Exception e) {
             throw new RuntimeException("Notification으로 메시지 생성 실패");
         }
-
-        return TrialIdResponseDto.from(trial.getSubmissionId());
     }
 
     private Boolean checkExistRecruitment(UUID recruitmentId) {
@@ -97,6 +111,7 @@ public class TrialService {
     @Transactional
     public TrialIdResponseDto changeStatusOfTrial(UUID submissionId, SubmissionStatus status) {
         // TODO: 권한 체크 (사용자)
+        // Kafka Message로 받아오는 경우에는 사용자 권한 체크 불필요 -> submissionId로 누군지 알 수 있다.
 
         // TODO: UserId토큰에서 받아오기
         UUID userId = UUID.randomUUID();
