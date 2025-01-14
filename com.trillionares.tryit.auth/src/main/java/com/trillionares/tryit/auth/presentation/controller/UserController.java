@@ -1,7 +1,7 @@
 package com.trillionares.tryit.auth.presentation.controller;
 
 
-import com.trillionares.tryit.auth.application.dto.UserAuthorityResponseDto;
+import com.trillionares.tryit.auth.application.dto.InfoByUsernameResponseDto;
 import com.trillionares.tryit.auth.application.service.UserService;
 import com.trillionares.tryit.auth.infrastructure.config.CustomUserDetails;
 import com.trillionares.tryit.auth.presentation.dto.BaseResponse;
@@ -59,15 +59,15 @@ public class UserController {
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     userService.deleteUser(userDetails.getUserId());
 
-    return BaseResponse.of(204, HttpStatus.NO_CONTENT, "회원탈퇴 완료", null);
+    return BaseResponse.of(204, HttpStatus.NO_CONTENT, "회원탈퇴가 완료되었습니다.", null);
 
   }
 
-  @GetMapping("/internals/username/{username}")
-  public BaseResponse<UserAuthorityResponseDto> getUserByUsername(@PathVariable String username,
+  @GetMapping("/internals/username/{username}") // 내부통신용으로 인증제외됨
+  public BaseResponse<InfoByUsernameResponseDto> getUserByUsername(@PathVariable String username,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
-    UserAuthorityResponseDto resDto = userService.getUserByUsername(username);
-    return BaseResponse.of(200, HttpStatus.OK, "사용자 정보 조회 성공", resDto);
+    InfoByUsernameResponseDto resDto = userService.getUserByUsername(username);
+    return BaseResponse.of(200, HttpStatus.OK, "사용자 정보 조회에 성공하였습니다.", resDto);
   }
 
   @GetMapping("/{userId}")
@@ -77,7 +77,7 @@ public class UserController {
     return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
   }
 
-  @GetMapping("/internals/{userId}")
+  @GetMapping("/internals/{userId}")  // 내부통신용으로 인증제외됨
   public BaseResponse<UserResponseDto> getUserInfo(@PathVariable UUID userId,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     UserResponseDto resDto = userService.getUser(userDetails.getUserId());
