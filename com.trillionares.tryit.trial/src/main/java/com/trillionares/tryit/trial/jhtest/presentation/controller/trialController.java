@@ -2,6 +2,7 @@ package com.trillionares.tryit.trial.jhtest.presentation.controller;
 
 import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
 import com.trillionares.tryit.trial.jhtest.domain.service.TrialService;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.SubmissionIdAndStatusResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialIdResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.common.base.BaseResponseDto;
@@ -81,5 +82,14 @@ public class trialController {
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
         }
+    }
+
+    @GetMapping("/{submissionId}/isSelected")
+    public BaseResponseDto<SubmissionIdAndStatusResponseDto> validateIsSelected(
+            @PathVariable("submissionId") UUID submissionId
+    ) {
+        SubmissionIdAndStatusResponseDto responseDto = trialService.validateIsSelected(submissionId);
+
+        return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 선택한 경우.", responseDto);
     }
 }
