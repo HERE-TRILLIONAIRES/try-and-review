@@ -26,7 +26,7 @@ public class TrialEndpoint {
         UpdateStatusDto updateStatusDto = JsonUtils.fromJson(kafkaMessage.getPayload(), UpdateStatusDto.class);
 
         // TODO: Status 값에 따라 분기문 수정하기
-        if(updateStatusDto.getStatus().contains("FAIL")){
+        if(updateStatusDto.getStatus().contains("FAIL")){ // 상태는 아직 가칭 FAIL
             trialService.changeStatusOfTrial(updateStatusDto.getSubmissionId(), SubmissionStatus.FAILED);
         }
         trialService.changeStatusOfTrial(updateStatusDto.getSubmissionId(), SubmissionStatus.SELECTED);
