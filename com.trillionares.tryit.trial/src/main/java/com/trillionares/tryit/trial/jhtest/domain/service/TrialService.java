@@ -6,6 +6,7 @@ import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
 import com.trillionares.tryit.trial.jhtest.domain.repository.TrialRepository;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SendNotificationDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SendRecruitmentDto;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.SubmissionIdAndStatusResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialIdResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.common.kafka.KafkaMessage;
@@ -164,5 +165,28 @@ public class TrialService {
         }
 
         return trial;
+    }
+
+    public SubmissionIdAndStatusResponseDto validateIsSelected(UUID submissionId) {
+        Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
+        if(trial == null){
+            throw new RuntimeException("신청을 찾을 수 없습니다.");
+        }
+
+
+        if(trial.getSubmissionStatus().getMessage().equals(SubmissionStatus.SELECTED.getMessage())) {
+            SubmissionIdAndStatusResponseDto responseDto = SubmissionIdAndStatusResponseDto.of(
+                    trial.getSubmissionId(), true
+            );
+
+            return responseDto;
+        }
+        else {
+            SubmissionIdAndStatusResponseDto responseDto = SubmissionIdAndStatusResponseDto.of(
+                    trial.getSubmissionId(), false
+            );
+
+            return responseDto;
+        }
     }
 }
