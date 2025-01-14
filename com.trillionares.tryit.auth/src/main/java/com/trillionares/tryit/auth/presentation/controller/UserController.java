@@ -64,23 +64,20 @@ public class UserController {
   }
 
   @GetMapping("/internals/username/{username}") // 내부통신용으로 인증제외됨
-  public BaseResponse<InfoByUsernameResponseDto> getUserByUsername(@PathVariable String username,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
+  public BaseResponse<InfoByUsernameResponseDto> getUserByUsername(@PathVariable String username) {
     InfoByUsernameResponseDto resDto = userService.getUserByUsername(username);
     return BaseResponse.of(200, HttpStatus.OK, "사용자 정보 조회에 성공하였습니다.", resDto);
   }
 
   @GetMapping("/{userId}")
-  public BaseResponse<UserResponseDto> getUser(@PathVariable UUID userId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
-    UserResponseDto resDto = userService.getUser(userDetails.getUserId());
+  public BaseResponse<UserResponseDto> getUser(@PathVariable UUID userId) {
+    UserResponseDto resDto = userService.getUser(userId);
     return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
   }
 
   @GetMapping("/internals/{userId}")  // 내부통신용으로 인증제외됨
-  public BaseResponse<UserResponseDto> getUserInfo(@PathVariable UUID userId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
-    UserResponseDto resDto = userService.getUser(userDetails.getUserId());
+  public BaseResponse<UserResponseDto> getUserInfo(@PathVariable UUID userId) {
+    UserResponseDto resDto = userService.getUserInfo(userId);
     return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
   }
 
