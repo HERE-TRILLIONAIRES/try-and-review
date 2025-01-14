@@ -11,8 +11,5 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface AuthServiceClient {
 
   @GetMapping("/users/{userId}")
-  BaseResponse<UserResponseDto> getUser(
-  @PathVariable UUID userId,
-  @RequestHeader("X-Auth-Username") String h_username,
-  @RequestHeader("X-Auth-Role") String role);
+  BaseResponse<UserResponseDto> getUser(@PathVariable UUID userId);
 }
