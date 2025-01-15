@@ -5,9 +5,9 @@ import com.trillionares.tryit.notification.domain.model.Notification;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
 import com.trillionares.tryit.notification.infrastructure.messaging.event.SubmissionSelectedEvent;
 import com.trillionares.tryit.notification.infrastructure.persistence.NotificationRepository;
-import com.trillionares.tryit.notification.libs.client.auth.UserResponseDto;
 import com.trillionares.tryit.notification.libs.client.auth.AuthServiceClient;
-import com.trillionares.tryit.notification.libs.client.auth.RequestHeaderProvider;
+import com.trillionares.tryit.notification.libs.client.auth.UserResponseDto;
+import com.trillionares.tryit.notification.libs.client.config.RequestHeaderProvider;
 import com.trillionares.tryit.notification.libs.exception.ErrorCode;
 import com.trillionares.tryit.notification.libs.exception.ExceptionConverter;
 import com.trillionares.tryit.notification.libs.exception.GlobalException;
@@ -33,8 +33,6 @@ public class NotificationService {
 
   @Transactional
   public void createNotificationFromSubmissionEvent(SubmissionSelectedEvent event) {
-    // 상태값 검증
-    validateSubmissionStatus(event.getStatus());
 
     // 알림 엔티티 저장
     Notification notification = convertEventToNotification(event);
@@ -43,34 +41,26 @@ public class NotificationService {
     String slackId = getSlackId(savedNotification);
 
     // 슬랙 알림 발송
-    slackNotificationSender.sendNotification(savedNotification, slackId);
-
-    NotificationResponse.from(savedNotification);
+    slackNotificationSender.sendNotification(savedNotification, slackId, event.getStatus());
   }
 
   private String getSlackId(Notification notification) {
-    BaseResponse<UserResponseDto> response = authServiceClient.getUser(
-        notification.getUserId(),
-        requestHeaderProvider.getUsername(),
-        requestHeaderProvider.getRole()
-    );
+
+    BaseResponse<UserResponseDto> response = authServiceClient.getUserInfo(
+        notification.getUserId());
 
     UserResponseDto userDto = response.getData();
     String slackId = userDto.getSlackId();
 
-    if (slackId == null || slackId.isEmpty()) {
+    log.info("slackId {}", slackId);
+
+    if (slackId == null || slackId.isEmpty()) { // TODO: Feign error 추가 필요
       throw new GlobalException(ErrorCode.SLACK_ID_NOT_FOUND);
     }
 
     return slackId;
   }
 
-  private void validateSubmissionStatus(String status) {
-
-    if (!"APPLIED".equals(status)) {
-      throw new GlobalException(ErrorCode.INVALID_SUBMISSION_STATUS);
-    }
-  }
 
   private Notification convertEventToNotification(SubmissionSelectedEvent event) {
 

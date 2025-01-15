@@ -24,9 +24,9 @@ public class SlackNotificationSender {
   private final NotificationRepository notificationRepository;
 
   @Transactional
-  public void sendNotification(Notification notification, String slackId) {
+  public void sendNotification(Notification notification, String slackId, String status) {
 
-    SlackMessage message = SlackMessage.from(notification); // 슬랙 메세지 생성
+    SlackMessage message = SlackMessage.from(notification, slackId, status); // 슬랙 메세지 생성
 
     try {
       restTemplate.postForEntity(webhookUrl, message, String.class);
