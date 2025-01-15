@@ -44,11 +44,9 @@ public class TrialService {
         // TODO: UserId 비동기 업데이트 고려해보기
         UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
-        // TODO: recruitmentID 존재하는지 검증
-//        if(!checkExistRecruitment(requestDto.getRecruitmentId())) {
-//            log.error("해당 모집이 없습니다.");
-//            throw new RuntimeException("해당 모집이 없습니다.");
-//        }
+        if(existPastSubmissionHistory(userId, requestDto.getRecruitmentId())) {
+            throw new RuntimeException("이전 신청내역이 있는 모집 입니다.");
+        }
 
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
 
