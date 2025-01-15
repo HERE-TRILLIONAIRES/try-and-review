@@ -128,19 +128,23 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     public BaseResponseDto<ProductIdResponseDto> updateProduct(
+            @RequestHeader("X-Auth-Username") String username,
+            @RequestHeader("X-Auth-Role") String role,
             @PathVariable("productId") UUID productId,
             @RequestPart("productInfoRequestDto") String requestDto,
             @RequestPart(value = "productMainImage") MultipartFile productMainImage
     ) {
         try {
             ProductInfoRequestDto productInfoRequestDto = JsonUtils.fromJson(requestDto, ProductInfoRequestDto.class);
-            ProductIdResponseDto responseDto = productService.updateProduct(productId, productInfoRequestDto, productMainImage);
+            ProductIdResponseDto responseDto = productService.updateProduct(username, role, productId, productInfoRequestDto, productMainImage);
 
             return BaseResponseDto.from(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, ProductMessage.MODIFIED_PRODUCT_SUCCESS.getMessage(), responseDto);
         } catch (CategoryNotFoundException cnfe) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
         } catch (ProductNotFoundException pnfe) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pnfe.getMessage(), null);
+        } catch (IllegalArgumentException ie) {
+            return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ie.getMessage(), null);
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
         } catch (Exception e) {

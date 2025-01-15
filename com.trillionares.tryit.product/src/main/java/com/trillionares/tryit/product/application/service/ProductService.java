@@ -270,23 +270,37 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductIdResponseDto updateProduct(UUID productId, ProductInfoRequestDto requestDto,
+    public ProductIdResponseDto updateProduct(String username, String role, UUID productId, ProductInfoRequestDto requestDto,
                                               MultipartFile productMainImage) {
-        // TODO: 권한 체크 (관리자, 판매자)
+        if(!validatePermission(role)){
+            throw new IllegalArgumentException("권한이 없는 사용자입니다.");
+        }
 
-        // TODO: UserId 토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "상품 수정한 사람";
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
         Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
         if(product == null) {
             throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
+        // TODO: 내가 등록한 물건인지 확인
+        log.info("product.getUserId(): {}, userId: {}", product.getUserId(), userId);
+        if(!isProductOwner(userId, product.getUserId())) {
+            throw new IllegalArgumentException("판매자가 등록한 상품이 아닙니다.");
+        }
+
         updateProductElement(username, product, requestDto, productMainImage);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private Boolean isProductOwner(UUID userId1, UUID userId2) {
+        if(userId1.equals(userId2)) {
+            return true;
+        }
+        return false;
     }
 
     private Product updateProductElement(String username, Product product, ProductInfoRequestDto requestDto,
