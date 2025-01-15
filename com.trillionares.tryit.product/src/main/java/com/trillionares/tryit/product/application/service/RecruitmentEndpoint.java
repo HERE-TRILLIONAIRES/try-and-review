@@ -1,12 +1,9 @@
 package com.trillionares.tryit.product.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trillionares.tryit.product.application.service.RecruitmentService;
 import com.trillionares.tryit.product.domain.common.json.JsonUtils;
-import com.trillionares.tryit.product.domain.repository.RecruitmentRepository;
+import com.trillionares.tryit.product.presentation.dto.common.kafka.KafkaMessage;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.SubmissionToRecruitmentRequestDto;
 import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
-import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +33,8 @@ public class RecruitmentEndpoint {
     @KafkaListener(topics = "checkPossible", groupId = "recruitment-tryit")
     public void handleSubmissionRequest(String message) {
         try {
-            SubmissionToRecruitmentRequestDto requestDto = JsonUtils.fromJson(message, SubmissionToRecruitmentRequestDto.class);
+            KafkaMessage kafkaMessage = JsonUtils.fromJson(message, KafkaMessage.class);
+            SubmissionToRecruitmentRequestDto requestDto = JsonUtils.fromJson(kafkaMessage.payload(), SubmissionToRecruitmentRequestDto.class);
 
             // 모집 가능 여부 확인
             boolean isPossible = recruitmentService.checkAndUpdateRecruitment(
