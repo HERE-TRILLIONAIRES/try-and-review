@@ -61,11 +61,13 @@ public class trialController {
 
     @PatchMapping("/{submissionId}")
     public BaseResponseDto<TrialIdResponseDto> changeStatusOfTrial(
+            @RequestHeader("X-Auth-Username") String username,
+            @RequestHeader("X-Auth-Role") String role,
             @PathVariable("submissionId") UUID submissionId,
             @RequestParam("status") SubmissionStatus status
     ) {
         try {
-            TrialIdResponseDto responseDto = trialService.changeStatusOfTrial(submissionId, status);
+            TrialIdResponseDto responseDto = trialService.changeStatusOfTrial(username, role, submissionId, status);
 
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 변경했습니다. 신청 상태 : " + status, responseDto);
 

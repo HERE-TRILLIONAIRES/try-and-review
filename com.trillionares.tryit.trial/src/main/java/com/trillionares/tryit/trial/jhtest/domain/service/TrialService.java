@@ -142,9 +142,10 @@ public class TrialService {
     }
 
     @Transactional
-    public TrialIdResponseDto changeStatusOfTrial(UUID submissionId, SubmissionStatus status) {
-        // TODO: 권한 체크 (사용자)
-        // Kafka Message로 받아오는 경우에는 사용자 권한 체크 불필요 -> submissionId로 누군지 알 수 있다.
+    public TrialIdResponseDto changeStatusOfTrial(String username, String role, UUID submissionId, SubmissionStatus status) {
+        if(!updateValidatePermission(role)){
+            throw new IllegalArgumentException("관리자나 판매자는 체험 신청할 수 없습니다.");
+        }
 
         // TODO: UserId토큰에서 받아오기
         UUID userId = UUID.randomUUID();
@@ -155,9 +156,29 @@ public class TrialService {
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
 
+        if(!isSubmissionOwner(userId, trial.getUserId()) && role.contains("MEMBER")) {
+            throw new IllegalArgumentException("로그인한 사용자의 신청이 아닙니다.");
+        }
+
         trial = statusConvert(trial, trial.getSubmissionStatus(), status, username);
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    private Boolean isSubmissionOwner(UUID userId1, UUID userId2) {
+        if(userId1.equals(userId2)) {
+            return true;
+        }
+        return false;
+    }
+
+    private Boolean updateValidatePermission(String role) {
+        if(role.contains("MEMBER")){
+            return true;
+        } else if(role.contains("ADMIN")) {
+            return true;
+        }
+        return false;
     }
 
     private Trial statusConvert(Trial trial, SubmissionStatus previousStatus, SubmissionStatus nextStatus, String username){
