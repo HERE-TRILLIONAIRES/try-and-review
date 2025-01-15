@@ -1,6 +1,6 @@
 package com.trillionares.tryit.auth.application.service;
 
-import com.trillionares.tryit.auth.application.dto.UserAuthorityResponseDto;
+import com.trillionares.tryit.auth.application.dto.InfoByUsernameResponseDto;
 import com.trillionares.tryit.auth.domain.model.Role;
 import com.trillionares.tryit.auth.domain.model.User;
 import com.trillionares.tryit.auth.domain.repository.UserRepository;
@@ -84,15 +84,22 @@ public class UserService {
     userRepository.save(user); // 변경 사항 저장
   }
 
-  public UserAuthorityResponseDto getUserByUsername(String username) {
+  public InfoByUsernameResponseDto getUserByUsername(String username) {
     User user = userRepository.findByUsernameAndIsDeletedFalse(username)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-    // 권한과 ID를 포함한 응답 DTO 생성
-    return new UserAuthorityResponseDto(user.getUserId(), user.getUsername(), user.getRole());
+    // username, userId, role, slackId를 포함한 응답 DTO 생성
+    return new InfoByUsernameResponseDto(user);
   }
 
   public UserResponseDto getUser(UUID userId) {
+    User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
+        .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
+
+    return new UserResponseDto(user);
+  }
+
+  public UserResponseDto getUserInfo(UUID userId) {
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
