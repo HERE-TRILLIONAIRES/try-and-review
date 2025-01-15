@@ -284,9 +284,7 @@ public class ProductService {
             throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
-        // TODO: 내가 등록한 물건인지 확인
-        log.info("product.getUserId(): {}, userId: {}", product.getUserId(), userId);
-        if(!isProductOwner(userId, product.getUserId())) {
+        if(!isProductOwner(userId, product.getUserId()) && role.contains("COMPANY")) {
             throw new IllegalArgumentException("판매자가 등록한 상품이 아닙니다.");
         }
 
