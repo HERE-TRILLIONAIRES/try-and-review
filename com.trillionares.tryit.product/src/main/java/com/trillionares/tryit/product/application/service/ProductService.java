@@ -10,6 +10,7 @@ import com.trillionares.tryit.product.domain.model.category.Category;
 import com.trillionares.tryit.product.domain.model.category.ProductCategory;
 import com.trillionares.tryit.product.domain.model.product.Product;
 import com.trillionares.tryit.product.domain.model.product.QProduct;
+import com.trillionares.tryit.product.domain.client.AuthClient;
 import com.trillionares.tryit.product.domain.repository.CategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
@@ -55,17 +56,19 @@ public class ProductService {
     private final ProductCategoryRepository productCategoryRepository;
 
     private final ImageClient imageClient;
+    private final AuthClient authClient;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     private String defaultProductImgUrl = "https://trillionaires-s3.s3.ap-northeast-2.amazonaws.com/empty_product.png";
 
     @Transactional
-    public ProductIdResponseDto createProductUsingkafka(ProductInfoRequestDto requestDto, MultipartFile productMainImage) {
-        // TODO: 권한 체크 (관리자, 판매자)
+    public ProductIdResponseDto createProductUsingkafka(String username, String role, ProductInfoRequestDto requestDto, MultipartFile productMainImage) {
+        if(!validatePermission(role)){
+            throw new IllegalArgumentException("권한이 없는 사용자입니다.");
+        }
 
-        // TODO: UserId 토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "상품 만든 사람";
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
         Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
         if(!category.isPresent()) {
@@ -110,28 +113,17 @@ public class ProductService {
         } catch (Exception e) {
             throw new RuntimeException("직렬화 실패");
         }
-
-//        ImageIdResponseDto productMainImageResponseDto = imageClient.createImage(imageInfoResquestDto).getData();
-//        if(productMainImageResponseDto == null) {
-//            throw new CreateProductMainImageIdException(ProductMessage.CREATED_PRODUCT_MAIN_IMAGE_ID_FAIL.getMessage());
-//        }
-
-//        product.setProductImgId(productMainImageResponseDto.getImageId());
-//
-//        if(dummyProductImgId.equals(product.getProductImgId())) {
-//            throw new ProductMainImageNotFoundException(ProductMessage.NOT_FOUND_PRODUCT_MAIN_IMAGE.getMessage());
-//        }
-
         return product;
     }
 
     @Transactional
-    public ProductIdResponseDto createProduct(ProductInfoRequestDto requestDto, MultipartFile productMainImage) {
-        // TODO: 권한 체크 (관리자, 판매자)
+    public ProductIdResponseDto createProduct(String username, String role, ProductInfoRequestDto requestDto, MultipartFile productMainImage) {
+        if(!validatePermission(role)){
+            throw new IllegalArgumentException("권한이 없는 사용자입니다.");
+        }
 
-        // TODO: UserId 토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "상품 만든 사람";
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
         Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getProductCategory());
         if(!category.isPresent()) {
@@ -154,6 +146,15 @@ public class ProductService {
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private Boolean validatePermission(String role) {
+        if(role.contains("ADMIN")){
+            return true;
+        } else if(role.contains("COMPANY")){
+            return true;
+        }
+        return false;
     }
 
     private Product mappingProductAndProductMainImg(Product product, MultipartFile productMainImage, String username) {
