@@ -26,7 +26,8 @@ public enum ErrorCode {
     INVALID_DATE(400, "날짜가 올바르지 않습니다"),
 
     // Review
-    REVIEW_ID_NOT_FOUND(404, "리뷰를 찾을 수 없습니다.");
+    REVIEW_ID_NOT_FOUND(404, "리뷰를 찾을 수 없습니다."),
+    REVIEW_CREATE_FORBIDDEN(403, "리뷰 작성 권한이 없습니다.");
 
     private final int status;
     private final String message;
