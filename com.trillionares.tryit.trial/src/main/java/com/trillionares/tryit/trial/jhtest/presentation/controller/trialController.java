@@ -78,10 +78,12 @@ public class trialController {
 
     @DeleteMapping("/{submissionId}")
     public BaseResponseDto<TrialIdResponseDto> deleteTrial(
+            @RequestHeader("X-Auth-Username") String username,
+            @RequestHeader("X-Auth-Role") String role,
             @PathVariable("submissionId") UUID submissionId
     ) {
         try {
-            TrialIdResponseDto responseDto = trialService.deleteTrial(submissionId);
+            TrialIdResponseDto responseDto = trialService.deleteTrial(username, role, submissionId);
 
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 취소했습니다.", responseDto);
 

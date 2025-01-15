@@ -143,18 +143,17 @@ public class TrialService {
 
     @Transactional
     public TrialIdResponseDto changeStatusOfTrial(String username, String role, UUID submissionId, SubmissionStatus status) {
-        if(!updateValidatePermission(role)){
-            throw new IllegalArgumentException("관리자나 판매자는 체험 신청할 수 없습니다.");
+        if(!updateAndDeleteValidatePermission(role)){
+            throw new IllegalArgumentException("판매자는 신청을 수정 할 수 없습니다.");
         }
-
-        // TODO: UserId 비동기 업데이트 고려해보기
-        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
         Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
 
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
         if(!isSubmissionOwner(userId, trial.getUserId()) && role.contains("MEMBER")) {
             throw new IllegalArgumentException("로그인한 사용자의 신청이 아닙니다.");
         }
@@ -171,7 +170,7 @@ public class TrialService {
         return false;
     }
 
-    private Boolean updateValidatePermission(String role) {
+    private Boolean updateAndDeleteValidatePermission(String role) {
         if(role.contains("MEMBER")){
             return true;
         } else if(role.contains("ADMIN")) {
@@ -198,16 +197,20 @@ public class TrialService {
     }
 
     @Transactional
-    public TrialIdResponseDto deleteTrial(UUID submissionId) {
-        // TODO: 권한 체크 (사용자) 본인인지 확인
-
-        // TODO: UserId 토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "나신청";
+    public TrialIdResponseDto deleteTrial(String username, String role, UUID submissionId) {
+        if(!updateAndDeleteValidatePermission(role)){
+            throw new IllegalArgumentException("판매자는 신청을 삭제 할 수 없습니다.");
+        }
 
         Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
+        }
+
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        if(!isSubmissionOwner(userId, trial.getUserId()) && role.contains("MEMBER")) {
+            throw new IllegalArgumentException("로그인한 사용자의 신청이 아닙니다.");
         }
 
         trial = toDeletedStatusOfTrial(trial, SubmissionStatus.CANCELED, username);
