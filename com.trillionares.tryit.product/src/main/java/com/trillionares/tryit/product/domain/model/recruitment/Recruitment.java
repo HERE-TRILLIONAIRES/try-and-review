@@ -75,5 +75,8 @@ public class Recruitment {
         this.recruitmentStatus = status;
     }
 
+    public void updateCurrentParticipants(long currentParticipants) {
+        this.currentParticipants = currentParticipants;
+    }
 }
 
