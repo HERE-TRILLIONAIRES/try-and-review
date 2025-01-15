@@ -23,14 +23,16 @@ public class JwtUtil {
   @Value("${service.jwt.secret-key}")
   private String secretKey;
 
+  // SecretKey 객체 생성
   private SecretKey getSigningKey() {
-    return Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
+    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
   }
 
+  // JWT 유효성 검증
   public boolean validateToken(String token) {
     try {
       Jwts.parserBuilder()
-          .setSigningKey(secretKey)
+          .setSigningKey(getSigningKey()) // SecretKey 객체 사용
           .build()
           .parseClaimsJws(token);
       return true;
@@ -48,7 +50,7 @@ public class JwtUtil {
     return false;
   }
 
-  // 게이트웨이로 요청이 들어오면 토큰을 추출
+  // Authorization 헤더에서 토큰 추출
   public String extractToken(ServerHttpRequest request) {
     String authHeader = request.getHeaders().getFirst("Authorization");
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -59,22 +61,37 @@ public class JwtUtil {
 
   // 토큰에서 사용자 이름 추출
   public String extractUsername(String token) {
-    return extractClaims(token).get("username", String.class);
+    String username = extractClaims(token).getSubject();
+    log.info("토큰에서 추출한 사용자 이름: {}", username);
+    return username;
   }
 
   // 토큰에서 역할 추출
   public String extractRole(String token) {
-    return extractClaims(token).get("role", String.class);
+    try {
+      String role = extractClaims(token).get("role", String.class);
+      log.info("토큰에서 추출한 역할: {}", role);
+      return role;
+    } catch (Exception e) {
+      log.error("역할 추출 실패: {}", e.getMessage());
+      return null;
+    }
   }
 
-  // 토큰에서 클레임 부분 추출
+  // 토큰에서 클레임 추출
   private Claims extractClaims(String token) {
-    return Jwts.parserBuilder()
-        .setSigningKey(getSigningKey())
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
+    try {
+      return Jwts.parserBuilder()
+          .setSigningKey(getSigningKey()) // SecretKey 객체 사용
+          .build()
+          .parseClaimsJws(token)
+          .getBody();
+    } catch (Exception e) {
+      log.error("클레임 추출 실패: {}", e.getMessage());
+      throw e; // 필요하다면 예외를 다시 던지거나 기본값 반환 처리
+    }
   }
+
 
 }
 

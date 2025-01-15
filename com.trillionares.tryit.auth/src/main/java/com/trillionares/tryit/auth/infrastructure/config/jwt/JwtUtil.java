@@ -34,6 +34,7 @@ public class JwtUtil {
 
         return Jwts.builder()
             .setSubject(username)
+            .claim("username", username) // username 클레임 추가
             .claim(AUTHORIZATION_ROLE, "ROLE_" + role)
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + accessExpiration))

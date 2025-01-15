@@ -20,9 +20,12 @@ public class JwtAuthFilter implements GatewayFilter {
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
+    log.info("JwtAuthFilter 실행됨");  // 기본 로그
+
     String path = exchange.getRequest().getURI().getPath();
 
-    // 인증 제외 경로를 직접 설정
+    // 인증 제외 경로 설정
     List<String> excludedPaths = List.of("/auth/signin", "/users/signup", "/users/internals/**");
 
     if (excludedPaths.stream().anyMatch(path::startsWith)) {
@@ -37,20 +40,28 @@ public class JwtAuthFilter implements GatewayFilter {
       return exchange.getResponse().setComplete();
     }
 
-    // JWT 유효성 검증 후 사용자 정보를 헤더에 추가
+    // JWT에서 사용자 정보 추출
     String userName = jwtUtil.extractUsername(token);
     String userRole = jwtUtil.extractRole(token);
+
+    // 헤더 추가 및 최종 로그 확인
     return chain.filter(addHeaders(exchange, userName, userRole));
   }
 
-  // 사용자 정보 헤더에 추가
   private ServerWebExchange addHeaders(ServerWebExchange exchange, String userName, String userRole) {
-    return exchange.mutate()
+    log.info("헤더 추가 시도 - Username: {}, Role: {}", userName, userRole);
+
+    ServerWebExchange mutatedExchange = exchange.mutate()
         .request(exchange.getRequest().mutate()
-            .header("X-Auth-Username", userName)
-            .header("X-Auth-Role", userRole)
+            .header("X-Auth-Username", userName != null ? userName : "없음")
+            .header("X-Auth-Role", userRole != null ? userRole : "없음")
             .build())
         .build();
+
+    // 최종 요청 헤더 로그
+    log.info("최종 요청 헤더: {}", mutatedExchange.getRequest().getHeaders());
+    return mutatedExchange;
   }
+
 
 }
