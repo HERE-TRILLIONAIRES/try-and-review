@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name="product-service", configuration = FeignConfig.class)
 public interface RecruitmentClient {
 
-    @GetMapping("/isExist/{recruitmentId}")
+    @GetMapping("/recruitments/isExist/{recruitmentId}")
     BaseResponseDto<RecruitmentExistAndStatusDto> isExistRecruitmentById(@PathVariable("recruitmentId") UUID recruitmentId);
 }

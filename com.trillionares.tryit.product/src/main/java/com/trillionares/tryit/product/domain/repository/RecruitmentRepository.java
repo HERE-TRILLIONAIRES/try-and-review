@@ -6,5 +6,5 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, UUID>, CustomRecruitmentRepository{
-    Optional<Recruitment> existsByIdAndIsDeletedFalse(UUID recruitmentId);
+    Optional<Recruitment> findByRecruitmentId(UUID recruitmentId);
 }

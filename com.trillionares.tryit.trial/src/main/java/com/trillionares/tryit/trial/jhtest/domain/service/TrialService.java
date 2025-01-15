@@ -46,7 +46,7 @@ public class TrialService {
         UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
         if(existPastSubmissionHistory(userId, requestDto.getRecruitmentId())) {
-            throw new RuntimeException("이전 신청내역이 있는 모집 입니다.");
+            throw new IllegalArgumentException("이전 신청내역이 있는 모집 입니다.");
         }
 
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
@@ -78,13 +78,13 @@ public class TrialService {
 
         if(!responseDto.getIsExist()) {
             throw new IllegalArgumentException("존재하지 않는 모집 입니다.");
-        } else if(!responseDto.getStatus().contains("WAITING")) {
+        } else if(responseDto.getStatus().contains("WAITING")) {
             throw new IllegalArgumentException("모집이 시작되지 않았습니다.");
-        } else if(!responseDto.getStatus().contains("PAUSED")) {
+        } else if(responseDto.getStatus().contains("PAUSED")) {
             throw new IllegalArgumentException("모집이 중단 되었습니다.");
-        } else if(!responseDto.getStatus().contains("ENDED")) {
+        } else if(responseDto.getStatus().contains("ENDED")) {
             throw new IllegalArgumentException("모집이 종료 되었습니다.");
-        } else if(!responseDto.getStatus().contains("NOT_FOUND")) {
+        } else if(responseDto.getStatus().contains("NOT_FOUND")) {
             throw new IllegalArgumentException("모집을 찾을 수 없습니다.");
         }
     }

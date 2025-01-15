@@ -138,7 +138,7 @@ public class RecruitmentService {
     }
 
     public RecruitmentExistAndStatusDto isExistRecruitmentById(UUID recruitmentId) {
-        Optional<Recruitment> recruitment = recruitmentRepository.existsByIdAndIsDeletedFalse(recruitmentId);
+        Optional<Recruitment> recruitment = recruitmentRepository.findByRecruitmentId(recruitmentId);
 
         if(!recruitment.isPresent() || recruitment.isEmpty() || recruitment == null) {
             return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");
