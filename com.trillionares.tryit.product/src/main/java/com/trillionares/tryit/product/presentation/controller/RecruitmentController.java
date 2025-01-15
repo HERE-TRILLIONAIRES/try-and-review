@@ -1,6 +1,8 @@
 package com.trillionares.tryit.product.presentation.controller;
 
 import com.trillionares.tryit.product.application.service.RecruitmentService;
+import com.trillionares.tryit.product.presentation.dto.RecruitmentExistAndStatusDto;
+import com.trillionares.tryit.product.presentation.dto.common.base.BaseResponseDto;
 import com.trillionares.tryit.product.presentation.dto.request.CreateRecruitmentRequest;
 import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentRequest;
 import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentStatusRequest;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,5 +80,10 @@ public class RecruitmentController {
                 recruitmentService.updateRecruitmentStatus(recruitmentId, request));
     }
 
+    @GetMapping("/isExist/{recruitmentId}")
+    public BaseResponseDto<RecruitmentExistAndStatusDto> isExistRecruitmentById(@PathVariable("recruitmentId") UUID recruitmentId) {
+        RecruitmentExistAndStatusDto responseDto = recruitmentService.isExistRecruitmentById(recruitmentId);
 
+        return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "OK", responseDto);
+    }
 }

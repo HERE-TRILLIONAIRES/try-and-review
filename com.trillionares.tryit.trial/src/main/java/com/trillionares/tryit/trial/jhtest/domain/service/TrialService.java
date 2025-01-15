@@ -1,10 +1,12 @@
 package com.trillionares.tryit.trial.jhtest.domain.service;
 
 import com.trillionares.tryit.trial.jhtest.domain.client.AuthClient;
+import com.trillionares.tryit.trial.jhtest.domain.client.RecruitmentClient;
 import com.trillionares.tryit.trial.jhtest.domain.common.json.JsonUtils;
 import com.trillionares.tryit.trial.jhtest.domain.model.Trial;
 import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
 import com.trillionares.tryit.trial.jhtest.domain.repository.TrialRepository;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.RecruitmentExistAndStatusDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SendNotificationDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SendRecruitmentDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SubmissionIdAndStatusResponseDto;
@@ -28,6 +30,8 @@ public class TrialService {
     private final TrialRepository trialRepository;
 
     private final AuthClient authClient;
+    private final RecruitmentClient recruitmentClient;
+
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Transactional
@@ -36,11 +40,8 @@ public class TrialService {
             throw new IllegalArgumentException("관리자나 판매자는 체험 신청할 수 없습니다.");
         }
 
-        // TODO: UserId토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "신청자";
-        
-        // TODO: 이전 신청내역없는지 검증
+        checkExistRecruitment(requestDto.getRecruitmentId());
+
         // TODO: UserId 비동기 업데이트 고려해보기
         UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
@@ -126,13 +127,6 @@ public class TrialService {
         } catch (Exception e) {
             throw new RuntimeException("Notification으로 메시지 생성 실패");
         }
-    }
-
-    private Boolean checkExistRecruitment(UUID recruitmentId) {
-        kafkaTemplate.send("recruitmentExistenceCheck",
-                "recruitmentId", String.valueOf(recruitmentId));
-
-        return true;
     }
 
     public TrialInfoResponseDto getTrialById(UUID submissionId) {
