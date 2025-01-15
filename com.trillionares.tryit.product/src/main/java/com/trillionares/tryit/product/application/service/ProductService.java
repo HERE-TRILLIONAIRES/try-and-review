@@ -208,8 +208,7 @@ public class ProductService {
 
         List<ProductInfoResponseDto> responseDto = new ArrayList<>();
         for (Product product : productList) {
-            // TODO: User Service 호출해서 userId -> Seller 정보 받아오기
-            String seller = "나판매";
+            String seller = authClient.getUserInfo(product.getUserId()).getData().getUsername();
 
             if(product.getProductCategory().getCategory().getCategoryName() == null) {
                 throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
@@ -251,8 +250,7 @@ public class ProductService {
             throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
         }
 
-        // TODO: User Service 호출해서 Seller 정보 받아오기
-        String seller = "나판매";
+        String seller = authClient.getUserInfo(product.getUserId()).getData().getUsername();
 
         // TODO: 카테고리 정보 여러개면 문자열 붙이기
         if(product.getProductCategory().getCategory().getCategoryName() == null) {

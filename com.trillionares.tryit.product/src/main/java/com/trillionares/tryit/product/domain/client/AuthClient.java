@@ -2,7 +2,9 @@ package com.trillionares.tryit.product.domain.client;
 
 import com.trillionares.tryit.product.infrastructure.config.FeignConfig;
 import com.trillionares.tryit.product.presentation.dto.InfoByUsernameResponseDto;
+import com.trillionares.tryit.product.presentation.dto.UserResponseDto;
 import com.trillionares.tryit.product.presentation.dto.common.base.BaseResponseDto;
+import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,4 +14,7 @@ public interface AuthClient {
 
     @GetMapping("/users/internals/username/{username}")
     BaseResponseDto<InfoByUsernameResponseDto> getUserByUsername(@PathVariable("username") String username);
+
+    @GetMapping("/internals/{userId}")
+    BaseResponseDto<UserResponseDto> getUserInfo(UUID userId);
 }
