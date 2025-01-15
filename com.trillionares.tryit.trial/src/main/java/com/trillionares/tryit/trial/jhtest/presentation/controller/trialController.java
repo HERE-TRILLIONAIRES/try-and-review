@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,10 +31,12 @@ public class trialController {
 
     @PostMapping()
     public BaseResponseDto<TrialIdResponseDto> createTrial(
+            @RequestHeader("X-Auth-Username") String username,
+            @RequestHeader("X-Auth-Role") String role,
             @RequestBody TrialInfoRequestDto requestDto
     ) {
         try{
-            TrialIdResponseDto responseDto = trialService.createTrial(requestDto);
+            TrialIdResponseDto responseDto = trialService.createTrial(username, role, requestDto);
 
             return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, "신청을 완료했습니다.", responseDto);
         } catch (RuntimeException re) {

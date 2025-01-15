@@ -28,8 +28,10 @@ public class TrialService {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Transactional
-    public TrialIdResponseDto createTrial(TrialInfoRequestDto requestDto) {
-        // TODO: 권한 체크 (사용자)
+    public TrialIdResponseDto createTrial(String username, String role, TrialInfoRequestDto requestDto) {
+        if(!validatePermission(role)){
+            throw new IllegalArgumentException("관리자나 판매자는 체험 신청할 수 없습니다.");
+        }
 
         // TODO: UserId토큰에서 받아오기
         UUID userId = UUID.randomUUID();
@@ -63,6 +65,38 @@ public class TrialService {
         sendMessageToNotification(trial.getSubmissionId());
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    private void checkExistRecruitment(UUID recruitmentId) {
+        // TODO: 객체가 null인지 판단 중인데, 존재여부만 확인하는 endpoint 추가 요청
+
+        RecruitmentExistAndStatusDto responseDto = recruitmentClient.isExistRecruitmentById(recruitmentId).getData();
+
+        if(!responseDto.getIsExist()) {
+            throw new IllegalArgumentException("존재하지 않는 모집 입니다.");
+        } else if(!responseDto.getStatus().contains("WAITING")) {
+            throw new IllegalArgumentException("모집이 시작되지 않았습니다.");
+        } else if(!responseDto.getStatus().contains("PAUSED")) {
+            throw new IllegalArgumentException("모집이 중단 되었습니다.");
+        } else if(!responseDto.getStatus().contains("ENDED")) {
+            throw new IllegalArgumentException("모집이 종료 되었습니다.");
+        } else if(!responseDto.getStatus().contains("NOT_FOUND")) {
+            throw new IllegalArgumentException("모집을 찾을 수 없습니다.");
+        }
+    }
+
+    private Boolean existPastSubmissionHistory(UUID userId, UUID recruitmentId) {
+        if(trialRepository.existsByUserIdAndRecruitmentIdAndIsDeletedFalse(userId, recruitmentId)) {
+            return true;
+        }
+        return false;
+    }
+
+    private Boolean validatePermission(String role) {
+        if(role.contains("MEMBER")){
+            return true;
+        }
+        return false;
     }
 
     public void sendMessageToNotification(UUID submissionId) {
