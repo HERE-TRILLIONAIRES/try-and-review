@@ -46,11 +46,13 @@ public class trialController {
 
     @GetMapping("/{submissionId}")
     public BaseResponseDto<TrialInfoResponseDto> getTrialById(
+            @RequestHeader("X-Auth-Username") String username,
+            @RequestHeader("X-Auth-Role") String role,
             @PathVariable("submissionId") UUID submissionId
     ) {
         try {
 
-            TrialInfoResponseDto responseDto = trialService.getTrialById(submissionId);
+            TrialInfoResponseDto responseDto = trialService.getTrialById(username, role, submissionId);
 
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 조회했습니다.", responseDto);
 

@@ -129,13 +129,21 @@ public class TrialService {
         }
     }
 
-    public TrialInfoResponseDto getTrialById(UUID submissionId) {
+    public TrialInfoResponseDto getTrialById(String username, String role, UUID submissionId) {
+        if(!adminAndMemberValidatePermission(role)){
+            throw new IllegalArgumentException("판매자의 조회 API가 아닙니다.");
+        }
+
         Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
 
-        // TODO: User Service 호출해서 신청자 정보 받아오기, 내가 신청한건지 확인
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        if(!isSubmissionOwner(userId, trial.getUserId()) && role.contains("MEMBER")) {
+            throw new IllegalArgumentException("로그인한 사용자의 신청이 아닙니다.");
+        }
         String trialedUser = "신청자";
 
         return TrialInfoResponseDto.from(trial);
@@ -143,7 +151,7 @@ public class TrialService {
 
     @Transactional
     public TrialIdResponseDto changeStatusOfTrial(String username, String role, UUID submissionId, SubmissionStatus status) {
-        if(!updateAndDeleteValidatePermission(role)){
+        if(!adminAndMemberValidatePermission(role)){
             throw new IllegalArgumentException("판매자는 신청을 수정 할 수 없습니다.");
         }
 
@@ -170,7 +178,7 @@ public class TrialService {
         return false;
     }
 
-    private Boolean updateAndDeleteValidatePermission(String role) {
+    private Boolean adminAndMemberValidatePermission(String role) {
         if(role.contains("MEMBER")){
             return true;
         } else if(role.contains("ADMIN")) {
@@ -198,7 +206,7 @@ public class TrialService {
 
     @Transactional
     public TrialIdResponseDto deleteTrial(String username, String role, UUID submissionId) {
-        if(!updateAndDeleteValidatePermission(role)){
+        if(!adminAndMemberValidatePermission(role)){
             throw new IllegalArgumentException("판매자는 신청을 삭제 할 수 없습니다.");
         }
 
