@@ -1,6 +1,5 @@
-package com.trillionares.tryit.notification.application.service;
+package com.trillionares.tryit.notification.application.dto.slack;
 
-import com.trillionares.tryit.notification.application.dto.slack.SlackMessage;
 import com.trillionares.tryit.notification.domain.model.Notification;
 import com.trillionares.tryit.notification.infrastructure.persistence.NotificationRepository;
 import com.trillionares.tryit.notification.libs.exception.ErrorCode;
