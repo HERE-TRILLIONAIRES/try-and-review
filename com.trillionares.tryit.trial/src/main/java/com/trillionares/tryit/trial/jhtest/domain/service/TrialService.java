@@ -1,5 +1,6 @@
 package com.trillionares.tryit.trial.jhtest.domain.service;
 
+import com.trillionares.tryit.trial.jhtest.domain.client.AuthClient;
 import com.trillionares.tryit.trial.jhtest.domain.common.json.JsonUtils;
 import com.trillionares.tryit.trial.jhtest.domain.model.Trial;
 import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
@@ -25,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class TrialService {
 
     private final TrialRepository trialRepository;
+
+    private final AuthClient authClient;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Transactional
@@ -38,6 +41,8 @@ public class TrialService {
         String username = "신청자";
         
         // TODO: 이전 신청내역없는지 검증
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
         // TODO: recruitmentID 존재하는지 검증
 //        if(!checkExistRecruitment(requestDto.getRecruitmentId())) {
