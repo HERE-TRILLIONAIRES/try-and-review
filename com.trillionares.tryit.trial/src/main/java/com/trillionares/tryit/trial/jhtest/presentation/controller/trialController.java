@@ -2,6 +2,7 @@ package com.trillionares.tryit.trial.jhtest.presentation.controller;
 
 import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
 import com.trillionares.tryit.trial.jhtest.domain.service.TrialService;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.SubmissionIdAndStatusResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialIdResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.TrialInfoRequestDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.common.base.BaseResponseDto;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -77,6 +79,29 @@ public class trialController {
             TrialIdResponseDto responseDto = trialService.deleteTrial(submissionId);
 
             return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 취소했습니다.", responseDto);
+
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
+        }
+    }
+
+    @GetMapping("/{submissionId}/isSelected")
+    public BaseResponseDto<SubmissionIdAndStatusResponseDto> validateIsSelected(
+            @PathVariable("submissionId") UUID submissionId
+    ) {
+        SubmissionIdAndStatusResponseDto responseDto = trialService.validateIsSelected(submissionId);
+
+        return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 선택한 경우.", responseDto);
+    }
+
+    @PutMapping("/{submissionId}/submitReview")
+    public BaseResponseDto<TrialIdResponseDto> updateSubmissionStatusToReviewSubmit(
+            @PathVariable("submissionId") UUID submissionId
+    ) {
+        try {
+            TrialIdResponseDto responseDto = trialService.updateSubmissionStatusToReviewSubmit(submissionId);
+
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 전송했습니다.", responseDto);
 
         } catch (RuntimeException re) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
