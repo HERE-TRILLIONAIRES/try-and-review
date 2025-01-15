@@ -10,5 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateStatusDto {
     private UUID submissionId;
+    private UUID recruitmentId;
+    private UUID userId;
     private String status;
 }
