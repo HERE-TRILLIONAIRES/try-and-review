@@ -76,3 +76,5 @@ logging:
   level:
     org.springframework.web.reactive.function.client.WebClient: DEBUG
     org.springframework.cloud.gateway: DEBUG
+    com.trillionares.tryit.gateway.filter.JwtAuthFilter: DEBUG
+    com.trillionares.tryit.gateway.jwt.JwtUtil: DEBUG
