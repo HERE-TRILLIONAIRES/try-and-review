@@ -1,6 +1,5 @@
 package com.trillionares.tryit.notification.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trillionares.tryit.notification.application.dto.NotificationResponse;
 import com.trillionares.tryit.notification.application.dto.slack.SlackNotificationSender;
 import com.trillionares.tryit.notification.domain.model.Notification;
