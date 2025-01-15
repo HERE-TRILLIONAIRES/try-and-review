@@ -17,6 +17,8 @@ public class FeignClientConfig {
       String username = requestHeaderProvider.getUsername();
       String role = requestHeaderProvider.getRole();
 
+      requestTemplate.header("X-Auth-Username", username);
+      requestTemplate.header("X-Auth-Role", role);
     };
   }
 }

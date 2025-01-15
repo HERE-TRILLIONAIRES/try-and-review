@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient(name = "auth-service" , url = "${openapi.service.url}")
 public interface AuthServiceClient {
 
-  @GetMapping("/users/{userId}")
-  BaseResponse<UserResponseDto> getUser(@PathVariable UUID userId);
+  @GetMapping("users/internals/{userId}")
+  public BaseResponse<UserResponseDto> getUserInfo(@PathVariable UUID userId);
 }
