@@ -84,6 +84,7 @@ public class TrialService {
             KafkaMessage sendMessage = KafkaMessage.from(sendPayloadJson);
             String sendMessageJson = JsonUtils.toJson(sendMessage);
 
+            log.info("sendMessageJson : {}", sendMessageJson);
             kafkaTemplate.send("tryit-completed", "NotificationInfo-req", sendMessageJson);
         } catch (Exception e) {
             throw new RuntimeException("Notification으로 메시지 생성 실패");

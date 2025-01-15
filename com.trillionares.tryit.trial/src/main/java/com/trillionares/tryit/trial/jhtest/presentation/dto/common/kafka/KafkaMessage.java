@@ -13,15 +13,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KafkaMessage {
 
-    private UUID id;           // 고유 ID (UUID)
+    private UUID messageId;           // 고유 ID (UUID)
     private String payload;      // 실제 메시지 데이터
-    private String timestamp;  // 발행 시간
+    private String eventTimestamp;  // 발행 시간
 
     public static KafkaMessage from(String sendPayloadJson) {
         return KafkaMessage.builder()
-                .id(UUID.randomUUID())
+                .messageId(UUID.randomUUID())
                 .payload(sendPayloadJson)
-                .timestamp(String.valueOf(LocalDateTime.now()))
+                .eventTimestamp(String.valueOf(LocalDateTime.now()))
                 .build();
     }
 }
