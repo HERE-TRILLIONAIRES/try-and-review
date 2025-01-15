@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record KafkaMessage(
-        UUID id,
+        UUID messageId,
         String payload,
-        String timestamp
+        String eventTimestamp
 
 ) {
     public static KafkaMessage of(String sendPayloadJson) {
