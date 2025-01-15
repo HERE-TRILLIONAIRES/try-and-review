@@ -10,6 +10,7 @@ import java.util.UUID;
 public record ReviewCreateRequestDto(
         UUID userId,
         UUID productId,
+        UUID submissionId,
         String reviewTitle,
         String reviewContent,
         int reviewScore) {
@@ -18,6 +19,7 @@ public record ReviewCreateRequestDto(
         return ReviewCreateRequestDto.builder()
                 .userId(reviewCreateRequest.getUserId())
                 .productId(reviewCreateRequest.getProductId())
+                .submissionId(reviewCreateRequest.getSubmissionId())
                 .reviewTitle(reviewCreateRequest.getReviewTitle())
                 .reviewContent(reviewCreateRequest.getReviewContent())
                 .reviewScore(reviewCreateRequest.getReviewScore())
