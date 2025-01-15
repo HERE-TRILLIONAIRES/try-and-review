@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -91,5 +92,19 @@ public class trialController {
         SubmissionIdAndStatusResponseDto responseDto = trialService.validateIsSelected(submissionId);
 
         return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 선택한 경우.", responseDto);
+    }
+
+    @PutMapping("/{submissionId}/submitReview")
+    public BaseResponseDto<TrialIdResponseDto> updateSubmissionStatusToReviewSubmit(
+            @PathVariable("submissionId") UUID submissionId
+    ) {
+        try {
+            TrialIdResponseDto responseDto = trialService.updateSubmissionStatusToReviewSubmit(submissionId);
+
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "신청을 전송했습니다.", responseDto);
+
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
+        }
     }
 }
