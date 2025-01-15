@@ -33,7 +33,7 @@ public class ReviewService {
             throw new GlobalException(REVIEW_CREATE_FORBIDDEN);
 
         Review review = reviewRepository.save(Review.of(reviewCreateRequestDto.userId(),reviewCreateRequestDto.productId(),reviewCreateRequestDto.reviewTitle(),reviewCreateRequestDto.reviewContent(),reviewCreateRequestDto.reviewScore(),"image_url"));
-
+        trialClient.notifySubmissionToTrial(reviewCreateRequestDto.submissionId());
         return ReviewCreateResponseDto.of(review.getReviewId(),review.getCreatedAt());
     }
 
