@@ -123,20 +123,26 @@ public class TrialService {
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
 
+        trial = statusConvert(trial, trial.getSubmissionStatus(), status, username);
+
+        return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    private Trial statusConvert(Trial trial, SubmissionStatus previousStatus, SubmissionStatus nextStatus, String username){
         // TODO: 변경 전 변경 가능 상태 비교
         // 신청 -> 당첨, 신청취소, 낙첨
         // 당첨 -> 리뷰 제출
-        if((trial.getSubmissionStatus() == SubmissionStatus.APPLIED && (
-                status == SubmissionStatus.SELECTED
-                        || status == SubmissionStatus.CANCELED
-                        || status == SubmissionStatus.FAILED))
-        || (trial.getSubmissionStatus() == SubmissionStatus.SELECTED && status == SubmissionStatus.REVIEW_SUBMITTED)) {
-            trial.setSubmissionStatus(status);
+        if((previousStatus == SubmissionStatus.APPLIED && (
+                nextStatus == SubmissionStatus.SELECTED
+                        || nextStatus == SubmissionStatus.CANCELED
+                        || nextStatus == SubmissionStatus.FAILED))
+        || (previousStatus == SubmissionStatus.SELECTED && nextStatus == SubmissionStatus.REVIEW_SUBMITTED)) {
+            trial.setSubmissionStatus(nextStatus);
             trial.setUpdatedBy(username);
             trialRepository.save(trial);
         }
 
-        return TrialIdResponseDto.from(trial.getSubmissionId());
+        return trial;
     }
 
     @Transactional
@@ -188,5 +194,17 @@ public class TrialService {
 
             return responseDto;
         }
+    }
+
+    @Transactional
+    public TrialIdResponseDto updateSubmissionStatusToReviewSubmit(UUID submissionId) {
+        Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
+        if(trial == null){
+            throw new RuntimeException("신청을 찾을 수 없습니다.");
+        }
+
+        trial = statusConvert(trial, trial.getSubmissionStatus(), SubmissionStatus.REVIEW_SUBMITTED, "시스템");
+
+        return TrialIdResponseDto.from(trial.getSubmissionId());
     }
 }
