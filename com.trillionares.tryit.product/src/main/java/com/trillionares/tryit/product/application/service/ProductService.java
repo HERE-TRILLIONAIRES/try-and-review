@@ -385,16 +385,21 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductIdResponseDto deleteProduct(UUID productId) {
-        // TODO: 권한 체크 (관리자, 판매자)
+    public ProductIdResponseDto deleteProduct(String username, String role, UUID productId) {
+        if(!validatePermission(role)){
+            throw new IllegalArgumentException("권한이 없는 사용자입니다.");
+        }
 
-        // TODO: UserId 토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "너판매";
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
 
         Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
         if(product == null) {
             throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
+        }
+
+        if(!isProductOwner(userId, product.getUserId()) && role.contains("COMPANY")) {
+            throw new IllegalArgumentException("판매자가 등록한 상품이 아닙니다.");
         }
 
         product = disconnectProductAndProductMainImg(product, username);

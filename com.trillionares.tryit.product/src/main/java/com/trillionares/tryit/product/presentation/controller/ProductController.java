@@ -153,9 +153,13 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    public BaseResponseDto<ProductIdResponseDto> deleteProduct(@PathVariable("productId") UUID productId) {
+    public BaseResponseDto<ProductIdResponseDto> deleteProduct(
+            @RequestHeader("X-Auth-Username") String username,
+            @RequestHeader("X-Auth-Role") String role,
+            @PathVariable("productId") UUID productId
+    ) {
         try {
-            ProductIdResponseDto responseDto = productService.deleteProduct(productId);
+            ProductIdResponseDto responseDto = productService.deleteProduct(username, role, productId);
 
             return BaseResponseDto.from(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT, ProductMessage.DELETED_PRODUCT_SUCCESS.getMessage(), responseDto);
         } catch (ProductNotFoundException pnfe) {
