@@ -21,11 +21,9 @@ spring:
     consumer:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # 여기만 변경
       properties:
         spring.json.trusted.packages: '*'
-        spring.json.type.mapping: submission:com.trillionares.tryit.notification.infrastructure.messaging.event.SubmissionKafkaEvent
-        spring.json.value.default.type: com.trillionares.tryit.notification.infrastructure.messaging.event.SubmissionKafkaEvent
       group-id: notification-service-group
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
