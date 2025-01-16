@@ -12,4 +12,8 @@ public class ReviewValidation {
     private boolean isMember(String role) {
         return "ROLE_MEMBER".equals(role);
     }
+
+    public boolean isNotCreateValidation(String role, Boolean isSelected) {
+        return !((isAdmin(role) || isMember(role)) && isSelected);
+    }
 }

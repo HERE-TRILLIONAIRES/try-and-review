@@ -24,9 +24,11 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("/reviews")
-    public BaseResponse<ReviewCreateResponseDto> createReview(@RequestBody @Valid ReviewCreateRequest reviewCreateRequest) {
+    public BaseResponse<ReviewCreateResponseDto> createReview(
+            @RequestHeader("X-Auth-Role") String role,
+            @RequestBody @Valid ReviewCreateRequest reviewCreateRequest) {
         return BaseResponse.of(HttpStatus.CREATED.value(),HttpStatus.CREATED,"리뷰 생성 성공",
-                reviewService.createReview(ReviewCreateRequestDto.from(reviewCreateRequest)));
+                reviewService.createReview(ReviewCreateRequestDto.from(reviewCreateRequest),role));
     }
 
     @GetMapping("/reviews/{reviewId}")
