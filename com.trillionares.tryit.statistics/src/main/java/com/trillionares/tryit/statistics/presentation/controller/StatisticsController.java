@@ -32,7 +32,10 @@ public class StatisticsController {
     }
 
     @GetMapping("/statistics/{userId}")
-    public BaseResponse<List<StatisticsGetResponseDto>> getStatistics(@PathVariable("userId") UUID userId) {
-        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"통계 목록 조회",statisticsService.getStatistics(userId));
+    public BaseResponse<List<StatisticsGetResponseDto>> getStatistics(
+            @RequestHeader("X-Auth-Role") String role,
+            @RequestHeader("X-Auth-Username") String username,
+            @PathVariable("userId") UUID userId) {
+        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"통계 목록 조회",statisticsService.getStatistics(userId,role,username));
     }
 }
