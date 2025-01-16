@@ -27,7 +27,8 @@ public enum ErrorCode {
 
     // Review
     REVIEW_ID_NOT_FOUND(404, "리뷰를 찾을 수 없습니다."),
-    REVIEW_CREATE_FORBIDDEN(403, "리뷰 작성 권한이 없습니다.");
+    REVIEW_CREATE_FORBIDDEN(403, "리뷰 작성 권한이 없습니다."),
+    REVIEW_UPDATE_FORBIDDEN(403,"리뷰 수정 권한이 없습니다.");
 
     private final int status;
     private final String message;
