@@ -3,6 +3,14 @@ spring:
     name: notification-service
   config:
     import: configserver:http://localhost:18080   # Config Server 주소
+  jpa:
+    hibernate:
+      ddl-auto: create  # 개발 환경에서만 create 사용
+    properties:
+      hibernate:
+        default_schema: notification
+        format_sql: true
+    show-sql: true
 
 server:
   port: 19050
@@ -19,19 +27,6 @@ feign:
       auth-service:
         configuration: com.trillionares.tryit.notification.libs.client.config.InternalFeignClientConfig
 
-
-logging:
-  level:
-    root: INFO
-    com.trillionares.tryit: DEBUG
-    org.springframework.web: DEBUG
-    feign: DEBUG
-    feign.Logger: DEBUG
-
 openapi:
   service:
     url: http://localhost:19091 # API Gateway 포트
-
-slack:
-  webhook:
-    url: https://hooks.slack.com/ # 임시 가짜 URL
