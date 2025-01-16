@@ -26,8 +26,9 @@ public class StatisticsController {
     }
 
     @GetMapping("/statistics")
-    public BaseResponse<List<StatisticsGetResponseDto>> getAllStatistics() {
-        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"통계 전체 조회",statisticsService.getAllStatistics());
+    public BaseResponse<List<StatisticsGetResponseDto>> getAllStatistics(
+            @RequestHeader("X-Auth-Role") String role) {
+        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"통계 전체 조회",statisticsService.getAllStatistics(role));
     }
 
     @GetMapping("/statistics/{userId}")

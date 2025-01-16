@@ -12,4 +12,8 @@ public class StatisticsValidation {
     private boolean isCompany(String role) {
         return "ROLE_COMPANY".equals(role);
     }
+
+    public boolean isNotGetAllValidation(String role) {
+        return !isAdmin(role);
+    }
 }
