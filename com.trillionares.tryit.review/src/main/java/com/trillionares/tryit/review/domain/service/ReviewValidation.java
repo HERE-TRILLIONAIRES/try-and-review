@@ -15,8 +15,8 @@ public class ReviewValidation {
         return "ROLE_MEMBER".equals(role);
     }
 
-    private boolean isSameAuthorAndModifier(UUID author, UUID modifier) {
-        return author.equals(modifier);
+    private boolean isSameAuthorAndActor(UUID author, UUID actor) {
+        return author.equals(actor);
     }
 
     public boolean isNotCreateValidation(String role, Boolean isSelected) {
@@ -24,10 +24,10 @@ public class ReviewValidation {
     }
 
     public boolean isNotUpdateValidation(String role, UUID author, UUID modifier) {
-        return !(isAdmin(role) || isSameAuthorAndModifier(author,modifier));
+        return !(isAdmin(role) || isSameAuthorAndActor(author,modifier));
     }
 
     public boolean isNotDeleteValidation(String role, UUID author, UUID deleter) {
-        return !(isAdmin(role) || isSameAuthorAndModifier(author,deleter));
+        return !(isAdmin(role) || isSameAuthorAndActor(author,deleter));
     }
 }
