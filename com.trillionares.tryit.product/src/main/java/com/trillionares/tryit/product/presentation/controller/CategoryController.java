@@ -7,6 +7,7 @@ import com.trillionares.tryit.product.presentation.dto.request.CategoryInfoReque
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,9 +19,13 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping()
-    public BaseResponseDto<CategoryIdResponseDto> createCategory(@RequestBody CategoryInfoRequestDto requestDto) {
+    public BaseResponseDto<CategoryIdResponseDto> createCategory(
+            @RequestHeader("X-Auth-Username") String username,
+            @RequestHeader("X-Auth-Role") String role,
+            @RequestBody CategoryInfoRequestDto requestDto
+    ) {
         try {
-            CategoryIdResponseDto responseDto = categoryService.createCategory(requestDto);
+            CategoryIdResponseDto responseDto = categoryService.createCategory(username, role, requestDto);
 
             return BaseResponseDto.from(200, null, "카테고리 등록 성공", responseDto);
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.trillionares.tryit.trial.jhtest.presentation.dto;
+package com.trillionares.tryit.product.presentation.dto;
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateStatusDto {
-    private UUID submissionId;
-    private UUID recruitmentId;
+public class InfoByUsernameResponseDto {
     private UUID userId;
-    private String status;
+    private String username;
+    private String role;
+    private String slackId;
 }

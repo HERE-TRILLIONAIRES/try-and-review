@@ -5,8 +5,6 @@ public record SubmissionToRecruitmentRequestDto (
          String recruitmentId,
          String userId,
          int quantity,
-         String submissionTime,
-         String messageId,
-         String eventTimestamp
+         String submissionTime
 ) {
 }

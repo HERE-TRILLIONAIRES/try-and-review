@@ -12,7 +12,10 @@ import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +23,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
@@ -79,6 +84,25 @@ public class UserController {
   public BaseResponse<UserResponseDto> getUserInfo(@PathVariable UUID userId) {
     UserResponseDto resDto = userService.getUserInfo(userId);
     return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
+  }
+
+  // 헤더 잘 추출 되고 잘 넣어지는지 테스트 용도
+  @GetMapping("/test")
+  public ResponseEntity<String> testHeaders(
+      @RequestHeader(value = "X-Auth-Username", required = false) String username,
+      @RequestHeader(value = "X-Auth-Role", required = false) String role) {
+
+    // 헤더 값 로깅
+    log.info("요청 헤더 - Username: {}, Role: {}", username, role);
+
+    // 응답에 헤더 추가
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.add("X-Auth-Username", username);
+    responseHeaders.add("X-Auth-Role", role);
+
+    return ResponseEntity.ok()
+        .headers(responseHeaders)
+        .body("헤더 성공적으로 받아옴.");
   }
 
 }

@@ -14,6 +14,9 @@ public class ReviewCreateRequest {
     @NotNull
     private UUID productId;
 
+    @NotNull
+    private UUID submissionId;
+
     @NotBlank
     private String reviewTitle;
 

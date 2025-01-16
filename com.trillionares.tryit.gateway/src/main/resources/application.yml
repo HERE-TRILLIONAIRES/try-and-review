@@ -8,7 +8,7 @@ spring:
     name: gateway-service  # 애플리케이션 이름을 'gateway-service'로 설정
   cloud:
     gateway:
-      routes:  # Spring Cloud Gateway의 라우팅 설정
+      routes: # Spring Cloud Gateway의 라우팅 설정
         - id: auth-service           # 라우트 식별자
           uri: lb://auth-service    # 'auth-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
@@ -17,21 +17,17 @@ spring:
         - id: product-service
           uri: lb://product-service
           predicates:
-            - Path=/api/products/**
-            - Path=/api/categories/**
-            - Path=/recruitments/**
+            - Path=/api/products/**,/api/categories/**,/recruitments/**
 
         - id: review-service
           uri: lb://review-service
           predicates:
-            - Path=/api/reviews/**
             - Path=/reviews/**
 
         - id: image-manage-service
           uri: lb://image-manage-service
           predicates:
-            - Path=/api/images/**
-            - Path=/api/s3/**
+            - Path=/api/images/**,/api/s3/**
 
         - id: statistics-service
           uri: lb://statistics-service
@@ -42,6 +38,11 @@ spring:
           uri: lb://notification-service
           predicates:
             - Path=/notifications/**
+
+        - id: recruitment-service
+          uri: lb://recruitment-service
+          predicates:
+            - Path=/api/submissions/**
 
       discovery:
         locator:
@@ -75,3 +76,5 @@ logging:
   level:
     org.springframework.web.reactive.function.client.WebClient: DEBUG
     org.springframework.cloud.gateway: DEBUG
+    com.trillionares.tryit.gateway.filter.JwtAuthFilter: DEBUG
+    com.trillionares.tryit.gateway.jwt.JwtUtil: DEBUG
