@@ -2,12 +2,13 @@ package com.trillionares.tryit.notification.libs.client.config;
 
 import feign.RequestInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+
 @RequiredArgsConstructor
-public class FeignClientConfig {
+@ConditionalOnWebApplication
+public class WebFeignClientConfig {
 
   private final RequestHeaderProvider requestHeaderProvider;
 

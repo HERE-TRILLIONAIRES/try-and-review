@@ -16,13 +16,12 @@ spring:
         format_sql: true
     show-sql: true
 
-
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # 여기만 변경
       properties:
         spring.json.trusted.packages: '*'
       group-id: notification-service-group
@@ -33,6 +32,7 @@ spring:
       notification-service: "notification-service-group"
     admin:
       auto-create-topics: false # 테스트 위해서 토픽 자동으로 생성하도록 설정
+
   #  data:
 #    redis:
 #      host: ${redis.notification.host}
