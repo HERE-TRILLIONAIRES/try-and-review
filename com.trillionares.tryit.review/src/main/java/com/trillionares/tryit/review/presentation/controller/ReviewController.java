@@ -38,8 +38,11 @@ public class ReviewController {
 
     @PutMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewUpdateResponseDto> updateReview(
+            @RequestHeader("X-Auth-Role") String role,
+            @RequestHeader("X-Auth-Username") String username,
             @RequestBody @Valid ReviewUpdateRequest reviewUpdateRequest, @PathVariable UUID reviewId) {
-        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"리뷰 수정 성공",reviewService.updateReview(ReviewUpdateRequestDto.from(reviewUpdateRequest),reviewId));
+        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"리뷰 수정 성공",
+                reviewService.updateReview(ReviewUpdateRequestDto.from(reviewUpdateRequest),reviewId,role,username));
     }
 
     @DeleteMapping("/reviews/{reviewId}")
