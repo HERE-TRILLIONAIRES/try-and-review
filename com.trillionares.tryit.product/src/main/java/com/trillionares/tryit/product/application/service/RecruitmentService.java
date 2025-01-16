@@ -4,6 +4,7 @@ import com.trillionares.tryit.product.domain.common.json.JsonUtils;
 import com.trillionares.tryit.product.domain.model.recruitment.Recruitment;
 import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
 import com.trillionares.tryit.product.domain.repository.RecruitmentRepository;
+import com.trillionares.tryit.product.presentation.dto.RecruitmentExistAndStatusDto;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.KafkaMessage;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.RecruitmentSubmissionResponseDto;
 import com.trillionares.tryit.product.presentation.dto.request.CreateRecruitmentRequest;
@@ -12,6 +13,7 @@ import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitment
 import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
 import com.trillionares.tryit.product.presentation.dto.response.RecruitmentIdResponse;
 import com.trillionares.tryit.product.presentation.dto.response.UpdateRecruitmentStatusResponse;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -135,4 +137,27 @@ public class RecruitmentService {
         }
     }
 
+    public RecruitmentExistAndStatusDto isExistRecruitmentById(UUID recruitmentId) {
+        Optional<Recruitment> recruitment = recruitmentRepository.findByRecruitmentId(recruitmentId);
+
+        if(!recruitment.isPresent() || recruitment.isEmpty() || recruitment == null) {
+            return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");
+        }
+
+        // TODO: RecruitmentStatus 수정을 임의로 할 수 없다고 생각해서 매핑만 시켜둠
+        switch (recruitment.get().getRecruitmentStatus()) {
+            case WAITING:
+                return RecruitmentExistAndStatusDto.of(true, "WAITING");
+            case STARTED:
+                return RecruitmentExistAndStatusDto.of(true, "STARTED");
+            case RESTARTED:
+                return RecruitmentExistAndStatusDto.of(true, "RESTARTED");
+            case PAUSED:
+                return RecruitmentExistAndStatusDto.of(true, "PAUSED");
+            case ENDED:
+                return RecruitmentExistAndStatusDto.of(true, "ENDED");
+            default:
+                return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");
+        }
+    }
 }

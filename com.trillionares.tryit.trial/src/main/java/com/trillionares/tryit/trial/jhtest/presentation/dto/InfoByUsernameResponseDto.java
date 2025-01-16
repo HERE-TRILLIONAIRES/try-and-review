@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateStatusDto {
-    private UUID submissionId;
-    private UUID recruitmentId;
+public class InfoByUsernameResponseDto {
     private UUID userId;
-    private String status;
+    private String username;
+    private String role;
+    private String slackId;
 }

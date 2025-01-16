@@ -1,9 +1,12 @@
 package com.trillionares.tryit.trial.jhtest.domain.service;
 
+import com.trillionares.tryit.trial.jhtest.domain.client.AuthClient;
+import com.trillionares.tryit.trial.jhtest.domain.client.RecruitmentClient;
 import com.trillionares.tryit.trial.jhtest.domain.common.json.JsonUtils;
 import com.trillionares.tryit.trial.jhtest.domain.model.Trial;
 import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
 import com.trillionares.tryit.trial.jhtest.domain.repository.TrialRepository;
+import com.trillionares.tryit.trial.jhtest.presentation.dto.RecruitmentExistAndStatusDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SendNotificationDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SendRecruitmentDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.SubmissionIdAndStatusResponseDto;
@@ -25,23 +28,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class TrialService {
 
     private final TrialRepository trialRepository;
+
+    private final AuthClient authClient;
+    private final RecruitmentClient recruitmentClient;
+
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Transactional
-    public TrialIdResponseDto createTrial(TrialInfoRequestDto requestDto) {
-        // TODO: 권한 체크 (사용자)
+    public TrialIdResponseDto createTrial(String username, String role, TrialInfoRequestDto requestDto) {
+        if(!validatePermission(role)){
+            throw new IllegalArgumentException("관리자나 판매자는 체험 신청할 수 없습니다.");
+        }
 
-        // TODO: UserId토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "신청자";
-        
-        // TODO: 이전 신청내역없는지 검증
+        checkExistRecruitment(requestDto.getRecruitmentId());
 
-        // TODO: recruitmentID 존재하는지 검증
-//        if(!checkExistRecruitment(requestDto.getRecruitmentId())) {
-//            log.error("해당 모집이 없습니다.");
-//            throw new RuntimeException("해당 모집이 없습니다.");
-//        }
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+
+        if(existPastSubmissionHistory(userId, requestDto.getRecruitmentId())) {
+            throw new IllegalArgumentException("이전 신청내역이 있는 모집 입니다.");
+        }
 
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
 
@@ -63,6 +69,38 @@ public class TrialService {
         sendMessageToNotification(trial.getSubmissionId());
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    private void checkExistRecruitment(UUID recruitmentId) {
+        // TODO: 객체가 null인지 판단 중인데, 존재여부만 확인하는 endpoint 추가 요청
+
+        RecruitmentExistAndStatusDto responseDto = recruitmentClient.isExistRecruitmentById(recruitmentId).getData();
+
+        if(!responseDto.getIsExist()) {
+            throw new IllegalArgumentException("존재하지 않는 모집 입니다.");
+        } else if(responseDto.getStatus().contains("WAITING")) {
+            throw new IllegalArgumentException("모집이 시작되지 않았습니다.");
+        } else if(responseDto.getStatus().contains("PAUSED")) {
+            throw new IllegalArgumentException("모집이 중단 되었습니다.");
+        } else if(responseDto.getStatus().contains("ENDED")) {
+            throw new IllegalArgumentException("모집이 종료 되었습니다.");
+        } else if(responseDto.getStatus().contains("NOT_FOUND")) {
+            throw new IllegalArgumentException("모집을 찾을 수 없습니다.");
+        }
+    }
+
+    private Boolean existPastSubmissionHistory(UUID userId, UUID recruitmentId) {
+        if(trialRepository.existsByUserIdAndRecruitmentIdAndIsDeletedFalse(userId, recruitmentId)) {
+            return true;
+        }
+        return false;
+    }
+
+    private Boolean validatePermission(String role) {
+        if(role.contains("MEMBER")){
+            return true;
+        }
+        return false;
     }
 
     public void sendMessageToNotification(UUID submissionId) {
@@ -91,42 +129,62 @@ public class TrialService {
         }
     }
 
-    private Boolean checkExistRecruitment(UUID recruitmentId) {
-        kafkaTemplate.send("recruitmentExistenceCheck",
-                "recruitmentId", String.valueOf(recruitmentId));
+    public TrialInfoResponseDto getTrialById(String username, String role, UUID submissionId) {
+        if(!adminAndMemberValidatePermission(role)){
+            throw new IllegalArgumentException("판매자의 조회 API가 아닙니다.");
+        }
 
-        return true;
-    }
-
-    public TrialInfoResponseDto getTrialById(UUID submissionId) {
         Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
 
-        // TODO: User Service 호출해서 신청자 정보 받아오기, 내가 신청한건지 확인
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        if(!isSubmissionOwner(userId, trial.getUserId()) && role.contains("MEMBER")) {
+            throw new IllegalArgumentException("로그인한 사용자의 신청이 아닙니다.");
+        }
         String trialedUser = "신청자";
 
         return TrialInfoResponseDto.from(trial);
     }
 
     @Transactional
-    public TrialIdResponseDto changeStatusOfTrial(UUID submissionId, SubmissionStatus status) {
-        // TODO: 권한 체크 (사용자)
-        // Kafka Message로 받아오는 경우에는 사용자 권한 체크 불필요 -> submissionId로 누군지 알 수 있다.
-
-        // TODO: UserId토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "신청자";
+    public TrialIdResponseDto changeStatusOfTrial(String username, String role, UUID submissionId, SubmissionStatus status) {
+        if(!adminAndMemberValidatePermission(role)){
+            throw new IllegalArgumentException("판매자는 신청을 수정 할 수 없습니다.");
+        }
 
         Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
         }
 
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        if(!isSubmissionOwner(userId, trial.getUserId()) && role.contains("MEMBER")) {
+            throw new IllegalArgumentException("로그인한 사용자의 신청이 아닙니다.");
+        }
+
         trial = statusConvert(trial, trial.getSubmissionStatus(), status, username);
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    private Boolean isSubmissionOwner(UUID userId1, UUID userId2) {
+        if(userId1.equals(userId2)) {
+            return true;
+        }
+        return false;
+    }
+
+    private Boolean adminAndMemberValidatePermission(String role) {
+        if(role.contains("MEMBER")){
+            return true;
+        } else if(role.contains("ADMIN")) {
+            return true;
+        }
+        return false;
     }
 
     private Trial statusConvert(Trial trial, SubmissionStatus previousStatus, SubmissionStatus nextStatus, String username){
@@ -147,16 +205,20 @@ public class TrialService {
     }
 
     @Transactional
-    public TrialIdResponseDto deleteTrial(UUID submissionId) {
-        // TODO: 권한 체크 (사용자) 본인인지 확인
-
-        // TODO: UserId 토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "나신청";
+    public TrialIdResponseDto deleteTrial(String username, String role, UUID submissionId) {
+        if(!adminAndMemberValidatePermission(role)){
+            throw new IllegalArgumentException("판매자는 신청을 삭제 할 수 없습니다.");
+        }
 
         Trial trial = trialRepository.findBySubmissionIdAndIsDeletedFalse(submissionId).orElse(null);
         if(trial == null){
             throw new RuntimeException("신청을 찾을 수 없습니다.");
+        }
+
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        if(!isSubmissionOwner(userId, trial.getUserId()) && role.contains("MEMBER")) {
+            throw new IllegalArgumentException("로그인한 사용자의 신청이 아닙니다.");
         }
 
         trial = toDeletedStatusOfTrial(trial, SubmissionStatus.CANCELED, username);
