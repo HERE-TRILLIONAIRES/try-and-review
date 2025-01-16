@@ -20,12 +20,10 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    public CategoryIdResponseDto createCategory(CategoryInfoRequestDto requestDto) {
-        // TODO: 권한 체크 (관리자)
-
-        // TODO: UserId 토큰에서 받아오기
-        UUID userId = UUID.randomUUID();
-        String username = "나 관리자";
+    public CategoryIdResponseDto createCategory(String username, String role, CategoryInfoRequestDto requestDto) {
+        if(!validatePermission(role)){
+            throw new IllegalArgumentException("권한이 없는 사용자입니다.");
+        }
 
         Optional<Category> category = categoryRepository.findByCategoryNameAndIsDeleteFalse(requestDto.getCategoryName());
         if (category.isPresent()) {
@@ -37,5 +35,12 @@ public class CategoryService {
 
         CategoryIdResponseDto responseDto = CategoryIdResponseDto.from(newCategory.getCategoryId());
         return responseDto;
+    }
+
+    private Boolean validatePermission(String role) {
+        if(role.contains("ADMIN")){
+            return true;
+        }
+        return false;
     }
 }
