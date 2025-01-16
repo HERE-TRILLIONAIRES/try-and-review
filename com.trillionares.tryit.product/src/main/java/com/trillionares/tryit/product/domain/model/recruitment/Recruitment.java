@@ -1,5 +1,6 @@
 package com.trillionares.tryit.product.domain.model.recruitment;
 
+import com.trillionares.tryit.product.domain.common.base.BaseEntity;
 import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,9 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Recruitment {
-    //TODO: BaseEntity 상속
-
+public class Recruitment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "recruitment_id")
