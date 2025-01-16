@@ -1,8 +1,8 @@
 spring:
   application:
     name: product-service
-#  config:
-#    import: configserver:http://localhost:18080   # Config Server 주소
+  config:
+    import: configserver:http://localhost:18080   # Config Server 주소
   datasource:
     url: ${DB_URL}
     username: ${DB_PRODUCT_USERNAME}
@@ -54,10 +54,10 @@ logging:
   level:
     org.springframework.cloud.openfeign: DEBUG
 
-management:
-  zipkin:
-    tracing:
-      endpoint: ${ZIPKIN_URL}
-  tracing:
-    sampling:
-      probability: 1.0
+#management:
+#  zipkin:
+#    tracing:
+#      endpoint: ${ZIPKIN_URL}
+#  tracing:
+#    sampling:
+#      probability: 1.0

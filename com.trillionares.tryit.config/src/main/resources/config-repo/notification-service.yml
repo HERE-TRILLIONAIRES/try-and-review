@@ -33,6 +33,14 @@ spring:
     admin:
       auto-create-topics: false # 테스트 위해서 토픽 자동으로 생성하도록 설정
 
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  tracing:
+    sampling:
+      probability: 1.0
+
   #  data:
 #    redis:
 #      host: ${redis.notification.host}
