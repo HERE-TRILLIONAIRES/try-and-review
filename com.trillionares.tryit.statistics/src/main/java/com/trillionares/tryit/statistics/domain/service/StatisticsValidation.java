@@ -24,11 +24,6 @@ public class StatisticsValidation {
     }
 
     public boolean isNotGetValidation(String role, UUID company, UUID actor) {
-        System.out.println("role : "+role);
-        System.out.println("company : "+company);
-        System.out.println("actor : "+actor);
-        System.out.println((isCompany(role) && isSameCompanyAndActor(company,actor)));
-        System.out.println(!(isAdmin(role) || (isCompany(role) && isSameCompanyAndActor(company,actor))));
         return !(isAdmin(role) || (isCompany(role) && isSameCompanyAndActor(company,actor)));
     }
 }
