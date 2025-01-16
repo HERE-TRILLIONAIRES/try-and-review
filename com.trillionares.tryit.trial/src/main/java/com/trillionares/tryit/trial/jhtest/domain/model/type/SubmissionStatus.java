@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum SubmissionStatus {
-    APPLIED("신청"), //(신청)
-    SELECTED("당첨"), //(당첨)
-    CANCELED("신청취소"), //(신청취소)
-    FAILED("낙첨"), //(낙첨)
-    REVIEW_SUBMITTED("리뷰 제출"); //(리뷰 제출)
+    APPLIED("APPLIED"), //(신청)
+    SELECTED("SELECTED"), //(당첨)
+    CANCELED("CANCELED"), //(신청취소)
+    FAILED("FAILED"), //(낙첨)
+    REVIEW_SUBMITTED("REVIEW_SUBMITTED"); //(리뷰 제출)
 
     private final String message;
 }
