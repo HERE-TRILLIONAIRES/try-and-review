@@ -66,7 +66,17 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDeleteResponseDto deleteReview(UUID reviewId) {
+    public ReviewDeleteResponseDto deleteReview(UUID reviewId, String role, String username) {
+
+        BaseResponse<ReviewGetUserByUsernameResponseDto> reviewGetUserByUsernameResponseDto
+                = authClient.getUserByUsernameOfUser(username);
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.REVIEW_ID_NOT_FOUND));
+
+        if(reviewValidation.isNotDeleteValidation(role,review.getUserId(),reviewGetUserByUsernameResponseDto.getData().getUserId()))
+            throw new GlobalException(ErrorCode.REVIEW_DELETE_FORBIDDEN);
+
         reviewRepository.deleteById(reviewId);
         return ReviewDeleteResponseDto.from(reviewId);
     }

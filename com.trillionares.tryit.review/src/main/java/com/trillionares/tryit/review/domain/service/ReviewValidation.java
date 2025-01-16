@@ -26,4 +26,8 @@ public class ReviewValidation {
     public boolean isNotUpdateValidation(String role, UUID author, UUID modifier) {
         return !(isAdmin(role) || isSameAuthorAndModifier(author,modifier));
     }
+
+    public boolean isNotDeleteValidation(String role, UUID author, UUID modifier) {
+        return !(isAdmin(role) || isSameAuthorAndModifier(author,modifier));
+    }
 }

@@ -46,7 +46,10 @@ public class ReviewController {
     }
 
     @DeleteMapping("/reviews/{reviewId}")
-    public BaseResponse<ReviewDeleteResponseDto> deleteReview(@PathVariable UUID reviewId) {
-        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"리뷰 삭제 성공",reviewService.deleteReview(reviewId));
+    public BaseResponse<ReviewDeleteResponseDto> deleteReview(
+            @RequestHeader("X-Auth-Role") String role,
+            @RequestHeader("X-Auth-Username") String username,
+            @PathVariable UUID reviewId) {
+        return BaseResponse.of(HttpStatus.OK.value(), HttpStatus.OK,"리뷰 삭제 성공",reviewService.deleteReview(reviewId,role,username));
     }
 }
