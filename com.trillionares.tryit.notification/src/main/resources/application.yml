@@ -1,3 +1,6 @@
+server:
+  port: 19050
+
 spring:
   application:
     name: notification-service
@@ -5,15 +8,13 @@ spring:
     import: configserver:http://localhost:18080   # Config Server 주소
   jpa:
     hibernate:
-      ddl-auto: create  # 개발 환경에서만 create 사용
+      ddl-auto: update
     properties:
       hibernate:
         default_schema: notification
         format_sql: true
     show-sql: true
 
-server:
-  port: 19050
 eureka:
   client:
     service-url:

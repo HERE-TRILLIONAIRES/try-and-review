@@ -4,9 +4,13 @@
 
 ### 알림 전체 조회
 GET {{host}}/notifications?status=PENDING
+role: ROLE_ADMIN
+username: admin
 
 ### 단건 조회
 GET {{host}}/notifications/{{notificationId}}
+role: ROLE_ADMIN
+username: admin
 
 ### 테스트용 이벤트 발생
 POST {{host}}/notifications/test/event

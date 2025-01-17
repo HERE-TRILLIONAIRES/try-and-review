@@ -1,6 +1,3 @@
-server:
-  port: 19050
-
 spring:
   datasource:
     url: ${DB_URL}
