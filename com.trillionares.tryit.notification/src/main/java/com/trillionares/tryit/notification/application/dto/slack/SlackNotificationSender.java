@@ -20,6 +20,7 @@ public class SlackNotificationSender {
   private String webhookUrl;
 
   private final RestTemplate restTemplate;
+  private final NotificationRepository notificationRepository;
 
   public void sendNotification(Notification notification, String slackId, String status) {
 
@@ -33,6 +34,7 @@ public class SlackNotificationSender {
 
     } catch (Exception e) {
       notification.increaseAttemptCount();
+      notificationRepository.save(notification); // 실패의 경우도 저장
       log.error("Failed to send Slack notification: {}", e.getMessage());
 
        throw exceptionConverter.convertToBaseException(e);
