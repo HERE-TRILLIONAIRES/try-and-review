@@ -298,7 +298,7 @@ jobs: #stages
         image: ${{ steps.server-build-image.outputs.image }}
         
     - name: Deploy server Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
       with:
         task-definition: ${{ steps.server-task-def.outputs.task-definition }}
         service: ${{ env.SERVER_ECS_SERVICE }}
@@ -325,7 +325,7 @@ jobs: #stages
         image: ${{ steps.config-build-image.outputs.image }}
         
     - name: Deploy config Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
       with:
         task-definition: ${{ steps.config-task-def.outputs.task-definition }}
         service: ${{ env.CONFIG_ECS_SERVICE }}
@@ -352,7 +352,7 @@ jobs: #stages
         image: ${{ steps.gateway-build-image.outputs.image }}
         
     - name: Deploy gateway Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
       with:
         task-definition: ${{ steps.gateway-task-def.outputs.task-definition }}
         service: ${{ env.GATEWAY_ECS_SERVICE }}
@@ -382,7 +382,7 @@ jobs: #stages
         image: ${{ steps.trial-build-image.outputs.image }}
 
     - name: Deploy trial Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
       with:
         task-definition: ${{ steps.trial-task-def.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
