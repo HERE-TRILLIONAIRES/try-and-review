@@ -6,8 +6,9 @@ import com.trillionares.tryit.notification.domain.model.Notification;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
 import com.trillionares.tryit.notification.infrastructure.messaging.event.SubmissionKafkaEvent;
 import com.trillionares.tryit.notification.infrastructure.persistence.NotificationRepository;
-import com.trillionares.tryit.notification.libs.client.auth.AuthServiceClient;
-import com.trillionares.tryit.notification.libs.client.auth.UserResponseDto;
+import com.trillionares.tryit.notification.libs.client.auth.AuthClient;
+import com.trillionares.tryit.notification.libs.client.auth.FeignUserIdResponseDto;
+import com.trillionares.tryit.notification.libs.client.auth.FeignUsernameResponseDto;
 import com.trillionares.tryit.notification.libs.exception.ErrorCode;
 import com.trillionares.tryit.notification.libs.exception.ExceptionConverter;
 import com.trillionares.tryit.notification.libs.exception.GlobalException;
@@ -28,7 +29,9 @@ public class NotificationService {
   private final ExceptionConverter exceptionConverter;
   private final NotificationRepository notificationRepository;
   private final SlackNotificationSender slackNotificationSender;
-  private final AuthServiceClient authServiceClient;
+  private final AuthClient authClient;
+  private final NotificationRoleValidation roleValidation;
+
   @Transactional
   public void createNotificationFromSubmissionEvent(SubmissionKafkaEvent event) {
 
@@ -44,10 +47,10 @@ public class NotificationService {
 
   private String getSlackId(Notification notification) {
 
-    BaseResponse<UserResponseDto> response = authServiceClient.getUserInfo(
+    BaseResponse<FeignUserIdResponseDto> response = authClient.getUserId(
         notification.getUserId());
 
-    UserResponseDto userDto = response.getData();
+    FeignUserIdResponseDto userDto = response.getData();
     String slackId = userDto.getSlackId();
 
     log.info("slackId {}", slackId);
@@ -68,18 +71,35 @@ public class NotificationService {
   }
 
   @Transactional(readOnly = true)
-  public NotificationResponse getNotification(UUID notificationId) {
+  public NotificationResponse getNotification(UUID notificationId, String role, String username) {
 
     Notification notification = notificationRepository.findById(notificationId)
         .orElseThrow(() -> new GlobalException(ErrorCode.NOTIFICATION_NOT_FOUND));
+
+    BaseResponse<FeignUsernameResponseDto> response = authClient.getUserByUsername(username);
+    UUID currentUserId = response.getData().getUserId();
+
+    if (!roleValidation.isAdmin(role) &&
+        !roleValidation.isNotificationOwner(notification.getUserId(), currentUserId)) {
+      throw new GlobalException(ErrorCode.UNAUTHORIZED);
+    }
 
     return NotificationResponse.from(notification);
   }
 
   @Transactional(readOnly = true)
-  public Page<NotificationResponse> getNotificationByStatus(NotificationStatus status,
-      Pageable pageable) {
+  public Page<NotificationResponse> getNotificationByStatus(
+      NotificationStatus status,
+      String role,
+      String username,
+      Pageable pageable
+  ) {
 
-    return notificationRepository.findByNotificationStatus(status, pageable);
+    BaseResponse<FeignUsernameResponseDto> response = authClient.getUserByUsername(username);
+    UUID currentUserId = response.getData().getUserId();
+
+    return roleValidation.isAdmin(role)
+        ? notificationRepository.findByNotificationStatus(status, pageable)
+        : notificationRepository.findByNotificationStatusAndUserId(status, currentUserId, pageable);
   }
 }
