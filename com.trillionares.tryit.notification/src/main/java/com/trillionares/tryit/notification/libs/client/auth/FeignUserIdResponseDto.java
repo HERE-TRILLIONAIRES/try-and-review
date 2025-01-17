@@ -4,8 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
-public class UserResponseDto {
+public class FeignUserIdResponseDto {
 
   private String slackId;
 }

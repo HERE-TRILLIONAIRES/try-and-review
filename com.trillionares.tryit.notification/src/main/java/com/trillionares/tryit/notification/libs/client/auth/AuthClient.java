@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
     name = "auth-service",
     configuration = InternalFeignClientConfig.class
 )
-public interface AuthServiceClient {
+public interface AuthClient {
 
   @GetMapping("/users/internals/{userId}")
-  BaseResponse<UserResponseDto> getUserInfo(@PathVariable("userId") UUID userId);
+  BaseResponse<FeignUserIdResponseDto> getUserId(@PathVariable("userId") UUID userId);
+
+  @GetMapping("/users/internals/username/{username}")
+  BaseResponse<FeignUsernameResponseDto> getUserByUsername(@PathVariable("username") String username);
 }
