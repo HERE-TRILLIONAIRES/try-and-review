@@ -32,6 +32,17 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2                  # set this to your preferred AWS region, e.g. us-west-1
+
+  # Auth
+  AUTH_ECR_REPOSITORY: here-trillionaires/try-and-review/auth      # set this to your Amazon ECR repository name
+  AUTH_ECS_SERVICE: auth-service                 # set this to your Amazon ECS service name
+  AUTH_ECS_CLUSTER: auth-cluster                # set this to your Amazon ECS cluster name
+  AUTH_ECS_TASK_DEFINITION: .github/workflows/auth-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  AUTH_CONTAINER_NAME: auth-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
+  
+  # trial
   ECR_REPOSITORY: here-trillionaires/try-and-review/trial        # set this to your Amazon ECR repository name
   ECS_SERVICE: trial-service                 # set this to your Amazon ECS service name
   ECS_CLUSTER: trial-cluster                # set this to your Amazon ECS cluster name
@@ -39,6 +50,53 @@ env:
                                                # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: trial-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+
+  # Product
+  PRODUCT_ECR_REPOSITORY: here-trillionaires/try-and-review/product      # set this to your Amazon ECR repository name
+  PRODUCT_ECS_SERVICE: product-service                 # set this to your Amazon ECS service name
+  PRODUCT_ECS_CLUSTER: product-cluster                # set this to your Amazon ECS cluster name
+  PRODUCT_ECS_TASK_DEFINITION: .github/workflows/product-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  PRODUCT_CONTAINER_NAME: product-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
+
+  # Review
+  REVIEW_ECR_REPOSITORY: here-trillionaires/try-and-review/review      # set this to your Amazon ECR repository name
+  REVIEW_ECS_SERVICE: review-service                 # set this to your Amazon ECS service name
+  REVIEW_ECS_CLUSTER: review-cluster                # set this to your Amazon ECS cluster name
+  REVIEW_ECS_TASK_DEFINITION: .github/workflows/review-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  REVIEW_CONTAINER_NAME: review-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
+
+  # Notification
+  NOTIFICATION_ECR_REPOSITORY: here-trillionaires/try-and-review/notification      # set this to your Amazon ECR repository name
+  NOTIFICATION_ECS_SERVICE: notification-service                 # set this to your Amazon ECS service name
+  NOTIFICATION_ECS_CLUSTER: notification-cluster                # set this to your Amazon ECS cluster name
+  NOTIFICATION_ECS_TASK_DEFINITION: .github/workflows/notification-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  NOTIFICATION_CONTAINER_NAME: notification-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
+
+  # Statistics
+  STATISTICS_ECR_REPOSITORY: here-trillionaires/try-and-review/statistics      # set this to your Amazon ECR repository name
+  STATISTICS_ECS_SERVICE: statistics-service                 # set this to your Amazon ECS service name
+  STATISTICS_ECS_CLUSTER: statistics-cluster                # set this to your Amazon ECS cluster name
+  STATISTICS_ECS_TASK_DEFINITION: .github/workflows/statistics-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  STATISTICS_CONTAINER_NAME: statistics-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
+
+  # Image-manage
+  IMAGE_MANAGE_ECR_REPOSITORY: here-trillionaires/try-and-review/image-manage      # set this to your Amazon ECR repository name
+  IMAGE_MANAGE_ECS_SERVICE: image-manage-service                 # set this to your Amazon ECS service name
+  IMAGE_MANAGE_ECS_CLUSTER: image-manage-cluster                # set this to your Amazon ECS cluster name
+  IMAGE_MANAGE_ECS_TASK_DEFINITION: .github/workflows/image-manage-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  IMAGE_MANAGE_CONTAINER_NAME: image-manage-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
+  
+  # config
   CONFIG_ECR_REPOSITORY: here-trillionaires/try-and-review/config      # set this to your Amazon ECR repository name
   CONFIG_ECS_SERVICE: config-service                 # set this to your Amazon ECS service name
   CONFIG_ECS_CLUSTER: config-cluster                # set this to your Amazon ECS cluster name
@@ -47,12 +105,21 @@ env:
   CONFIG_CONTAINER_NAME: config-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
 
+  # server
   SERVER_ECR_REPOSITORY: here-trillionaires/try-and-review/server      # set this to your Amazon ECR repository name
   SERVER_ECS_SERVICE: server-service                 # set this to your Amazon ECS service name
   SERVER_ECS_CLUSTER: server-cluster                # set this to your Amazon ECS cluster name
   SERVER_ECS_TASK_DEFINITION: .github/workflows/server-task-revision1.json # set this to the path to your Amazon ECS task definition
                                                # file, e.g. .aws/task-definition.json
   SERVER_CONTAINER_NAME: server-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
+  # Gateway
+  GATEWAY_ECR_REPOSITORY: here-trillionaires/try-and-review/gateway      # set this to your Amazon ECR repository name
+  GATEWAY_ECS_SERVICE: gateway-service                 # set this to your Amazon ECS service name
+  GATEWAY_ECS_CLUSTER: gateway-cluster                # set this to your Amazon ECS cluster name
+  GATEWAY_ECS_TASK_DEFINITION: .github/workflows/gateway-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  GATEWAY_CONTAINER_NAME: gateway-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
 
 permissions:
@@ -73,6 +140,7 @@ jobs: #stages
         java-version: '17'
         distribution: 'temurin'
 
+    # trial
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       working-directory: ./com.trillionares.tryit.trial
