@@ -8,6 +8,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 public class JwtAuthFilter implements GatewayFilter {
 
   private final JwtUtil jwtUtil;
+  private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -28,7 +30,12 @@ public class JwtAuthFilter implements GatewayFilter {
     // 인증 제외 경로 설정
     List<String> excludedPaths = List.of("/auth/signin", "/users/signup", "/users/internals/**");
 
-    if (excludedPaths.stream().anyMatch(path::startsWith)) {
+    // 로그 추가: 요청 경로와 인증 제외 경로 매칭 여부 확인
+    log.info("요청 경로: {}", path);
+    log.info("인증 제외 경로에 포함 여부: {}", excludedPaths.stream().anyMatch(pattern -> pathMatcher.match(pattern, path)));
+
+    // 인증 제외 경로일 경우 필터 체인을 그대로 통과
+    if (excludedPaths.stream().anyMatch(pattern -> pathMatcher.match(pattern, path))) {
       log.info("인증 제외 경로 접근: {}", path);
       return chain.filter(exchange);
     }
