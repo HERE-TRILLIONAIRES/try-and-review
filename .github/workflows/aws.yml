@@ -50,6 +50,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: trial-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  TRIAL_WD: ./com.trillionares.tryit.trial
 
   # Product
   PRODUCT_ECR_REPOSITORY: here-trillionaires/try-and-review/product      # set this to your Amazon ECR repository name
@@ -59,6 +60,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   PRODUCT_CONTAINER_NAME: product-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  PRODUCT_WD: ./com.trillionares.tryit.product
 
   # Review
   REVIEW_ECR_REPOSITORY: here-trillionaires/try-and-review/review      # set this to your Amazon ECR repository name
@@ -68,6 +70,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   REVIEW_CONTAINER_NAME: review-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  REVIEW_WD: ./com.trillionares.tryit.review
 
   # Notification
   NOTIFICATION_ECR_REPOSITORY: here-trillionaires/try-and-review/notification      # set this to your Amazon ECR repository name
@@ -77,6 +80,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   NOTIFICATION_CONTAINER_NAME: notification-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  NOTIFICATION_WD: ./com.trillionares.tryit.notification
 
   # Statistics
   STATISTICS_ECR_REPOSITORY: here-trillionaires/try-and-review/statistics      # set this to your Amazon ECR repository name
@@ -86,6 +90,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   STATISTICS_CONTAINER_NAME: statistics-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  STATISTICS_WD: ./com.trillionares.tryit.statistics
 
   # Image-manage
   IMAGE_MANAGE_ECR_REPOSITORY: here-trillionaires/try-and-review/image-manage      # set this to your Amazon ECR repository name
@@ -95,6 +100,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   IMAGE_MANAGE_CONTAINER_NAME: image-manage-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  IMAGE_MANAGE_WD: ./com.trillionares.tryit.image-manage
   
   # config
   CONFIG_ECR_REPOSITORY: here-trillionaires/try-and-review/config      # set this to your Amazon ECR repository name
@@ -104,6 +110,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   CONFIG_CONTAINER_NAME: config-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  CONFIG_WD: ./com.trillionares.tryit.config
 
   # server
   SERVER_ECR_REPOSITORY: here-trillionaires/try-and-review/server      # set this to your Amazon ECR repository name
@@ -113,6 +120,8 @@ env:
                                                # file, e.g. .aws/task-definition.json
   SERVER_CONTAINER_NAME: server-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  SERVER_WD: ./com.trillionares.tryit.server
+                                               
   # Gateway
   GATEWAY_ECR_REPOSITORY: here-trillionaires/try-and-review/gateway      # set this to your Amazon ECR repository name
   GATEWAY_ECS_SERVICE: gateway-service                 # set this to your Amazon ECS service name
@@ -121,6 +130,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   GATEWAY_CONTAINER_NAME: gateway-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  GATEWAY_WD: ./com.trillionares.tryit.gateway
 
 permissions:
   contents: read
@@ -140,22 +150,77 @@ jobs: #stages
         java-version: '17'
         distribution: 'temurin'
 
-    # trial
-    - name: Grant execute permission for gradlew
+    # server
+    - name: Grant execute permission for server gradlew
       run: chmod +x gradlew
-      working-directory: ./com.trillionares.tryit.trial
+      working-directory: ${{ env.SERVER_WD }}
 
-    - name: Build with Gradle
+    #- name: Build with server Gradle
+    - name: Build with Test without server Gradle
       #run: ./gradlew clean build
       run: ./gradlew clean build -x test
-      working-directory: ./com.trillionares.tryit.trial
+      working-directory: ${{ env.SERVER_WD }}
 
-    - name: Upload Build Artifacts
+    - name: Upload server Build Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: build-libs
+        name: server-build-libs
         path: build/libs/*.jar
-        working-directory: ./com.trillionares.tryit.trial
+        working-directory: ${{ env.SERVER_WD }}
+
+    # config
+    - name: Grant execute permission for config gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.CONFIG_WD }}
+
+    #- name: Build with config Gradle
+    - name: Build with Test without config Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.CONFIG_WD }}
+
+    - name: Upload config Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: config-build-libs
+        path: build/libs/*.jar
+        working-directory: ${{ env.CONFIG_WD }}
+
+    # gateway
+    - name: Grant execute permission for gateway gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.GATEWAY_WD }}
+
+    #- name: Build with gateway Gradle
+    - name: Build with Test without gateway Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.GATEWAY_WD }}
+
+    - name: Upload gateway Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: gateway-build-libs
+        path: build/libs/*.jar
+        working-directory: ${{ env.GATEWAY_WD }}
+        
+    # trial
+    - name: Grant execute permission for trial gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.TRIAL_WD }}
+
+    #- name: Build with trial Gradle
+    - name: Build with Test without trial Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.TRIAL_WD }}
+
+    - name: Upload trial Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: trial-build-libs
+        path: build/libs/*.jar
+        working-directory: ${{ env.TRIAL_WD }}
 
         
   deploy:
@@ -168,13 +233,39 @@ jobs: #stages
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Download Build Artifacts
+    # Service Down load ---------------------------------------------------
+    # Server
+    - name: Download server Build Artifacts
       uses: actions/download-artifact@v3
       with:
-        name: build-libs
+        name: server-build-libs
         path: build/libs
-        working-directory: ./com.trillionares.tryit.trial
+        working-directory: ${{ env.SERVER_WD }}
 
+    # Config
+    - name: Download config Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: config-build-libs
+        path: build/libs
+        working-directory: ${{ env.CONFIG_WD }}
+
+    # Gateway
+    - name: Download gateway Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: gateway-build-libs
+        path: build/libs
+        working-directory: ${{ env.GATEWAY_WD }}
+
+    # Trial
+    - name: Download trial Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: trial-build-libs
+        path: build/libs
+        working-directory: ${{ env.TRIAL_WD }}
+    # ------------------------------------------------------------------------
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -186,8 +277,88 @@ jobs: #stages
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
+    # Docker BUILD--------------------------------------------------------------
+    # Server
+    - name: Server - Build, tag, and push server image to Amazon ECR
+      id: server-build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/${{ env.SERVER_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.SERVER_WD }}
+        docker push $ECR_REGISTRY/${{ env.SERVER_ECR_REPOSITORY }}:${{ github.sha }}
+
+    - name: Fill in the new server image ID in the Amazon ECS task definition
+      id: server-task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.SERVER_ECS_TASK_DEFINITION }}
+        container-name: ${{ env.SERVER_CONTAINER_NAME }}
+        image: ${{ steps.server-build-image.outputs.image }}
+        
+    - name: Deploy server Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.server-task-def.outputs.task-definition }}
+        service: ${{ env.SERVER_ECS_SERVICE }}
+        cluster: ${{ env.SERVER_ECS_CLUSTER }}
+        wait-for-service-stability: true
+
+    # Config
+    - name: Config - Build, tag, and push server image to Amazon ECR
+      id: config-build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/${{ env.CONFIG_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.CONFIG_WD }}
+        docker push $ECR_REGISTRY/${{ env.CONFIG_ECR_REPOSITORY }}:${{ github.sha }}
+
+    - name: Fill in the new config image ID in the Amazon ECS task definition
+      id: config-task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.CONFIG_ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONFIG_CONTAINER_NAME }}
+        image: ${{ steps.config-build-image.outputs.image }}
+        
+    - name: Deploy config Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.config-task-def.outputs.task-definition }}
+        service: ${{ env.CONFIG_ECS_SERVICE }}
+        cluster: ${{ env.CONFIG_ECS_CLUSTER }}
+        wait-for-service-stability: true
+
+    # Gateway
+    - name: Gateway - Build, tag, and push server image to Amazon ECR
+      id: gateway-build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.GATEWAY_WD }}
+        docker push $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}
+
+    - name: Fill in the new config image ID in the Amazon ECS task definition
+      id: gateway-task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.GATEWAY_ECS_TASK_DEFINITION }}
+        container-name: ${{ env.GATEWAY_CONTAINER_NAME }}
+        image: ${{ steps.gateway-build-image.outputs.image }}
+        
+    - name: Deploy gateway Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.gateway-task-def.outputs.task-definition }}
+        service: ${{ env.GATEWAY_ECS_SERVICE }}
+        cluster: ${{ env.GATEWAY_ECS_CLUSTER }}
+        wait-for-service-stability: true
+
+    # Trial
+    - name: Trial - Build, tag, and push image to Amazon ECR
+      id: trial-build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
@@ -195,22 +366,22 @@ jobs: #stages
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ${{ env.TRIAL_WD }}
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
+    - name: Fill in the new trial image ID in the Amazon ECS task definition
+      id: trial-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.CONTAINER_NAME }}
-        image: ${{ steps.build-image.outputs.image }}
+        image: ${{ steps.trial-build-image.outputs.image }}
 
-    - name: Deploy Amazon ECS task definition
+    - name: Deploy trial Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        task-definition: ${{ steps.trial-task-def.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
