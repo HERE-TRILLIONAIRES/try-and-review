@@ -62,13 +62,15 @@ jobs: #stages
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew clean build
+      run: ./com.trillionares.tryit.trial/gradlew clean build
+      #run: ./gradlew clean build
 
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: build-libs
-        path: build/libs/*.jar
+        path: com.trillionares.tryit.trial/build/libs/*.jar
+        #path: build/libs/*.jar
 
         
   deploy:
@@ -85,7 +87,8 @@ jobs: #stages
       uses: actions/download-artifact@v3
       with:
         name: build-libs
-        path: build/libs
+        path: com.trillionares.tryit.trial/build/libs
+        #path: build/libs
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
