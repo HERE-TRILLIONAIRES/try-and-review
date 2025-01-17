@@ -182,8 +182,7 @@ jobs: #stages
       uses: actions/upload-artifact@v3
       with:
         name: config-build-libs
-        path: build/libs/*.jar
-        working-directory: ${{ env.CONFIG_WD }}
+        path: ${{ env.CONFIG_WD }}/build/libs/*.jar
 
     # gateway
     - name: Grant execute permission for gateway gradlew
@@ -200,8 +199,7 @@ jobs: #stages
       uses: actions/upload-artifact@v3
       with:
         name: gateway-build-libs
-        path: build/libs/*.jar
-        working-directory: ${{ env.GATEWAY_WD }}
+        path: ${{ env.GATEWAY_WD }}/build/libs/*.jar
         
     # trial
     - name: Grant execute permission for trial gradlew
@@ -218,8 +216,7 @@ jobs: #stages
       uses: actions/upload-artifact@v3
       with:
         name: trial-build-libs
-        path: build/libs/*.jar
-        working-directory: ${{ env.TRIAL_WD }}
+        path: ${{ env.TRIAL_WD }}/build/libs/*.jar
 
         
   deploy:
