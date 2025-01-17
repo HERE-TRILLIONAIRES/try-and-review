@@ -287,6 +287,7 @@ jobs: #stages
       run: |
         docker build -t $ECR_REGISTRY/${{ env.SERVER_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.SERVER_WD }}
         docker push $ECR_REGISTRY/${{ env.SERVER_ECR_REPOSITORY }}:${{ github.sha }}
+        echo "image=$ECR_REGISTRY/${{ env.SERVER_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
 
     - name: Fill in the new server image ID in the Amazon ECS task definition
       id: server-task-def
@@ -313,6 +314,7 @@ jobs: #stages
       run: |
         docker build -t $ECR_REGISTRY/${{ env.CONFIG_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.CONFIG_WD }}
         docker push $ECR_REGISTRY/${{ env.CONFIG_ECR_REPOSITORY }}:${{ github.sha }}
+        echo "image=$ECR_REGISTRY/${{ env.CONFIG_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
 
     - name: Fill in the new config image ID in the Amazon ECS task definition
       id: config-task-def
@@ -339,6 +341,7 @@ jobs: #stages
       run: |
         docker build -t $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.GATEWAY_WD }}
         docker push $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}
+        echo "image=$ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
 
     - name: Fill in the new config image ID in the Amazon ECS task definition
       id: gateway-task-def
