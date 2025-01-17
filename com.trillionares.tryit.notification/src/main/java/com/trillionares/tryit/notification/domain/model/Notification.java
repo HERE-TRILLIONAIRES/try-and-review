@@ -3,6 +3,8 @@ package com.trillionares.tryit.notification.domain.model;
 import com.trillionares.tryit.notification.domain.common.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +32,7 @@ public class Notification extends BaseEntity {
   @Column(name = "submission_id", columnDefinition = "uuid")
   private UUID submissionId;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "notification_status")
   private NotificationStatus notificationStatus = NotificationStatus.PENDING; // 초기상태 설정
 
