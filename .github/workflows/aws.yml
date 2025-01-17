@@ -59,18 +59,19 @@ jobs: #stages
         distribution: 'temurin'
 
     - name: Grant execute permission for gradlew
-      run: chmod +x com.trillionares.tryit.trial/gradlew
+      run: chmod +x gradlew
+      working-directory: ./com.trillionares.tryit.trial
 
     - name: Build with Gradle
-      run: ./com.trillionares.tryit.trial/gradlew clean build
-      #run: ./gradlew clean build
+      run: ./gradlew clean build
+      working-directory: ./com.trillionares.tryit.trial
 
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: build-libs
-        path: com.trillionares.tryit.trial/build/libs/*.jar
-        #path: build/libs/*.jar
+        path: build/libs/*.jar
+        working-directory: ./com.trillionares.tryit.trial
 
         
   deploy:
@@ -87,8 +88,8 @@ jobs: #stages
       uses: actions/download-artifact@v3
       with:
         name: build-libs
-        path: com.trillionares.tryit.trial/build/libs
-        #path: build/libs
+        path: build/libs
+        working-directory: ./com.trillionares.tryit.trial
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
