@@ -48,7 +48,7 @@ env:
   ECS_CLUSTER: trial-cluster                # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .github/workflows/trial-task-revision1.json # set this to the path to your Amazon ECS task definition
                                                # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: trial-container           # set this to the name of the container in the
+  CONTAINER_NAME: tiral-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
   TRIAL_WD: ./com.trillionares.tryit.trial
 
