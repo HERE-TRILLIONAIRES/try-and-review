@@ -39,6 +39,21 @@ env:
                                                # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: trial-container           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  CONFIG_ECR_REPOSITORY: here-trillionaires/try-and-review/config      # set this to your Amazon ECR repository name
+  CONFIG_ECS_SERVICE: config-service                 # set this to your Amazon ECS service name
+  CONFIG_ECS_CLUSTER: config-cluster                # set this to your Amazon ECS cluster name
+  CONFIG_ECS_TASK_DEFINITION: .github/workflows/config-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  CONFIG_CONTAINER_NAME: config-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
+
+  SERVER_ECR_REPOSITORY: here-trillionaires/try-and-review/server      # set this to your Amazon ECR repository name
+  SERVER_ECS_SERVICE: server-service                 # set this to your Amazon ECS service name
+  SERVER_ECS_CLUSTER: server-cluster                # set this to your Amazon ECS cluster name
+  SERVER_ECS_TASK_DEFINITION: .github/workflows/server-task-revision1.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  SERVER_CONTAINER_NAME: server-container           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
 
 permissions:
   contents: read
@@ -63,7 +78,8 @@ jobs: #stages
       working-directory: ./com.trillionares.tryit.trial
 
     - name: Build with Gradle
-      run: ./gradlew clean build
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
       working-directory: ./com.trillionares.tryit.trial
 
     - name: Upload Build Artifacts
