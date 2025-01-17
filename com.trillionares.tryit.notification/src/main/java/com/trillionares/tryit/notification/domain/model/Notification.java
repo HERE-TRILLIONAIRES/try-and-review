@@ -26,17 +26,17 @@ public class Notification extends BaseEntity {
   @Column(name = "notification_id", updatable = false)
   private UUID notificationId;
 
-  @Column(name = "user_id", columnDefinition = "uuid")
+  @Column(name = "user_id", columnDefinition = "uuid", nullable = false)
   private UUID userId;
 
-  @Column(name = "submission_id", columnDefinition = "uuid")
+  @Column(name = "submission_id", columnDefinition = "uuid", nullable = false)
   private UUID submissionId;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "notification_status")
   private NotificationStatus notificationStatus = NotificationStatus.PENDING; // 초기상태 설정
 
-  @Column(name = "attempt_count")
+  @Column(name = "attempt_count", nullable = false)
   private Integer attemptCount = 0;
 
   public void increaseAttemptCount() {
@@ -44,7 +44,7 @@ public class Notification extends BaseEntity {
     updateStatusBasedOnAttempt();
   }
 
-  public void updateStatusBasedOnAttempt() {
+  private void updateStatusBasedOnAttempt() {
     if (this.attemptCount >= 3) { // 0, 1, 2 최대 3회
       this.notificationStatus = NotificationStatus.FAILED;
     }
@@ -55,11 +55,9 @@ public class Notification extends BaseEntity {
   }
 
   @Builder
-  public Notification(UUID notificationId, UUID userId, UUID submissionId, Integer attemptCount
-  ) {
+  public Notification(UUID notificationId, UUID userId, UUID submissionId) {
     this.notificationId = notificationId;
     this.userId = userId;
     this.submissionId = submissionId;
-    this.attemptCount = attemptCount;
   }
 }
