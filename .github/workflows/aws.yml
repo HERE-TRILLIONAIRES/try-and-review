@@ -59,7 +59,7 @@ jobs: #stages
         distribution: 'temurin'
 
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: chmod +x com.trillionares.tryit.trial/gradlew
 
     - name: Build with Gradle
       run: ./com.trillionares.tryit.trial/gradlew clean build
