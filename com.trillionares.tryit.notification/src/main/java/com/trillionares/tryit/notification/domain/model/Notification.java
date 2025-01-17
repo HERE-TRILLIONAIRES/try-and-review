@@ -52,13 +52,11 @@ public class Notification extends BaseEntity {
   }
 
   @Builder
-  public Notification(UUID notificationId, UUID userId, UUID submissionId,
-      NotificationStatus notificationStatus, Integer attemptCount
+  public Notification(UUID notificationId, UUID userId, UUID submissionId, Integer attemptCount
   ) {
     this.notificationId = notificationId;
     this.userId = userId;
     this.submissionId = submissionId;
-    this.notificationStatus = NotificationStatus.PENDING; // 초기상태 PENDING
     this.attemptCount = attemptCount;
   }
 }
