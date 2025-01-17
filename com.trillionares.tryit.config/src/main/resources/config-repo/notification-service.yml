@@ -3,25 +3,17 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/trillionaires
-    username: notification
-    password: notification
+    url: ${DB_URL}
+    username: ${DB_NOTIFICATION_USERNAME}
+    password: ${DB_NOTIFICATION_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create  # 개발 환경에서만 create 사용
-    properties:
-      hibernate:
-        default_schema: notification
-        format_sql: true
-    show-sql: true
 
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # 여기만 변경
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: '*'
       group-id: notification-service-group
@@ -41,12 +33,14 @@ management:
     sampling:
       probability: 1.0
 
-  #  data:
-#    redis:
-#      host: ${redis.notification.host}
-#      port: ${redis.notification.port}
-#      password: ${redis.common.password}
-#
-#management:
-#  server:
-#    port: ${monitoring.prometheus.notification-port}
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_URL}
+
+logging:
+  level:
+    root: INFO
+    com.trillionares.tryit: DEBUG
+    org.springframework.web: DEBUG
+    feign: DEBUG
+    feign.Logger: DEBUG

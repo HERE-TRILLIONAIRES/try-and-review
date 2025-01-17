@@ -44,6 +44,9 @@ dependencies {
 	implementation 'io.github.openfeign:feign-micrometer'
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 
+	// prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
