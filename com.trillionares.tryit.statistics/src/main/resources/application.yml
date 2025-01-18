@@ -15,8 +15,8 @@ spring:
     redis:
       host: ${STATISTICS_REDIS_HOST}
       port: ${STATISTICS_REDIS_PORT}
-      username: ${STATISTICS_REDIS_USERNAME}
-      password: ${STATISTICS_REDIS_PASSWORD}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
 
   jpa: # jpa
     hibernate:
