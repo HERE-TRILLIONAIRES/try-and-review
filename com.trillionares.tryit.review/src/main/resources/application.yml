@@ -3,7 +3,7 @@ spring:
     name: review-service
 
   config:
-    import: configserver:http://localhost:18080   # Config Server 주소
+    import: configserver:${CONFIG_DNS_NAME}
 
   datasource: # database
     url: ${DB_URL}
@@ -32,8 +32,8 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19090/eureka/
+      defaultZone: ${EUREKA_DNS_NAME}/eureka
 
 openapi:
   service:
-    url: http://localhost:19091 # API Gateway 포트
+    url: ${GATEWAY_DNS_NAME}
