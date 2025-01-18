@@ -55,4 +55,4 @@ eureka:
 
 openapi:
   service:
-    url: http://localhost:19091 # API Gateway ??
+    url: ${GATEWAY_DNS_NAME}

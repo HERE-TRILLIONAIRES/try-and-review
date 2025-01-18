@@ -30,4 +30,4 @@ feign:
 
 openapi:
   service:
-    url: http://localhost:19091 # API Gateway 포트
+    url: ${GATEWAY_DNS_NAME}
