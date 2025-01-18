@@ -583,7 +583,6 @@ jobs: #stages
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
 
-
     # Product
     - name: Product - Build, tag, and push server image to Amazon ECR
       id: product-build-image
