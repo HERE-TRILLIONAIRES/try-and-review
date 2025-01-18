@@ -10,10 +10,10 @@ spring:
     driver-class-name: org.postgresql.Driver
   data:
     redis:
-      host: ${HUB_REDIS_HOST}
-      port: ${HUB_REDIS_PORT}
-      username: ${HUB_REDIS_USERNAME}
-      password: ${HUB_REDIS_PASSWORD}
+      host: ${PRODUCT_REDIS_HOST}
+      port: ${PRODUCT_REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -53,11 +53,3 @@ openapi:
 logging:
   level:
     org.springframework.cloud.openfeign: DEBUG
-
-#management:
-#  zipkin:
-#    tracing:
-#      endpoint: ${ZIPKIN_URL}
-#  tracing:
-#    sampling:
-#      probability: 1.0
