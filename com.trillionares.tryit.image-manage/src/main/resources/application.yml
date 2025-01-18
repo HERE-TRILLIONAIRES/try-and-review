@@ -1,8 +1,8 @@
 spring:
   application:
     name: image-manage-service
-    config:
-      import: configserver:${CONFIG_DNS_NAME}
+  config:
+    import: configserver:${CONFIG_DNS_NAME}
   datasource:
     url: ${DB_URL}
     username: ${DB_PRODUCT_USERNAME}
@@ -56,11 +56,3 @@ eureka:
 openapi:
   service:
     url: http://localhost:19091 # API Gateway ??
-
-management:
-  zipkin:
-    tracing:
-      endpoint: ${ZIPKIN_URL}
-  tracing:
-    sampling:
-      probability: 1.0
