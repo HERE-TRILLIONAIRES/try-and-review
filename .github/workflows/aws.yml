@@ -251,12 +251,55 @@ jobs: #stages
         name: gateway-build-libs
         path: ${{ env.GATEWAY_WD }}/build/libs
 
+    # Auth
+    - name: Download auth Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: auth-build-libs
+        path: ${{ env.AUTH_WD }}/build/libs
+
     # Trial
     - name: Download trial Build Artifacts
       uses: actions/download-artifact@v3
       with:
         name: trial-build-libs
         path: ${{ env.TRIAL_WD }}/build/libs
+
+    # Product
+    - name: Download product Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: product-build-libs
+        path: ${{ env.PRODUCT_WD }}/build/libs
+
+    # Review
+    - name: Download review Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: review-build-libs
+        path: ${{ env.REVIEW_WD }}/build/libs
+
+    # Notification
+    - name: Download notification Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: notification-build-libs
+        path: ${{ env.NOTIFICATION_WD }}/build/libs
+
+    # Statistics
+    - name: Download statistics Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: statistics-build-libs
+        path: ${{ env.STATISTICS_WD }}/build/libs
+
+    # Image-manage
+    - name: Download image-manage Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: image-manage-build-libs
+        path: ${{ env.IMAGE_MANAGE_WD }}/build/libs
+
     # ------------------------------------------------------------------------
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
