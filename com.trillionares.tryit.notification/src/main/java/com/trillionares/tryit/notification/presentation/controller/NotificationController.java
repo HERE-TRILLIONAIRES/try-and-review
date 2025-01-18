@@ -1,6 +1,6 @@
 package com.trillionares.tryit.notification.presentation.controller;
 
-import com.trillionares.tryit.notification.application.dto.NotificationResponse;
+import com.trillionares.tryit.notification.application.dto.response.NotificationResponse;
 import com.trillionares.tryit.notification.application.service.NotificationService;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
 import java.util.UUID;

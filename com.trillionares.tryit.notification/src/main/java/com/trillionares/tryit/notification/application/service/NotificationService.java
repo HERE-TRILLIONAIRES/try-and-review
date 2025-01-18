@@ -1,6 +1,6 @@
 package com.trillionares.tryit.notification.application.service;
 
-import com.trillionares.tryit.notification.application.dto.NotificationResponse;
+import com.trillionares.tryit.notification.application.dto.response.NotificationResponse;
 import com.trillionares.tryit.notification.application.dto.slack.SlackNotificationSender;
 import com.trillionares.tryit.notification.domain.model.Notification;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
