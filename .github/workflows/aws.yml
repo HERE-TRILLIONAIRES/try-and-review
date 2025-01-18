@@ -763,3 +763,4 @@ jobs: #stages
         service: ${{ env.IMAGE_MANAGE_ECS_SERVICE }}
         cluster: ${{ env.IMAGE_MANAGE_ECS_CLUSTER }}
         wait-for-service-stability: true
+
