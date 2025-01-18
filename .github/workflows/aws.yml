@@ -150,6 +150,15 @@ jobs: #stages
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Set EUREKA_DNS_NAME Environment Variable
+      run: echo "EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}" >> $GITHUB_ENV
+
+    - name: Set CONFIG_DNS_NAME Environment Variable
+      run: echo "CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}" >> $GITHUB_ENV
+
+    - name: Set GATEWAY_DNS_NAME Environment Variable
+      run: echo "GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}" >> $GITHUB_ENV
+
     # server
     - name: Grant execute permission for server gradlew
       run: chmod +x gradlew
@@ -343,7 +352,7 @@ jobs: #stages
         docker push $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}
         echo "image=$ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
 
-    - name: Fill in the new config image ID in the Amazon ECS task definition
+    - name: Fill in the new gateway image ID in the Amazon ECS task definition
       id: gateway-task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
