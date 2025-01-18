@@ -1,8 +1,8 @@
 spring:
   application:
     name: image-manage-service
-  #  config:
-  #    import: configserver:http://localhost:18080   # Config Server ??
+    config:
+      import: configserver:${CONFIG_DNS_NAME}
   datasource:
     url: ${DB_URL}
     username: ${DB_PRODUCT_USERNAME}

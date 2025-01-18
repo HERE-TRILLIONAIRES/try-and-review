@@ -2,7 +2,7 @@ spring:
   application:
     name: recruitment-service
   config:
-    import: configserver:http://localhost:18080   # Config Server 주소
+    import: configserver:${CONFIG_DNS_NAME}
   datasource:
     url: ${DB_URL}
     username: ${DB_RECRUITMENT_USERNAME}
