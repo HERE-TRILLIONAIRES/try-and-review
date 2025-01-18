@@ -29,7 +29,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19090/eureka/
+      defaultZone: ${EUREKA_DNS_NAME}/eureka
 
 openapi:
   service:
