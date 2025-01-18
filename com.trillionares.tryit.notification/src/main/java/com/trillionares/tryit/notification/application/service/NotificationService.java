@@ -35,6 +35,10 @@ public class NotificationService {
   @Transactional
   public void createNotificationFromSubmissionEvent(SubmissionKafkaEvent event) {
 
+    if (notificationRepository.existsByMessageId(event.getMessageId())) {
+      throw new GlobalException(ErrorCode.DUPLICATE_MESSAGE_ID);
+    }
+
     // 알림 엔티티 저장
     Notification notification = convertEventToNotification(event);
     Notification savedNotification = notificationRepository.save(notification);
@@ -67,6 +71,7 @@ public class NotificationService {
     return Notification.builder()
         .userId(event.getUserId())
         .submissionId(event.getSubmissionId())
+        .messageId(event.getMessageId())
         .build();
   }
 

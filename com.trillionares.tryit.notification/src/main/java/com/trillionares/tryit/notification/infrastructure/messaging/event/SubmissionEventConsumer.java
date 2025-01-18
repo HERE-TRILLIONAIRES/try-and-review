@@ -26,10 +26,11 @@ public class SubmissionEventConsumer {
 
     log.info("카프카 통신 KafkaMessage: {}", kafkaMessage);
 
-        SubmissionKafkaEvent event = objectMapper.readValue(
-            kafkaMessage.getPayload(),
-            SubmissionKafkaEvent.class
-        );
+    SubmissionKafkaEvent event = objectMapper.readValue( // payload 역직렬화
+        kafkaMessage.getPayload(),
+        SubmissionKafkaEvent.class
+    );
+    event.setMessageId(kafkaMessage.getMessageId());
     log.info("두번째 역직렬화 SubmissionKafkaEvent: {}", event);
 
     notificationService.createNotificationFromSubmissionEvent(event);

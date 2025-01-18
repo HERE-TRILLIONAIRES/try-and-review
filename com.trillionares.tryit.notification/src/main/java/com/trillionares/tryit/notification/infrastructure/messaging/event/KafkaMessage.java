@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 public class KafkaMessage {
 
-  private UUID messageId;
+  private String messageId;
   private String payload;
   private String eventTimestamp;
 }
