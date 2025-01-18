@@ -200,6 +200,23 @@ jobs: #stages
       with:
         name: gateway-build-libs
         path: ${{ env.GATEWAY_WD }}/build/libs/*.jar
+
+    # auth
+    - name: Grant execute permission for auth gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.AUTH_WD }}
+
+    #- name: Build with auth Gradle
+    - name: Build with Test without auth Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.AUTH_WD }}
+
+    - name: Upload auth Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: auth-build-libs
+        path: ${{ env.AUTH_WD }}/build/libs/*.jar
         
     # trial
     - name: Grant execute permission for trial gradlew
@@ -217,6 +234,91 @@ jobs: #stages
       with:
         name: trial-build-libs
         path: ${{ env.TRIAL_WD }}/build/libs/*.jar
+
+    # product
+    - name: Grant execute permission for product gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.PRODUCT_WD }}
+
+    #- name: Build with product Gradle
+    - name: Build with Test without product Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.PRODUCT_WD }}
+
+    - name: Upload product Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: product-build-libs
+        path: ${{ env.PRODUCT_WD }}/build/libs/*.jar
+
+    # review
+    - name: Grant execute permission for review gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.REVIEW_WD }}
+
+    #- name: Build with review Gradle
+    - name: Build with Test without review Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.REVIEW_WD }}
+
+    - name: Upload review Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: review-build-libs
+        path: ${{ env.REVIEW_WD }}/build/libs/*.jar
+
+    # notification
+    - name: Grant execute permission for notification gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.NOTIFICATION_WD }}
+
+    #- name: Build with notification Gradle
+    - name: Build with Test without notification Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.NOTIFICATION_WD }}
+
+    - name: Upload notification Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: notification-build-libs
+        path: ${{ env.NOTIFICATION_WD }}/build/libs/*.jar
+
+    # statistics
+    - name: Grant execute permission for statistics gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.STATISTICS_WD }}
+
+    #- name: Build with statistics Gradle
+    - name: Build with Test without statistics Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.STATISTICS_WD }}
+
+    - name: Upload statistics Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: statistics-build-libs
+        path: ${{ env.STATISTICS_WD }}/build/libs/*.jar
+
+    # image-manage
+    - name: Grant execute permission for image-manage gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.IMAGE_MANAGE_WD }}
+
+    #- name: Build with image-manage Gradle
+    - name: Build with Test without image-manage Gradle
+      #run: ./gradlew clean build
+      run: ./gradlew clean build -x test
+      working-directory: ${{ env.IMAGE_MANAGE_WD }}
+
+    - name: Upload image-manage Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: image-manage-build-libs
+        path: ${{ env.IMAGE_MANAGE_WD }}/build/libs/*.jar
 
         
   deploy:
