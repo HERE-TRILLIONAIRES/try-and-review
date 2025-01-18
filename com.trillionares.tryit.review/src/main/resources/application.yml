@@ -15,8 +15,8 @@ spring:
     redis:
       host: ${REVIEW_REDIS_HOST}
       port: ${REVIEW_REDIS_PORT}
-      username: ${REVIEW_REDIS_USERNAME}
-      password: ${REVIEW_REDIS_PASSWORD}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
 
   jpa: # jpa
     hibernate:
