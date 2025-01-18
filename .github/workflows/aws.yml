@@ -236,8 +236,6 @@ jobs: #stages
       with:
         name: server-build-libs
         path: ${{ env.SERVER_WD }}/build/libs
-        #path: build/libs
-        #working-directory: ${{ env.SERVER_WD }}
 
     # Config
     - name: Download config Build Artifacts
@@ -245,8 +243,6 @@ jobs: #stages
       with:
         name: config-build-libs
         path: ${{ env.CONFIG_WD }}/build/libs
-        #path: build/libs
-        #working-directory: ${{ env.CONFIG_WD }}
 
     # Gateway
     - name: Download gateway Build Artifacts
@@ -254,8 +250,6 @@ jobs: #stages
       with:
         name: gateway-build-libs
         path: ${{ env.GATEWAY_WD }}/build/libs
-        #path: build/libs
-        #working-directory: ${{ env.GATEWAY_WD }}
 
     # Trial
     - name: Download trial Build Artifacts
@@ -263,8 +257,6 @@ jobs: #stages
       with:
         name: trial-build-libs
         path: ${{ env.TRIAL_WD }}/build/libs
-        #path: build/libs
-        #working-directory: ${{ env.TRIAL_WD }}
     # ------------------------------------------------------------------------
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
