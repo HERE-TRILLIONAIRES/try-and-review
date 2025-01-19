@@ -533,7 +533,7 @@ jobs: #stages
           DB_AUTH_USERNAME=${{ secrets.DB_AUTH_USERNAME }}
           DB_AUTH_PASSWORD=${{ secrets.DB_AUTH_PASSWORD }}
           SECRET_KEY=${{ secrets.SECRET_KEY }}
-          ZIPKIN_URL=${{ secrets.ZIPKIN_ONLY_URL }}
+          ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
 
     - name: Deploy auth Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -613,7 +613,7 @@ jobs: #stages
           PRODUCT_REDIS_PORT=${{ secrets.PRODUCT_REDIS_PORT }}
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-          ZIPKIN_URL=${{ secrets.ZIPKIN_ONLY_URL }}
+          ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
 
     - name: Deploy product Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -652,6 +652,7 @@ jobs: #stages
           REVIEW_REDIS_PORT=${{ secrets.REVIEW_REDIS_PORT }}
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
 
     - name: Deploy review Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -683,6 +684,7 @@ jobs: #stages
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
           GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
 
     - name: Deploy notification Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -720,6 +722,7 @@ jobs: #stages
           STATISTICS_REDIS_PORT=${{ secrets.STATISTICS_REDIS_PORT }}
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
 
     - name: Deploy statistics Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -757,6 +760,7 @@ jobs: #stages
           AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}
           AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}
           AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}
+          ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
 
     - name: Deploy image-manage Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
