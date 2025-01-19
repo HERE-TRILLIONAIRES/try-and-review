@@ -533,7 +533,7 @@ jobs: #stages
           DB_AUTH_USERNAME=${{ secrets.DB_AUTH_USERNAME }}
           DB_AUTH_PASSWORD=${{ secrets.DB_AUTH_PASSWORD }}
           SECRET_KEY=${{ secrets.SECRET_KEY }}
-          ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+          ZIPKIN_URL=${{ secrets.ZIPKIN_ONLY_URL }}
 
     - name: Deploy auth Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
