@@ -1,6 +1,6 @@
 package com.trillionares.tryit.notification.application.service;
 
-import com.trillionares.tryit.notification.application.dto.NotificationResponse;
+import com.trillionares.tryit.notification.application.dto.response.NotificationResponse;
 import com.trillionares.tryit.notification.application.dto.slack.SlackNotificationSender;
 import com.trillionares.tryit.notification.domain.model.Notification;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
@@ -35,6 +35,10 @@ public class NotificationService {
   @Transactional
   public void createNotificationFromSubmissionEvent(SubmissionKafkaEvent event) {
 
+    if (notificationRepository.existsByMessageId(event.getMessageId())) {
+      throw new GlobalException(ErrorCode.DUPLICATE_MESSAGE_ID);
+    }
+
     // 알림 엔티티 저장
     Notification notification = convertEventToNotification(event);
     Notification savedNotification = notificationRepository.save(notification);
@@ -67,6 +71,7 @@ public class NotificationService {
     return Notification.builder()
         .userId(event.getUserId())
         .submissionId(event.getSubmissionId())
+        .messageId(event.getMessageId())
         .build();
   }
 

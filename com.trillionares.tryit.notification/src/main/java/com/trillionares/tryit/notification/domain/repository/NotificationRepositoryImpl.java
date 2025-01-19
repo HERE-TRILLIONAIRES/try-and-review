@@ -3,7 +3,7 @@ package com.trillionares.tryit.notification.domain.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.trillionares.tryit.notification.application.dto.NotificationResponse;
+import com.trillionares.tryit.notification.application.dto.response.NotificationResponse;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
 import com.trillionares.tryit.notification.domain.model.QNotification;
 import java.util.List;

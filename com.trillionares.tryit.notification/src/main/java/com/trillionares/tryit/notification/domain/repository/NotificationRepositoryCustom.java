@@ -1,6 +1,6 @@
 package com.trillionares.tryit.notification.domain.repository;
 
-import com.trillionares.tryit.notification.application.dto.NotificationResponse;
+import com.trillionares.tryit.notification.application.dto.response.NotificationResponse;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

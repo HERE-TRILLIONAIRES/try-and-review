@@ -22,7 +22,6 @@ public class SlackNotificationSender {
   private final RestTemplate restTemplate;
   private final NotificationRepository notificationRepository;
 
-  @Transactional
   public void sendNotification(Notification notification, String slackId, String status) {
 
     SlackMessage message = SlackMessage.from(notification, slackId, status); // 슬랙 메세지 생성
@@ -31,15 +30,13 @@ public class SlackNotificationSender {
       restTemplate.postForEntity(webhookUrl, message, String.class);
 
       notification.markAsDelivered();
-      notificationRepository.save(notification);
-
       log.info("Slack notification sent successfully: {}", notification.getNotificationId());
 
     } catch (Exception e) {
       notification.increaseAttemptCount();
-      notificationRepository.save(notification);
-
+      notificationRepository.save(notification); // 실패의 경우도 저장
       log.error("Failed to send Slack notification: {}", e.getMessage());
+
        throw exceptionConverter.convertToBaseException(e);
     }
   }
