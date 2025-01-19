@@ -613,6 +613,7 @@ jobs: #stages
           PRODUCT_REDIS_PORT=${{ secrets.PRODUCT_REDIS_PORT }}
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          ZIPKIN_URL=${{ secrets.ZIPKIN_ONLY_URL }}
 
     - name: Deploy product Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
