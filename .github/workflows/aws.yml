@@ -720,6 +720,7 @@ jobs: #stages
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
           GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          DB_URL=${{ secrets.DB_URL }}
           DB_STATISTICS_USERNAME=${{ secrets.DB_STATISTICS_USERNAME }}
           DB_STATISTICS_PASSWORD=${{ secrets.DB_STATISTICS_PASSWORD }}
           STATISTICS_REDIS_HOST=${{ secrets.STATISTICS_REDIS_HOST }}
@@ -758,6 +759,7 @@ jobs: #stages
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
           GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          DB_URL=${{ secrets.DB_URL }}
           DB_PRODUCT_USERNAME=${{ secrets.DB_PRODUCT_USERNAME }}
           DB_PRODUCT_PASSWORD=${{ secrets.DB_PRODUCT_PASSWORD }}
           AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
