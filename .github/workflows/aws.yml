@@ -685,6 +685,10 @@ jobs: #stages
           GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+          DB_URL=${{ secrets.DB_URL }}
+          DB_NOTIFICATION_USERNAME=${{ secrets.DB_NOTIFICATION_USERNAME }}
+          DB_NOTIFICATION_PASSWORD=${{ secrets.DB_NOTIFICATION_PASSWORD }}
+          SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
 
     - name: Deploy notification Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
