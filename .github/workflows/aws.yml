@@ -28,7 +28,7 @@ name: Deploy to Amazon ECS
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
     #branches: [ "develop" ] #branches: [ "main" ]
 
 env:
@@ -498,6 +498,15 @@ jobs: #stages
         image: ${{ steps.gateway-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
+          CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           SECRET_KEY=${{ secrets.SECRET_KEY }}
         
     - name: Deploy gateway Amazon ECS task definition
