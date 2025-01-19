@@ -40,7 +40,7 @@ eureka:
   instance:
     prefer-ip-address: false
     hostname: ${TRIAL_DNS_NAME}
-    instance-id: ${TRIAL_DNS_NAME}:${server.port}
+    instance-id: ${TRIAL_DNS_NAME}
 
 openapi:
   service:

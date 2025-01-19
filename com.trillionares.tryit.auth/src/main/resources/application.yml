@@ -33,7 +33,7 @@ eureka:
   instance:
     prefer-ip-address: false
     hostname: ${AUTH_DNS_NAME}
-    instance-id: ${AUTH_DNS_NAME}:${server.port}
+    instance-id: ${AUTH_DNS_NAME}
 
 openapi:
   service:
