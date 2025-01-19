@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification extends BaseEntity {
 
+  private static final int MAX_ATTEMPT_COUNT = 3;
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "notification_id", updatable = false)
@@ -57,17 +59,20 @@ public class Notification extends BaseEntity {
 
   public void increaseAttemptCount() {
     this.attemptCount++;
-    updateStatusBasedOnAttempt();
-  }
-
-  private void updateStatusBasedOnAttempt() {
-    if (this.attemptCount >= 3) { // 0, 1, 2 최대 3회
-      this.notificationStatus = NotificationStatus.FAILED;
-    }
+    updateNotificationStatus();
   }
 
   public void markAsDelivered() {
     this.notificationStatus = NotificationStatus.SENT;
+  }
+
+  public void updateNotificationStatus() {
+    if (this.attemptCount >= MAX_ATTEMPT_COUNT) {
+      this.notificationStatus = NotificationStatus.FAILED; // 시도 횟수 3번 이상 실패
+
+    } else if (this.notificationStatus != NotificationStatus.SENT) {
+      this.notificationStatus = NotificationStatus.PENDING;
+    }
   }
 
   @Builder
