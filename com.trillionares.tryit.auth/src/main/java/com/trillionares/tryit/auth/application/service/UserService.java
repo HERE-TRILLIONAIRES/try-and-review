@@ -13,6 +13,8 @@ import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,13 +63,14 @@ public class UserService {
     user.updatePassword(passwordEncoder.encode(reqDto.getNewPassword()));
   }
 
+  @CachePut(cacheNames = "userCache", key = "#userId")
   @Transactional
   public UserResponseDto updateUserInfo(@Valid UUID userId, UserInfoUpdateReqDto reqDto) {
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.ID_NOT_FOUND));
 
     user.updateUserInfo(reqDto.getFullname(), reqDto.getEmail(), reqDto.getPhoneNumber(), reqDto.getSlackId());
-
+    System.out.println("캐싱된 데이터 업데이트됨: " + userId);
     return new UserResponseDto(user);
   }
 
@@ -84,22 +87,30 @@ public class UserService {
     userRepository.save(user); // 변경 사항 저장
   }
 
+  @Cacheable(cacheNames = "userCache", key = "#username")
+  @Transactional(readOnly = true)
   public InfoByUsernameResponseDto getUserByUsername(String username) {
+    System.out.println("캐싱 적용 전, DB에서 사용자 정보 조회: " + username); // 캐싱 여부 확인용
     User user = userRepository.findByUsernameAndIsDeletedFalse(username)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-    // username, userId, role, slackId를 포함한 응답 DTO 생성
     return new InfoByUsernameResponseDto(user);
   }
 
+  @Cacheable(cacheNames = "userCache", key = "#userId")
+  @Transactional(readOnly = true)
   public UserResponseDto getUser(UUID userId) {
+    System.out.println("DB에서 사용자 정보 조회: " + userId); // 캐싱 여부 확인용
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
     return new UserResponseDto(user);
   }
 
+  @Cacheable(cacheNames = "userCache", key = "#userId")
+  @Transactional(readOnly = true)
   public UserResponseDto getUserInfo(UUID userId) {
+    System.out.println("DB에서 사용자 정보 조회: " + userId); // 캐싱 여부 확인용
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
