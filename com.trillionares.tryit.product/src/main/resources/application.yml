@@ -45,6 +45,10 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_DNS_NAME}/eureka
+  instance:
+    prefer-ip-address: false
+    hostname: ${PRODUCT_DNS_NAME}
+    instance-id: ${PRODUCT_DNS_NAME}:${server.port}
 
 openapi:
   service:

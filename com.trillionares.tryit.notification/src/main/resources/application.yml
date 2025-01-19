@@ -19,6 +19,10 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_DNS_NAME}/eureka
+  instance:
+    prefer-ip-address: false
+    hostname: ${NOTIFICATION_DNS_NAME}
+    instance-id: ${NOTIFICATION_DNS_NAME}:${server.port}
 
 feign:
   client:
