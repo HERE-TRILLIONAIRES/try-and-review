@@ -36,7 +36,7 @@ eureka:
   instance:
     prefer-ip-address: false
     hostname: ${STATISTICS_DNS_NAME}
-    instance-id: ${STATISTICS_DNS_NAME}:${server.port}
+    instance-id: ${STATISTICS_DNS_NAME}
 
 openapi:
   service:

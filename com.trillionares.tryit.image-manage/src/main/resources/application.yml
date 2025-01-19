@@ -55,7 +55,7 @@ eureka:
   instance:
     prefer-ip-address: false
     hostname: ${IMAGE_MANAGE_DNS_NAME}
-    instance-id: ${IMAGE_MANAGE_DNS_NAME}:${server.port}
+    instance-id: ${IMAGE_MANAGE_DNS_NAME}
 
 openapi:
   service:

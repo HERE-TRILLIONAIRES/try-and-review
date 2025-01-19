@@ -23,4 +23,4 @@ eureka:
   instance:
     prefer-ip-address: false
     hostname: ${CONFIG_DNS_NAME}
-    instance-id: ${CONFIG_DNS_NAME}:${server.port}
+    instance-id: ${CONFIG_DNS_NAME}
