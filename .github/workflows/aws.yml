@@ -464,6 +464,15 @@ jobs: #stages
         image: ${{ steps.config-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
+          CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
           DB_URL=${{ secrets.DB_URL }}
           DB_NOTIFICATION_USERNAME=${{ secrets.DB_NOTIFICATION_USERNAME }}
@@ -539,8 +548,15 @@ jobs: #stages
         image: ${{ steps.auth-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           DB_URL=${{ secrets.DB_URL }}
           DB_AUTH_USERNAME=${{ secrets.DB_AUTH_USERNAME }}
           DB_AUTH_PASSWORD=${{ secrets.DB_AUTH_PASSWORD }}
@@ -579,8 +595,15 @@ jobs: #stages
         image: ${{ steps.trial-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           DB_URL=${{ secrets.DB_URL }}
           DB_RECRUITMENT_USERNAME=${{ secrets.DB_RECRUITMENT_USERNAME }}
           DB_RECRUITMENT_PASSWORD=${{ secrets.DB_RECRUITMENT_PASSWORD }}
@@ -618,8 +641,15 @@ jobs: #stages
         image: ${{ steps.product-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           DB_URL=${{ secrets.DB_URL }}
           DB_PRODUCT_USERNAME=${{ secrets.DB_PRODUCT_USERNAME }}
           DB_PRODUCT_PASSWORD=${{ secrets.DB_PRODUCT_PASSWORD }}
@@ -658,8 +688,15 @@ jobs: #stages
         image: ${{ steps.review-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           DB_URL=${{ secrets.DB_URL }}
           DB_REVIEW_USERNAME=${{ secrets.DB_REVIEW_USERNAME }}
           DB_REVIEW_PASSWORD=${{ secrets.DB_REVIEW_PASSWORD }}
@@ -698,8 +735,15 @@ jobs: #stages
         image: ${{ steps.notification-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
           DB_URL=${{ secrets.DB_URL }}
           DB_NOTIFICATION_USERNAME=${{ secrets.DB_NOTIFICATION_USERNAME }}
@@ -735,8 +779,15 @@ jobs: #stages
         image: ${{ steps.statistics-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           DB_URL=${{ secrets.DB_URL }}
           DB_STATISTICS_USERNAME=${{ secrets.DB_STATISTICS_USERNAME }}
           DB_STATISTICS_PASSWORD=${{ secrets.DB_STATISTICS_PASSWORD }}
@@ -775,8 +826,15 @@ jobs: #stages
         image: ${{ steps.image-manage-build-image.outputs.image }}
         environment-variables: |
           EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
           CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+          GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+          AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+          TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+          PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+          REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+          NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+          STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+          IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           DB_URL=${{ secrets.DB_URL }}
           DB_PRODUCT_USERNAME=${{ secrets.DB_PRODUCT_USERNAME }}
           DB_PRODUCT_PASSWORD=${{ secrets.DB_PRODUCT_PASSWORD }}
