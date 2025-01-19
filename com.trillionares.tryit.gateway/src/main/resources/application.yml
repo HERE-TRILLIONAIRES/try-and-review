@@ -78,3 +78,16 @@ logging:
     org.springframework.cloud.gateway: DEBUG
     com.trillionares.tryit.gateway.filter.JwtAuthFilter: DEBUG
     com.trillionares.tryit.gateway.jwt.JwtUtil: DEBUG
+
+
+dns:
+  name:
+    auth-service: ${AUTH_DNS_NAME}
+    trial-service: ${TRIAL_DNS_NAME}
+    product-service: ${PRODUCT_DNS_NAME}
+    review-service: ${REVIEW_DNS_NAME}
+    statistics-service: ${STATISTICS_DNS_NAME}
+    notification-service: ${NOTIFICATION_DNS_NAME}
+    image-manage-service: ${IMAGE_MANAGE_DNS_NAME}
+    config-service: ${CONFIG_DNS_NAME}
+    gateway-service: ${GATEWAY_DNS_NAME}
