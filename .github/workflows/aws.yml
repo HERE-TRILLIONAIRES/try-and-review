@@ -469,6 +469,7 @@ jobs: #stages
           DB_NOTIFICATION_USERNAME=${{ secrets.DB_NOTIFICATION_USERNAME }}
           DB_NOTIFICATION_PASSWORD=${{ secrets.DB_NOTIFICATION_PASSWORD }}
           SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
         
     - name: Deploy config Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -508,6 +509,7 @@ jobs: #stages
           STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
           IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
           SECRET_KEY=${{ secrets.SECRET_KEY }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
         
     - name: Deploy gateway Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -544,6 +546,7 @@ jobs: #stages
           DB_AUTH_PASSWORD=${{ secrets.DB_AUTH_PASSWORD }}
           SECRET_KEY=${{ secrets.SECRET_KEY }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
 
     - name: Deploy auth Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -585,6 +588,7 @@ jobs: #stages
           RECRUITMENT_REDIS_PORT=${{ secrets.RECRUITMENT_REDIS_PORT }}
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
 
     - name: Deploy trial Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -624,6 +628,7 @@ jobs: #stages
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
 
     - name: Deploy product Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -663,6 +668,7 @@ jobs: #stages
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
 
     - name: Deploy review Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -699,6 +705,7 @@ jobs: #stages
           DB_NOTIFICATION_USERNAME=${{ secrets.DB_NOTIFICATION_USERNAME }}
           DB_NOTIFICATION_PASSWORD=${{ secrets.DB_NOTIFICATION_PASSWORD }}
           SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
 
     - name: Deploy notification Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -738,6 +745,7 @@ jobs: #stages
           REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
 
     - name: Deploy statistics Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -777,6 +785,7 @@ jobs: #stages
           AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}
           AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+          KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
 
     - name: Deploy image-manage Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
