@@ -70,7 +70,6 @@ public class UserController {
     userService.deleteUser(userDetails.getUserId());
 
     return BaseResponse.of(204, HttpStatus.NO_CONTENT, "회원탈퇴가 완료되었습니다.", null);
-
   }
 
   @GetMapping("/internals/username/{username}") // 내부통신용으로 인증제외됨
@@ -86,8 +85,8 @@ public class UserController {
   }
 
   @GetMapping("/internals/{userId}")  // 내부통신용으로 인증제외됨
-  public BaseResponse<UserResponseDto> getUserInfo(@PathVariable UUID userId) {
-    UserResponseDto resDto = userService.getUserInfo(userId);
+  public BaseResponse<UserResponseDto> getInternalUser(@PathVariable UUID userId) {
+    UserResponseDto resDto = userService.getInternalUser(userId);
     return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
   }
 

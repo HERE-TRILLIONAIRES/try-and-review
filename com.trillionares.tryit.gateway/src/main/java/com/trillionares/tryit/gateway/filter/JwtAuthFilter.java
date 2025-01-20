@@ -28,7 +28,7 @@ public class JwtAuthFilter implements GatewayFilter {
     String path = exchange.getRequest().getURI().getPath();
 
     // 인증 제외 경로 설정
-    List<String> excludedPaths = List.of("/auth/signin", "/users/signup", "/users/internals/**");
+    List<String> excludedPaths = List.of("/auth/signin", "/users/signup", "/users/internals/**", "/actuator/health");
 
     // 로그 추가: 요청 경로와 인증 제외 경로 매칭 여부 확인
     log.info("요청 경로: {}", path);

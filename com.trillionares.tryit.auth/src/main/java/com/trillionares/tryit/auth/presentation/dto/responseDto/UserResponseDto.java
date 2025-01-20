@@ -2,13 +2,14 @@ package com.trillionares.tryit.auth.presentation.dto.responseDto;
 
 import com.trillionares.tryit.auth.domain.model.Role;
 import com.trillionares.tryit.auth.domain.model.User;
+import java.io.Serializable;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserResponseDto {
+public class UserResponseDto implements Serializable {
   private UUID userId;
   private String username;
   private String fullname;

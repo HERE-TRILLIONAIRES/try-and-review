@@ -34,3 +34,8 @@ eureka:
 openapi:
   service:
     url: ${GATEWAY_DNS_NAME}
+
+logging:
+  level:
+    com.trillionares.tryit.auth: DEBUG
+    com.trillionares.tryit.auth.application.service.UserService: DEBUG
