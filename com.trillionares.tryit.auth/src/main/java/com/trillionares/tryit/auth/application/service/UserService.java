@@ -1,5 +1,6 @@
 package com.trillionares.tryit.auth.application.service;
 
+import com.querydsl.core.types.Predicate;
 import com.trillionares.tryit.auth.application.dto.InfoByUsernameResponseDto;
 import com.trillionares.tryit.auth.domain.model.Role;
 import com.trillionares.tryit.auth.domain.model.User;
@@ -11,8 +12,13 @@ import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.UserInfoUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +110,18 @@ public class UserService {
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
     return new UserResponseDto(user);
+  }
+
+  // 사용자 목록 조회 queryDsl+paging
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public PagedModel<UserResponseDto> getUsers(List<UUID> uuidList, Predicate predicate,
+      Pageable pageable) {
+
+    Page<UserResponseDto> userResponseDtoPage
+        = userRepository.findAllByConditions(uuidList, predicate, pageable);
+
+    return new PagedModel<>(userResponseDtoPage);
   }
 
 
