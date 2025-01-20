@@ -73,7 +73,7 @@ public class Notification extends BaseEntity {
   }
 
   @Builder
-  public Notification(UUID notificationId, UUID userId, UUID submissionId, String messageId, LocalDateTime submissionTime) {
+  public Notification(UUID notificationId, UUID userId, UUID submissionId, String messageId) {
     this.notificationId = notificationId;
     this.userId = userId;
     this.submissionId = submissionId;
