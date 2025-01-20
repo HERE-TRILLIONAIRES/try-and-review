@@ -15,12 +15,12 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class SlackNotificationSender {
 
-  private final ExceptionConverter exceptionConverter;
   @Value("${slack.webhook.url}")
   private String webhookUrl;
 
   private final RestTemplate restTemplate;
   private final NotificationRepository notificationRepository;
+  private final ExceptionConverter exceptionConverter;
 
   public void sendNotification(Notification notification, String slackId, String status) {
 

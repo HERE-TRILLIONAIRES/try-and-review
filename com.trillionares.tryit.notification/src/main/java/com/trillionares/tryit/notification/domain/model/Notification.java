@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification extends BaseEntity {
 
+  private static final int MAX_ATTEMPT_COUNT = 3;
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "notification_id", updatable = false)
@@ -47,9 +49,6 @@ public class Notification extends BaseEntity {
   @Column(name = "expiry_date")
   private LocalDateTime expiryDate;
 
-  @Column(name = "submission_time")
-  private LocalDateTime submissionTime;
-
   @PrePersist
   protected void onCreate() {
     this.expiryDate = LocalDateTime.now().plusMonths(3); // 저장일로 부터 3개월
@@ -57,25 +56,27 @@ public class Notification extends BaseEntity {
 
   public void increaseAttemptCount() {
     this.attemptCount++;
-    updateStatusBasedOnAttempt();
-  }
-
-  private void updateStatusBasedOnAttempt() {
-    if (this.attemptCount >= 3) { // 0, 1, 2 최대 3회
-      this.notificationStatus = NotificationStatus.FAILED;
-    }
+    updateNotificationStatus();
   }
 
   public void markAsDelivered() {
     this.notificationStatus = NotificationStatus.SENT;
   }
 
+  public void updateNotificationStatus() {
+    if (this.attemptCount >= MAX_ATTEMPT_COUNT) {
+      this.notificationStatus = NotificationStatus.FAILED; // 시도 횟수 3번 이상 실패
+
+    } else if (this.notificationStatus != NotificationStatus.SENT) {
+      this.notificationStatus = NotificationStatus.PENDING;
+    }
+  }
+
   @Builder
-  public Notification(UUID notificationId, UUID userId, UUID submissionId, String messageId, LocalDateTime submissionTime) {
+  public Notification(UUID notificationId, UUID userId, UUID submissionId, String messageId) {
     this.notificationId = notificationId;
     this.userId = userId;
     this.submissionId = submissionId;
     this.messageId = messageId;
-    this.submissionTime = submissionTime;
   }
 }
