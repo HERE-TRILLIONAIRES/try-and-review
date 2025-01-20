@@ -1,8 +1,8 @@
 spring:
   application:
     name: product-service
-#  config:
-#    import: configserver:http://localhost:18080   # Config Server 주소
+  config:
+    import: configserver:${CONFIG_DNS_NAME}
   datasource:
     url: ${DB_URL}
     username: ${DB_PRODUCT_USERNAME}
@@ -10,10 +10,10 @@ spring:
     driver-class-name: org.postgresql.Driver
   data:
     redis:
-      host: ${HUB_REDIS_HOST}
-      port: ${HUB_REDIS_PORT}
-      username: ${HUB_REDIS_USERNAME}
-      password: ${HUB_REDIS_PASSWORD}
+      host: ${PRODUCT_REDIS_HOST}
+      port: ${PRODUCT_REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -29,7 +29,7 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_DNS_URL}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -44,20 +44,12 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19090/eureka/
+      defaultZone: ${EUREKA_DNS_NAME}/eureka
 
 openapi:
   service:
-    url: http://localhost:19091 # API Gateway 포트
+    url: ${GATEWAY_DNS_NAME}
 
 logging:
   level:
     org.springframework.cloud.openfeign: DEBUG
-
-management:
-  zipkin:
-    tracing:
-      endpoint: ${ZIPKIN_URL}
-  tracing:
-    sampling:
-      probability: 1.0

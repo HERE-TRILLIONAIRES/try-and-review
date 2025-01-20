@@ -1,5 +1,6 @@
 package com.trillionares.tryit.product.domain.model.recruitment;
 
+import com.trillionares.tryit.product.domain.common.base.BaseEntity;
 import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,13 +14,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Recruitment {
-    //TODO: BaseEntity 상속
-
+public class Recruitment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "recruitment_id")
     private UUID recruitmentId;
+
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @Column(name = "product_id", nullable = false)
     private UUID productId;
@@ -75,5 +77,8 @@ public class Recruitment {
         this.recruitmentStatus = status;
     }
 
+    public void updateCurrentParticipants(long currentParticipants) {
+        this.currentParticipants = currentParticipants;
+    }
 }
 

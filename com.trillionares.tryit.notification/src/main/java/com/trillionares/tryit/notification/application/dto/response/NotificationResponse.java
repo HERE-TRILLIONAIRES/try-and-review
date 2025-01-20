@@ -1,4 +1,4 @@
-package com.trillionares.tryit.notification.application.dto;
+package com.trillionares.tryit.notification.application.dto.response;
 
 import com.trillionares.tryit.notification.domain.model.Notification;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class NotificationResponse {
     private UUID notificationId;
     private UUID userId;

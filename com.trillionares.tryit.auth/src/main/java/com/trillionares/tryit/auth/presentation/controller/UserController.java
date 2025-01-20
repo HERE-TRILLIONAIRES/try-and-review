@@ -1,7 +1,8 @@
 package com.trillionares.tryit.auth.presentation.controller;
 
 
-import com.trillionares.tryit.auth.application.dto.UserAuthorityResponseDto;
+import com.querydsl.core.types.Predicate;
+import com.trillionares.tryit.auth.application.dto.InfoByUsernameResponseDto;
 import com.trillionares.tryit.auth.application.service.UserService;
 import com.trillionares.tryit.auth.infrastructure.config.CustomUserDetails;
 import com.trillionares.tryit.auth.presentation.dto.BaseResponse;
@@ -10,9 +11,15 @@ import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.UserInfoUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +27,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
@@ -59,22 +69,54 @@ public class UserController {
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     userService.deleteUser(userDetails.getUserId());
 
-    return BaseResponse.of(204, HttpStatus.NO_CONTENT, "회원탈퇴 완료", null);
-
+    return BaseResponse.of(204, HttpStatus.NO_CONTENT, "회원탈퇴가 완료되었습니다.", null);
   }
 
-  @GetMapping("/username/{username}")
-  public BaseResponse<UserAuthorityResponseDto> getUserByUsername(@PathVariable String username,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
-    UserAuthorityResponseDto resDto = userService.getUserByUsername(username);
-    return BaseResponse.of(200, HttpStatus.OK, "사용자 정보 조회 성공", resDto);
+  @GetMapping("/internals/username/{username}") // 내부통신용으로 인증제외됨
+  public BaseResponse<InfoByUsernameResponseDto> getUserByUsername(@PathVariable String username) {
+    InfoByUsernameResponseDto resDto = userService.getUserByUsername(username);
+    return BaseResponse.of(200, HttpStatus.OK, "사용자 정보 조회에 성공하였습니다.", resDto);
   }
 
   @GetMapping("/{userId}")
-  public BaseResponse<UserResponseDto> getUser(@PathVariable UUID userId,
-      @AuthenticationPrincipal CustomUserDetails userDetails) {
-    UserResponseDto resDto = userService.getUser(userDetails.getUserId());
+  public BaseResponse<UserResponseDto> getUser(@PathVariable UUID userId) {
+    UserResponseDto resDto = userService.getUser(userId);
     return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
+  }
+
+  @GetMapping("/internals/{userId}")  // 내부통신용으로 인증제외됨
+  public BaseResponse<UserResponseDto> getInternalUser(@PathVariable UUID userId) {
+    UserResponseDto resDto = userService.getInternalUser(userId);
+    return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
+  }
+
+  @GetMapping("/userlists")
+  public BaseResponse<PagedModel<UserResponseDto>> getUsers(
+      @RequestParam(required = false) List<UUID> uuidList,
+      @RequestParam(required = false) Predicate predicate,
+      Pageable pageable) {
+    PagedModel<UserResponseDto> response = userService.getUsers(uuidList, predicate,
+        pageable);
+    return BaseResponse.of(200, HttpStatus.OK, "사용자 목록이 조회되었습니다.", response);
+  }
+
+  // 헤더 잘 추출 되고 잘 넣어지는지 테스트 용도
+  @GetMapping("/test")
+  public ResponseEntity<String> testHeaders(
+      @RequestHeader(value = "X-Auth-Username", required = false) String username,
+      @RequestHeader(value = "X-Auth-Role", required = false) String role) {
+
+    // 헤더 값 로깅
+    log.info("요청 헤더 - Username: {}, Role: {}", username, role);
+
+    // 응답에 헤더 추가
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.add("X-Auth-Username", username);
+    responseHeaders.add("X-Auth-Role", role);
+
+    return ResponseEntity.ok()
+        .headers(responseHeaders)
+        .body("헤더 성공적으로 받아옴.");
   }
 
 }

@@ -3,7 +3,6 @@ package com.trillionares.tryit.auth.infrastructure.config;
 import com.trillionares.tryit.auth.domain.repository.UserRepository;
 import com.trillionares.tryit.auth.infrastructure.config.jwt.JwtUtil;
 import com.trillionares.tryit.auth.infrastructure.config.jwt.filter.JwtAuthorizationFilter;
-import com.trillionares.tryit.auth.infrastructure.config.jwt.filter.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,9 +52,6 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
 
-    LoginFilter loginFilter = new LoginFilter(authenticationManager, jwtUtil);
-    loginFilter.setFilterProcessesUrl("/auth/signin");
-
     JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(customUserDetailsService(), jwtUtil);
 
     return http
@@ -65,10 +61,10 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(
             SessionCreationPolicy.STATELESS)) // 세션 비활성화
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/users/signup", "/auth/signin").permitAll() // 로그인 URL 허용
+            .requestMatchers("/users/signup", "/auth/signin", "/users/internals/**", "/actuator/health").permitAll() // 로그인 URL 허용
+            .requestMatchers("/users/userlists").hasAuthority("ADMIN") // 사용자 목록조회는 관리자 권한만 가능
             .anyRequest().authenticated() // 나머지는 인증 필요
         )
-        .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class) // LoginFilter 추가
         .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class) // JwtAuthorizationFilter 추가
         .build();
   }

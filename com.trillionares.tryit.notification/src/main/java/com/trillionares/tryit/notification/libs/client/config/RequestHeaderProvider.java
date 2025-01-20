@@ -1,11 +1,13 @@
-package com.trillionares.tryit.notification.libs.client.auth;
+package com.trillionares.tryit.notification.libs.client.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnWebApplication
 public class RequestHeaderProvider {
 
   private final HttpServletRequest request;
