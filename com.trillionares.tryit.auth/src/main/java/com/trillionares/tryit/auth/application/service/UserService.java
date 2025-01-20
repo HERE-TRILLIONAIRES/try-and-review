@@ -13,12 +13,14 @@ import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -90,7 +92,7 @@ public class UserService {
   @Cacheable(cacheNames = "userCache", key = "#username")
   @Transactional(readOnly = true)
   public InfoByUsernameResponseDto getUserByUsername(String username) {
-    System.out.println("캐싱 적용 전, DB에서 사용자 정보 조회: " + username); // 캐싱 여부 확인용
+    log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", username); // 캐싱 여부 확인용
     User user = userRepository.findByUsernameAndIsDeletedFalse(username)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
@@ -100,7 +102,7 @@ public class UserService {
   @Cacheable(cacheNames = "userCache", key = "#userId")
   @Transactional(readOnly = true)
   public UserResponseDto getUser(UUID userId) {
-    System.out.println("DB에서 사용자 정보 조회: " + userId); // 캐싱 여부 확인용
+    log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", userId); // 캐싱 여부 확인용
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
@@ -110,7 +112,7 @@ public class UserService {
   @Cacheable(cacheNames = "userCache", key = "#userId")
   @Transactional(readOnly = true)
   public UserResponseDto getUserInfo(UUID userId) {
-    System.out.println("DB에서 사용자 정보 조회: " + userId); // 캐싱 여부 확인용
+    log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", userId); // 캐싱 여부 확인용
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
