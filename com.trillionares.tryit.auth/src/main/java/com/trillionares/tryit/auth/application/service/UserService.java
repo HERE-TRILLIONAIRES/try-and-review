@@ -72,7 +72,7 @@ public class UserService {
         .orElseThrow(() -> new GlobalException(ErrorCode.ID_NOT_FOUND));
 
     user.updateUserInfo(reqDto.getFullname(), reqDto.getEmail(), reqDto.getPhoneNumber(), reqDto.getSlackId());
-    System.out.println("캐싱된 데이터 업데이트됨: " + userId);
+    log.info("캐싱 업데이트됨: {}", userId); // 캐싱 업데이트 여부 확인용
     return new UserResponseDto(user);
   }
 
