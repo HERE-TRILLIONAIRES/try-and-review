@@ -52,9 +52,6 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
 
-//    LoginFilter loginFilter = new LoginFilter(authenticationManager, jwtUtil);
-//    loginFilter.setFilterProcessesUrl("/auth/signin");
-
     JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(customUserDetailsService(), jwtUtil);
 
     return http
@@ -64,11 +61,9 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(
             SessionCreationPolicy.STATELESS)) // 세션 비활성화
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/users/signup", "/auth/signin", "/users/internals/**", "/actuator/health").permitAll() // 로그인 URL 허용
-//            .requestMatchers("/users/**").authenticated() // 인증된 사용자 허용
+            .requestMatchers("/users/signup", "/auth/signin", "/users/internals/**", "/actuator/health").permitAll()
             .anyRequest().authenticated() // 나머지는 인증 필요
         )
-//        .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class) // LoginFilter 추가한
         .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class) // JwtAuthorizationFilter 추가
         .build();
   }
