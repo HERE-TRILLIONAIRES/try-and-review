@@ -49,9 +49,6 @@ public class Notification extends BaseEntity {
   @Column(name = "expiry_date")
   private LocalDateTime expiryDate;
 
-  @Column(name = "submission_time")
-  private LocalDateTime submissionTime;
-
   @PrePersist
   protected void onCreate() {
     this.expiryDate = LocalDateTime.now().plusMonths(3); // 저장일로 부터 3개월
@@ -81,6 +78,5 @@ public class Notification extends BaseEntity {
     this.userId = userId;
     this.submissionId = submissionId;
     this.messageId = messageId;
-    this.submissionTime = submissionTime;
   }
 }
