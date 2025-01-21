@@ -1,5 +1,6 @@
 package com.trillionares.tryit.auth.application.service;
 
+import com.querydsl.core.types.Predicate;
 import com.trillionares.tryit.auth.application.dto.InfoByUsernameResponseDto;
 import com.trillionares.tryit.auth.domain.model.Role;
 import com.trillionares.tryit.auth.domain.model.User;
@@ -11,12 +12,21 @@ import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.UserInfoUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -61,13 +71,14 @@ public class UserService {
     user.updatePassword(passwordEncoder.encode(reqDto.getNewPassword()));
   }
 
+  @CacheEvict(cacheNames = "userCache", key = "#userId")
   @Transactional
   public UserResponseDto updateUserInfo(@Valid UUID userId, UserInfoUpdateReqDto reqDto) {
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.ID_NOT_FOUND));
 
     user.updateUserInfo(reqDto.getFullname(), reqDto.getEmail(), reqDto.getPhoneNumber(), reqDto.getSlackId());
-
+    log.info("캐시 삭제됨: {}", userId); // 캐싱 업데이트 여부 확인용
     return new UserResponseDto(user);
   }
 
@@ -84,26 +95,46 @@ public class UserService {
     userRepository.save(user); // 변경 사항 저장
   }
 
+  @Cacheable(cacheNames = "userCache", key = "#username")
+  @Transactional(readOnly = true)
   public InfoByUsernameResponseDto getUserByUsername(String username) {
+    log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", username); // 캐싱 여부 확인용
     User user = userRepository.findByUsernameAndIsDeletedFalse(username)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
-    // username, userId, role, slackId를 포함한 응답 DTO 생성
     return new InfoByUsernameResponseDto(user);
   }
 
+  @Cacheable(cacheNames = "userCache", key = "#userId")
+  @Transactional(readOnly = true)
   public UserResponseDto getUser(UUID userId) {
+    log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", userId); // 캐싱 여부 확인용
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
     return new UserResponseDto(user);
   }
 
-  public UserResponseDto getUserInfo(UUID userId) {
+  @Cacheable(cacheNames = "userCache", key = "#userId")
+  @Transactional(readOnly = true)
+  public UserResponseDto getInternalUser(UUID userId) {
+    log.info("캐싱 적용 전, DB에서 내부용 사용자 정보 조회: {}", userId); // 캐싱 여부 확인용
     User user = userRepository.findByUserIdAndIsDeletedFalse(userId)
         .orElseThrow(() -> new GlobalException(ErrorCode.USER_NOT_FOUND));
 
     return new UserResponseDto(user);
+  }
+
+  // 사용자 목록 조회 queryDsl+paging
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public PagedModel<UserResponseDto> getUsers(List<UUID> uuidList, Predicate predicate,
+      Pageable pageable) {
+
+    Page<UserResponseDto> userResponseDtoPage
+        = userRepository.findAllByConditions(uuidList, predicate, pageable);
+
+    return new PagedModel<>(userResponseDtoPage);
   }
 
 

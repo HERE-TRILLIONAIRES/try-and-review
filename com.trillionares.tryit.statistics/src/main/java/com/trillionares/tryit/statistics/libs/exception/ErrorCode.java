@@ -23,7 +23,11 @@ public enum ErrorCode {
     INVALID_LENGTH(400, "길이가 올바르지 않습니다"),
     INVALID_FORMAT(400, "형식이 올바르지 않습니다"),
     INVALID_RANGE(400, "범위가 올바르지 않습니다"),
-    INVALID_DATE(400, "날짜가 올바르지 않습니다");
+    INVALID_DATE(400, "날짜가 올바르지 않습니다"),
+
+    // Statistics
+    STATISTICS_GET_ALL_FORBIDDEN(403,"통계 전체 조회 권한이 없습니다."),
+    STATISTICS_GET_FORBIDDEN(403,"통계 목록 조회 권한이 없습니다.");
 
     private final int status;
     private final String message;

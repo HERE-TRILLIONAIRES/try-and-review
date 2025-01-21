@@ -1,5 +1,6 @@
 package com.trillionares.tryit.product.application.service;
 
+import com.trillionares.tryit.product.domain.client.AuthClient;
 import com.trillionares.tryit.product.domain.common.json.JsonUtils;
 import com.trillionares.tryit.product.domain.model.recruitment.Recruitment;
 import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
@@ -35,11 +36,16 @@ public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final RedisService redisService;
+    private final AuthClient authClient;
 
 
     @Transactional
-    public RecruitmentIdResponse createRecruitment(CreateRecruitmentRequest request) {
+    public RecruitmentIdResponse createRecruitment(CreateRecruitmentRequest request, String username, String role) {
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        validatePermission(role);
+
         Recruitment recruitment = Recruitment.builder()
+                .userId(userId)
                 .productId(request.productId())
                 .recruitmentTitle(request.title())
                 .recruitmentDescription(request.description())
@@ -62,9 +68,14 @@ public class RecruitmentService {
 
     @Transactional
     public RecruitmentIdResponse updateRecruitment(UUID recruitmentId,
-                                                   UpdateRecruitmentRequest request) {
+                                                   UpdateRecruitmentRequest request, String username, String role) {
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        validatePermission(role);
+
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> new RuntimeException(""));
+                .orElseThrow(() -> new RuntimeException("Not Found Recruitment"));
+
+        validateOwnership(recruitmentId, userId);
 
         recruitment.updateRecruitment(request.title(), request.description(), request.startTime(),
                 request.during(), request.endTime(), request.maxParticipants());
@@ -75,10 +86,14 @@ public class RecruitmentService {
     }
 
     @Transactional
-    public RecruitmentIdResponse deleteRecruitment(UUID recruitmentId) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> new RuntimeException(""));
+    public RecruitmentIdResponse deleteRecruitment(UUID recruitmentId, String username, String role) {
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        validatePermission(role);
 
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new RuntimeException("Not Found Recruitment"));
+
+        validateOwnership(recruitmentId, userId);
         // BaseEntity 구현 후 soft delete 로 변경
         recruitmentRepository.delete(recruitment);
 
@@ -96,11 +111,18 @@ public class RecruitmentService {
         return recruitmentRepository.getRecruitmentList(pageable);
     }
 
+    @Transactional
     public UpdateRecruitmentStatusResponse updateRecruitmentStatus(UUID recruitmentId,
-                                                                          UpdateRecruitmentStatusRequest request) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> new RuntimeException(""));
+                                                                   UpdateRecruitmentStatusRequest request,
+                                                                   String username,
+                                                                   String role) {
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+        validatePermission(role);
 
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new RuntimeException("Not Found Recruitment"));
+
+        validateOwnership(recruitmentId, userId);
         recruitment.updateStatus(request.status());
 
         recruitmentRepository.save(recruitment);
@@ -197,6 +219,20 @@ public class RecruitmentService {
 
         log.info("모집 ID {}의 상태가 {}로 업데이트되었습니다.", recruitmentId, status);
     }
+    private void validatePermission(String role) {
+        if (!(role.contains("ADMIN") || role.contains("COMPANY"))) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+    }
+
+    private void validateOwnership(UUID recruitmentId, UUID userId) {
+        UUID ownerId = recruitmentRepository.findOwnerIdByRecruitmentId(recruitmentId)
+                .orElseThrow(() -> new RuntimeException("Recruitment not found."));
+        if (!ownerId.equals(userId)) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+    }
+
 }
 
 

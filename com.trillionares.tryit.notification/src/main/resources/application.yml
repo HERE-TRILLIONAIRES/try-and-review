@@ -1,40 +1,33 @@
+server:
+  port: 19050
+
 spring:
   application:
     name: notification-service
   config:
-    import: configserver:http://localhost:18080   # Config Server 주소
+    import: configserver:${CONFIG_DNS_NAME}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: notification
+        format_sql: true
+    show-sql: true
 
-server:
-  port: 19050
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19090/eureka/
+      defaultZone: ${EUREKA_DNS_NAME}/eureka
 
 feign:
   client:
     config:
-      default:  # 모든 feign client에 적용
-        connectTimeout: 5000
-        readTimeout: 5000
-        loggerLevel: basic
+      default:
+        configuration: none  # 기본 설정 비활성화
       auth-service:
-        connectTimeout: 3000
-        readTimeout: 3000
-        loggerLevel: full
-
-logging:
-  level:
-    root: INFO
-    com.trillionares.tryit: DEBUG
-    org.springframework.web: DEBUG
-    feign: DEBUG
-    feign.Logger: DEBUG
+        configuration: com.trillionares.tryit.notification.libs.client.config.InternalFeignClientConfig
 
 openapi:
   service:
-    url: http://localhost:19091 # API Gateway 포트
-
-slack:
-  webhook:
-    url: https://hooks.slack.com/ # 임시 가짜 URL
+    url: ${GATEWAY_DNS_NAME}

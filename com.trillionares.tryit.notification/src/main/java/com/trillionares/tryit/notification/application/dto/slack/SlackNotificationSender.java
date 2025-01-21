@@ -1,10 +1,8 @@
-package com.trillionares.tryit.notification.application.service;
+package com.trillionares.tryit.notification.application.dto.slack;
 
-import com.trillionares.tryit.notification.application.dto.slack.SlackMessage;
 import com.trillionares.tryit.notification.domain.model.Notification;
 import com.trillionares.tryit.notification.infrastructure.persistence.NotificationRepository;
-import com.trillionares.tryit.notification.libs.exception.ErrorCode;
-import com.trillionares.tryit.notification.libs.exception.GlobalException;
+import com.trillionares.tryit.notification.libs.exception.ExceptionConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +20,8 @@ public class SlackNotificationSender {
 
   private final RestTemplate restTemplate;
   private final NotificationRepository notificationRepository;
+  private final ExceptionConverter exceptionConverter;
 
-  @Transactional
   public void sendNotification(Notification notification, String slackId, String status) {
 
     SlackMessage message = SlackMessage.from(notification, slackId, status); // 슬랙 메세지 생성
@@ -32,16 +30,14 @@ public class SlackNotificationSender {
       restTemplate.postForEntity(webhookUrl, message, String.class);
 
       notification.markAsDelivered();
-      notificationRepository.save(notification);
-
       log.info("Slack notification sent successfully: {}", notification.getNotificationId());
 
     } catch (Exception e) {
       notification.increaseAttemptCount();
-      notificationRepository.save(notification);
-
+      notificationRepository.save(notification); // 실패의 경우도 저장
       log.error("Failed to send Slack notification: {}", e.getMessage());
-       throw new GlobalException(ErrorCode.SLACK_NOTIFICATION_FAILED);
+
+       throw exceptionConverter.convertToBaseException(e);
     }
   }
 }

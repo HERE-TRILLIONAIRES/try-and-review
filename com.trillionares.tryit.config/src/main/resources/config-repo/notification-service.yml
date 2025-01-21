@@ -1,28 +1,16 @@
-server:
-  port: 19050
-
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/trillionaires
-    username: notification
-    password: notification
+    url: ${DB_URL}
+    username: ${DB_NOTIFICATION_USERNAME}
+    password: ${DB_NOTIFICATION_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create  # 개발 환경에서만 create 사용
-    properties:
-      hibernate:
-        default_schema: notification
-        format_sql: true
-    show-sql: true
-
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_DNS_URL}
     consumer:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: '*'
       group-id: notification-service-group
@@ -33,12 +21,23 @@ spring:
       notification-service: "notification-service-group"
     admin:
       auto-create-topics: false # 테스트 위해서 토픽 자동으로 생성하도록 설정
-  #  data:
-#    redis:
-#      host: ${redis.notification.host}
-#      port: ${redis.notification.port}
-#      password: ${redis.common.password}
-#
-#management:
-#  server:
-#    port: ${monitoring.prometheus.notification-port}
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  tracing:
+    sampling:
+      probability: 1.0
+
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_URL}
+
+logging:
+  level:
+    root: INFO
+    com.trillionares.tryit: DEBUG
+    org.springframework.web: DEBUG
+    feign: DEBUG
+    feign.Logger: DEBUG

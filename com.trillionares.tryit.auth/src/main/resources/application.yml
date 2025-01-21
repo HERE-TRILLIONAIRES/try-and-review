@@ -2,7 +2,7 @@ spring:
   application:
     name: auth-service
   config:
-    import: configserver:http://localhost:18080   # Config Server 주소
+    import: configserver:${CONFIG_DNS_NAME}
 
   jpa:
     hibernate:
@@ -18,6 +18,13 @@ spring:
     username: ${DB_AUTH_USERNAME}
     password: ${DB_AUTH_PASSWORD}
 
+  data:
+    redis:
+      host: ${AUTH_REDIS_HOST}
+      port: ${AUTH_REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+
 service:
   jwt:
     access-expiration: 86400000  # 24시간
@@ -29,8 +36,13 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19090/eureka/
+      defaultZone: ${EUREKA_DNS_NAME}/eureka
 
 openapi:
   service:
-    url: http://localhost:19091 # API Gateway 포트
+    url: ${GATEWAY_DNS_NAME}
+
+logging:
+  level:
+    com.trillionares.tryit.auth: DEBUG
+    com.trillionares.tryit.auth.application.service.UserService: DEBUG
