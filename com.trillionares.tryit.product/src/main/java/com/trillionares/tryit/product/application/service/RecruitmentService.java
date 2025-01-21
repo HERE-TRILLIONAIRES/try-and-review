@@ -36,7 +36,6 @@ public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
     private final RedisService redisService;
 
 
