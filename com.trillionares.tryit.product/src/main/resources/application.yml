@@ -10,10 +10,10 @@ spring:
     driver-class-name: org.postgresql.Driver
   data:
     redis:
-      host: ${HUB_REDIS_HOST}
-      port: ${HUB_REDIS_PORT}
-      username: ${HUB_REDIS_USERNAME}
-      password: ${HUB_REDIS_PASSWORD}
+      host: localhost
+      port: 6379
+      password:
+      timeout: 60000
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
