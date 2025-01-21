@@ -1,6 +1,6 @@
 <h1>Try it</h1>
 <div  align="center">
-  <img width="24%" src="https://github.com/user-attachments/assets/b2992947-940a-40b5-a424-4f8005d95f71" alt="LOGO">
+  <img width="50%" src="https://github.com/user-attachments/assets/b2992947-940a-40b5-a424-4f8005d95f71" alt="LOGO">
 </div>
 </br>
 <h3 align="center">Spring 단기심화 2기 Ch.3 프로젝트</h3>
@@ -11,7 +11,7 @@
 - **한줄 소개 :** 새로운 제품을 출시하는 기업과 체험하고 싶은 사용자를 연결하는 선착순 체험단 플랫폼
 - **팀원 :** 손예지(리더), 신영한(부리더), 김주한, 하남규, 조승아
 - **팀노션 링크 :** [💁🏻 노션 링크](https://teamsparta.notion.site/1-1-1672dc3ef51480ceb16ff07841605e7b)
-- **배포 링크 :** [📮 링크](https://github.com/HERE-TRILLIONAIRES/try-and-review)
+- **배포 링크 :** [📮 링크](http://gateway-lb-1883933206.ap-northeast-2.elb.amazonaws.com)
 
 ## 📝 프로젝트 개요
 `Try-it` 서비스는 새로운 제품을 출시하여 고객 반응을 얻고자 하는 기업과 신제품을 체험해보고 싶어하는 다양한 사람들을 이어주는 서비스를 개발하고자 하였습니다. </br>
@@ -27,37 +27,44 @@
 
 ## 👨‍👩‍👧‍👦 Team
 | 손예지<br> | 신영한<br> | 김주한<br> | 하남규<br> | 조승아<br> |
-| :---: | :---: | :---: |---------| :---: |
-| <img alt="예지" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QEFTESGP-e2b23afd15a7-512" height="100" width="100"> | <img alt="영한" src="https://ca.slack-edge.com/T06B9PCLY1E-U07S875EUBV-g9ae29003de3-512" height="100" width="100"> | <img alt="주한" src="https://ca.slack-edge.com/T06B9PCLY1E-U06QUQQ5UU8-f0cd5f6b2a58-512" height="100" width="100"> |    <img alt="남규" src="https://ca.slack-edge.com/T06B9PCLY1E-U07RKNHN003-db789eae7cdc-512" height="100" width="100">     | <img alt="승아" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QQLBVDDJ-1001a73273bb-512" height="100" width="100"> |
+| :---: | :---: | :---: |:---:| :---: |
+| <img alt="예지" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QEFTESGP-e2b23afd15a7-512" height="100" width="100"> | <img alt="영한" src="https://ca.slack-edge.com/T06B9PCLY1E-U07S875EUBV-g9ae29003de3-512" height="100" width="100"> | <img alt="주한" src="https://ca.slack-edge.com/T06B9PCLY1E-U06QUQQ5UU8-f0cd5f6b2a58-512" height="100" width="100"> | <img alt="남규" src="https://ca.slack-edge.com/T06B9PCLY1E-U07RKNHN003-db789eae7cdc-512" height="100" width="100"> | <img alt="승아" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QQLBVDDJ-1001a73273bb-512" height="100" width="100"> |
 | [handyejee](https://github.com/handyejee) | [syhan7516](https://github.com/syhan7516) | [Hany-Kim](https://github.com/Hany-Kim) |     [Namgyu11](https://github.com/Namgyu11)    | [hiimsajo](https://github.com/hiimsajo) | 
-|<p align="left">- 알림기능 <br/>- 아키텍쳐 설계 및 초기구성<br/>- 일정관리</p>|<p align="left">- 리뷰기능<br/>- 통계기능</p>|<p align="left">- 상품, 이미지 업로드 기능<br/>- 체험단 신청기능<br/>- AWS 배포</p>|<p align="left">- 체험단 모집<br/>- 추가예정<br/>- 추가예정</p>|<p align="left">- 사용자 기능<br/>- JWT 기반 인증 기능<br/>- Gateway 설정</p>|
+|<p align="left">- 알림기능 <br/>- 아키텍쳐 설계 및 초기구성<br/>- 일정관리</p>|<p align="left">- 리뷰기능<br/>- 통계기능</p>|<p align="left">- 상품, 이미지 업로드 기능<br/>- 체험단 신청기능<br/>- AWS 배포</p>|<p align="left">- 체험단 모집<br/>- 모집상태 관리</p>|<p align="left">- 사용자 기능<br/>- JWT 기반 인증 기능<br/>- Gateway 설정</p>|
 
 ## 📺 프로젝트 설계
-### API 명세서</br>
+### 🔗API 명세서</br>
+<details>
+  <summary>사용자 API</summary>
+  <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
+</details>
+<details>
+  <summary>상품 API</summary>
+  <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
+</details>
+
+### 🔗테이블 명세서</br>
 <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
 
-### 테이블 명세서</br>
-<img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
-
-### ERD</br>
+### 🔗ERD</br>
 <img alt="" src="https://github.com/user-attachments/assets/0afea585-b5d6-4c56-a7a2-7341f1075f67"  width="800">
 
-### 인프라 설계도</br>
+### 🔗인프라 설계도</br>
 <img alt="" src="https://github.com/user-attachments/assets/7f469c41-4999-444f-94cf-96441c8f1e43"  width="800">
 
-### 카프카 구조도</br>
+### 🔗카프카 구조도</br>
 <img alt="" src="https://github.com/user-attachments/assets/346a7fe1-f7a3-4bc4-abb4-13b28b3a8f66"  width="800">
 
-### WBS 일정관리</br>
+### 🔗WBS 일정관리</br>
 <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
 
 
-## ➡️ User flow
-<img width="2800" alt="https://github.com/user-attachments/assets/cd22c0d1-8f4a-44e7-aea0-35a53ebd0f64">
+## ➡️User flow
+<img width="2800" alt="User flow" src="https://github.com/user-attachments/assets/cd22c0d1-8f4a-44e7-aea0-35a53ebd0f64">
 
 </br>
 
-## Tech Stack
+## 🔧Tech Stack
 ### Tools
 | Git | Github | Slack |
 | :---: | :---: | :---: |
