@@ -569,7 +569,7 @@ jobs: #stages
           REDIS_GUI_PORT=${{ secrets.REDIS_GUI_PORT }}
           AUTH_REDIS_HOST=${{ secrets.AUTH_REDIS_HOST }}
           AUTH_REDIS_PORT=${{ secrets.AUTH_REDIS_PORT }}
-          AUTH_REDIS_GUI_PORT=${{ secret.AUTH_REDIS_GUI_PORT }}
+          AUTH_REDIS_GUI_PORT=${{ secrets.AUTH_REDIS_GUI_PORT }}
 
     - name: Deploy auth Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -625,7 +625,7 @@ jobs: #stages
           REDIS_GUI_PORT=${{ secrets.REDIS_GUI_PORT }}
           RECRUITMENT_REDIS_HOST=${{ secrets.RECRUITMENT_REDIS_HOST }}
           RECRUITMENT_REDIS_PORT=${{ secrets.RECRUITMENT_REDIS_PORT }}
-          RECRUITMENT_REDIS_GUI_PORT=${{ secret.RECRUITMENT_REDIS_GUI_PORT }}
+          RECRUITMENT_REDIS_GUI_PORT=${{ secrets.RECRUITMENT_REDIS_GUI_PORT }}
 
     - name: Deploy trial Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
