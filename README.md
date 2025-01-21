@@ -3,7 +3,7 @@
   <img width="50%" src="https://github.com/user-attachments/assets/b2992947-940a-40b5-a424-4f8005d95f71" alt="LOGO">
 </div>
 </br>
-<h3 align="center">Spring 단기심화 2기 Ch.3 프로젝트</h3>
+<h3 align="center">Spring 단기심화 2기 최종 프로젝트</h3>
 
 - **팀 명 :**  연봉1조
 - **프로젝트 명 :** Try it
@@ -14,26 +14,15 @@
 - **배포 링크 :** [📮 링크](http://gateway-lb-1883933206.ap-northeast-2.elb.amazonaws.com)
 
 ## 📝 프로젝트 개요
-`Try-it` 서비스는 새로운 제품을 출시하여 고객 반응을 얻고자 하는 기업과 신제품을 체험해보고 싶어하는 다양한 사람들을 이어주는 서비스를 개발하고자 하였습니다. </br>
-
-상품을 체험해보고 싶은 사람이라면 누구나 신청이 가능하며, SNS의 팔로워 수나 기타 영상채널의 구독자 수와는 상관없이 모두가 선착순으로 체험이 가능하여 보다 솔직한 실제 사용 후기를 플랫폼 내의 모두가 공유할 수 있는 서비스를 만들어보고자 하였습니다. </br>
-또한 고객들의 리뷰를 기반으로 하는 통계 기능을 제공하여 기업들에게 인사이트를 제공하고자 합니다. </br>
+`Try-it` 서비스는 새로운 제품을 출시하는 기업과 체험하고 싶은 사용자를 연결하는 선착순 체험단 플랫폼 입니다.</br>
 
 ## 🥅 프로젝트 목표
 - 대규모 트래픽이 예상되는 인기 체험단 모집 시 신청자 대기열을 안정적으로 관리합니다.
 - Kafka 를활용해 체험단 상태변경을 실시간으로 감지하고 이벤트 기반으로 알림을 발행하는 시스템 구축합니다.
 - 자주 조회되는 정보를 캐싱해 데이터베이스의 부하를 감소시킵니다.
-- 필요한 기능들에 대해 생성, 수정과 관련된 항목의 테스트코드를 작성합니다.
-
-## 👨‍👩‍👧‍👦 Team
-| 손예지<br> | 신영한<br> | 김주한<br> | 하남규<br> | 조승아<br> |
-| :---: | :---: | :---: |:---:| :---: |
-| <img alt="예지" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QEFTESGP-e2b23afd15a7-512" height="100" width="100"> | <img alt="영한" src="https://ca.slack-edge.com/T06B9PCLY1E-U07S875EUBV-g9ae29003de3-512" height="100" width="100"> | <img alt="주한" src="https://ca.slack-edge.com/T06B9PCLY1E-U06QUQQ5UU8-f0cd5f6b2a58-512" height="100" width="100"> | <img alt="남규" src="https://ca.slack-edge.com/T06B9PCLY1E-U07RKNHN003-db789eae7cdc-512" height="100" width="100"> | <img alt="승아" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QQLBVDDJ-1001a73273bb-512" height="100" width="100"> |
-| [handyejee](https://github.com/handyejee) | [syhan7516](https://github.com/syhan7516) | [Hany-Kim](https://github.com/Hany-Kim) |     [Namgyu11](https://github.com/Namgyu11)    | [hiimsajo](https://github.com/hiimsajo) | 
-|<p align="left">- 알림기능 <br/>- 아키텍쳐 설계 및 초기구성<br/>- 일정관리</p>|<p align="left">- 리뷰기능<br/>- 통계기능</p>|<p align="left">- 상품, 이미지 업로드 기능<br/>- 체험단 신청기능<br/>- AWS 배포</p>|<p align="left">- 체험단 모집<br/>- 모집상태 관리</p>|<p align="left">- 사용자 기능<br/>- JWT 기반 인증 기능<br/>- Gateway 설정</p>|
 
 ## 📺 프로젝트 설계
-### 🔗API 명세서</br>
+### 🔗API 명세서 확인하기</br> -> 링크
 <details>
   <summary>사용자 API</summary>
   <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
@@ -43,7 +32,7 @@
   <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
 </details>
 
-### 🔗테이블 명세서</br>
+### 🔗테이블 명세서</br> -> 링크
 <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
 
 ### 🔗ERD</br>
@@ -55,11 +44,10 @@
 ### 🔗카프카 구조도</br>
 <img alt="" src="https://github.com/user-attachments/assets/346a7fe1-f7a3-4bc4-abb4-13b28b3a8f66"  width="800">
 
-### 🔗WBS 일정관리</br>
+### 🔗WBS 일정관리</br> -> 링크
 <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
 
-
-## ➡️User flow
+### ➡️User flow
 <img width="2800" alt="User flow" src="https://github.com/user-attachments/assets/cd22c0d1-8f4a-44e7-aea0-35a53ebd0f64">
 
 </br>
@@ -90,7 +78,7 @@
 |  "remove: ~ "  | 파일을 삭제만 한 경우 |
 
 ## 📁 프로젝트 파일 구조
-1. 마이크로서비스 아키텍처 구조
+1. 마이크로서비스 아키텍처 구조<br>
 프로젝트는 Microservices Architecture와 DDD(Domain-Driven Design) 기반의 Layered Architecture를 적용하여 구성되어 있습니다.
 ```text
 ├─ com.trillionares.tryit.*  // 각 마이크로서비스
@@ -110,7 +98,7 @@
 └─ prometheus              // 모니터링 시스템
 ```
 
-2. 계층형 아키텍처 구조
+2. 계층형 아키텍처 구조<br>
 각 마이크로서비스는 DDD 기반의 계층형 아키텍처로 구성되어 있습니다.
 ``` text
 com.trillionares.tryit.[service-name]
@@ -130,3 +118,35 @@ com.trillionares.tryit.[service-name]
     ├─ controller       // 컨트롤러
     └─ dto             // API 요청/응답 DTO
 ```
+## 역할 분담 및 협업 방식
+| 손예지<br> | 신영한<br> | 김주한<br> | 하남규<br> | 조승아<br> |
+| :---: | :---: | :---: |:---:| :---: |
+| <img alt="예지" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QEFTESGP-e2b23afd15a7-512" height="100" width="100"> | <img alt="영한" src="https://ca.slack-edge.com/T06B9PCLY1E-U07S875EUBV-g9ae29003de3-512" height="100" width="100"> | <img alt="주한" src="https://ca.slack-edge.com/T06B9PCLY1E-U06QUQQ5UU8-f0cd5f6b2a58-512" height="100" width="100"> | <img alt="남규" src="https://ca.slack-edge.com/T06B9PCLY1E-U07RKNHN003-db789eae7cdc-512" height="100" width="100"> | <img alt="승아" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QQLBVDDJ-1001a73273bb-512" height="100" width="100"> |
+| [handyejee](https://github.com/handyejee) | [syhan7516](https://github.com/syhan7516) | [Hany-Kim](https://github.com/Hany-Kim) |     [Namgyu11](https://github.com/Namgyu11)    | [hiimsajo](https://github.com/hiimsajo) | 
+|<p align="left">- 알림기능 <br/>- 아키텍쳐 설계 및 초기구성<br/>- 일정관리</p>|<p align="left">- 리뷰기능<br/>- 통계기능</p>|<p align="left">- 상품, 이미지 업로드 기능<br/>- 체험단 신청기능<br/>- AWS 배포</p>|<p align="left">- 체험단 모집<br/>- 모집상태 관리</p>|<p align="left">- 사용자 기능<br/>- JWT 기반 인증 기능<br/>- Gateway 설정</p>|
+
+---
+
+### **Ground Rule**
+
+🍁 **문제 발생 시 즉시 공유**  
+- 문제가 발생하면 팀원들에게 빠르게 상황을 공유하여 협력 해결.
+
+
+## 성과 및 회고
+
+### 잘된 점
+- **제목**  
+  - 내용
+
+---
+
+### 아쉬운 점
+- **제목**  
+  - 내용
+---
+
+### 향후 계획
+- **제목**  
+  - 내용
+
