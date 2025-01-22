@@ -479,6 +479,10 @@ jobs: #stages
           DB_NOTIFICATION_PASSWORD=${{ secrets.DB_NOTIFICATION_PASSWORD }}
           SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
           KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
+          NOTIFICATION_REDIS_HOST=${{ secrets.NOTIFICATION_REDIS_HOST }}
+          NOTIFICATION_REDIS_PORT=${{ secrets.NOTIFICATION_REDIS_PORT }}
+          REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
         
     - name: Deploy config Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -563,6 +567,10 @@ jobs: #stages
           SECRET_KEY=${{ secrets.SECRET_KEY }}
           ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
           KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
+          REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          AUTH_REDIS_HOST=${{ secrets.AUTH_REDIS_HOST }}
+          AUTH_REDIS_PORT=${{ secrets.AUTH_REDIS_PORT }}
 
     - name: Deploy auth Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -750,6 +758,10 @@ jobs: #stages
           DB_NOTIFICATION_PASSWORD=${{ secrets.DB_NOTIFICATION_PASSWORD }}
           SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
           KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
+          NOTIFICATION_REDIS_HOST=${{ secrets.NOTIFICATION_REDIS_HOST }}
+          NOTIFICATION_REDIS_PORT=${{ secrets.NOTIFICATION_REDIS_PORT }}
+          REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
 
     - name: Deploy notification Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -852,4 +864,5 @@ jobs: #stages
         service: ${{ env.IMAGE_MANAGE_ECS_SERVICE }}
         cluster: ${{ env.IMAGE_MANAGE_ECS_CLUSTER }}
         wait-for-service-stability: true
+
 
