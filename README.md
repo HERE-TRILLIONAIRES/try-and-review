@@ -22,7 +22,6 @@
 ## 🥅 프로젝트 목표
 1. **대규모 트래픽 대응**
   - Redis와 Kafka를 활용한 비동기 처리를 통해 API 요청 200req/sec 이상 처리.
-  - 동시성 문제를 해결하며 안정적인 쿠폰 발급 서비스 제공.
 
 2. **성능 최적화**
   - Redis 기반 캐싱으로 가장 빈번하게 호출되는 api의 조회 성능을 2배 이상 향상.
@@ -33,7 +32,7 @@
   - Prometheus와 Grafana를 활용한 실시간 모니터링으로 시스템 안정성 확보.
 
 4. **데이터 일관성 및 트랜잭션 관리**
-  - Kafka 를활용해 체험단 상태변경을 실시간으로 감지하고 이벤트 기반 트랜잭션 처리.
+  - Kafka를 활용해 체험단 상태변경을 실시간으로 감지하고 이벤트 기반 트랜잭션 처리.
   - 대규모 트래픽이 예상되는 인기 체험단 모집 시 신청자 대기열을 안정적으로 관리
   - 중복 및 데이터 손실을 방지하는 Kafka Batch Listener 구현.
 
@@ -250,32 +249,37 @@
 <br>
 
 ## 📺 프로젝트 설계
-### 🔗API 명세서 확인하기</br> [➡️ 링크](https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=1840269664#gid=1840269664)
+### 🔗API 명세서</br> [➡️ 확인하기](https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=1840269664#gid=1840269664)
+
 <details>
-  <summary>사용자 API</summary>
-  <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
-</details>
-<details>
-  <summary>상품 API</summary>
-  <img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
+  <summary> 🔗카프카 구조도 </summary>
+  <img alt="kafka structure" src="https://github.com/user-attachments/assets/346a7fe1-f7a3-4bc4-abb4-13b28b3a8f66" width="600">
 </details>
 
-### 🔗테이블 명세서</br> [➡️ 링크](https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=91016624#gid=91016624)
+<details>
+  <summary> 🔗ERD </summary>
+  <img alt="erd" src="https://github.com/user-attachments/assets/0afea585-b5d6-4c56-a7a2-7341f1075f67" width="600">
+</details>
 
-<img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
+<details>
+  <summary>🔗테이블 명세서</summary>
+  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=91016624#gid=91016624">➡️ 확인하기</a>
+</details>
 
-### 🔗ERD</br>
-<img alt="" src="https://github.com/user-attachments/assets/0afea585-b5d6-4c56-a7a2-7341f1075f67"  width="800">
+<details>
+  <summary>🔗API 명세서</summary>
+  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=1840269664#gid=1840269664">➡️ 확인하기</a>
+</details>
 
-### 🔗카프카 구조도</br>
-<img alt="" src="https://github.com/user-attachments/assets/346a7fe1-f7a3-4bc4-abb4-13b28b3a8f66"  width="800">
+<details>
+  <summary> 🔗User Flow </summary>
+  <img alt="User flow" src="https://github.com/user-attachments/assets/4e7a36d7-1165-4095-afed-27e6fa886069" width="600">
+</details>
 
-### 🔗WBS 일정관리</br> [➡️ 링크](https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=2096235861#gid=2096235861)
-
-<img alt="" src="https://github.com/user-attachments/assets/b3b42806-0558-4764-98ab-35a2a1400e46"  width="800">
-
-### ➡️User flow
-<img width="2800" alt="User flow" src="https://github.com/user-attachments/assets/4e7a36d7-1165-4095-afed-27e6fa886069">
+<details>
+  <summary>🔗WBS 일정관리</summary>
+  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=2096235861#gid=2096235861">➡️ 확인하기</a>
+</details>
 
 </br>
 <br><br>
