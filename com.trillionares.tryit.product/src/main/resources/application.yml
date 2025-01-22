@@ -2,7 +2,7 @@ spring:
   application:
     name: product-service
   config:
-    import: configserver:${CONFIG_DNS_NAME}
+    import: configserver:http://${CONFIG_DNS_NAME}
   datasource:
     url: ${DB_URL}
     username: ${DB_PRODUCT_USERNAME}

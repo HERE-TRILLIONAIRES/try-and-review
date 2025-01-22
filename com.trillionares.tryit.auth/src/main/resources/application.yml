@@ -2,7 +2,7 @@ spring:
   application:
     name: auth-service
   config:
-    import: configserver:${CONFIG_DNS_NAME}
+    import: configserver:http://${CONFIG_DNS_NAME}
 
   jpa:
     hibernate:
