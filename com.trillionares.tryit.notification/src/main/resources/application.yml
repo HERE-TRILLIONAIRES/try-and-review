@@ -5,7 +5,7 @@ spring:
   application:
     name: notification-service
   config:
-    import: configserver:${CONFIG_DNS_NAME}
+    import: configserver:http://${CONFIG_DNS_NAME}
   jpa:
     hibernate:
       ddl-auto: update
