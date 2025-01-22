@@ -38,7 +38,8 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_DNS_NAME}/eureka
   instance:
-    hostname: ${AUTH_DNS_NAME}
+    prefer-ip-address: true
+    non-secure-port-enabled: true
 
 openapi:
   service:

@@ -63,6 +63,8 @@ eureka:
       defaultZone: ${EUREKA_DNS_NAME}/eureka
   instance:
     hostname: ${GATEWAY_DNS_NAME}
+    non-secure-port: 80
+    non-secure-port-enabled: true
 
 service:
   jwt:
