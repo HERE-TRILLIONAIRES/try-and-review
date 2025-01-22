@@ -40,7 +40,7 @@
 
 ## 🗝️ KEY Summary
 
-### 🍁 **성능 개선 : 최저가 상품 조회 성능, Redis 도입으로 3배 이상 향상**
+### **제목**
 
 1. **한 줄 요약**
   - Redis 도입으로 기존 DB 조회보다 **348% 성능 개선**
@@ -170,27 +170,23 @@
 ## 🚀기술적 고도화
 
 <details>
-<summary><b>🔩 분산락 Redisson 도입으로 CPU 점유율 2배 개선</b></summary>
+<summary><b>🔩 제목</b></summary>
 
-### 왜 동시성 제어 시 여러 선택지가 있는데, 분산락을 사용했을까요?
-
+### 제목
 ---
 
-#### 낙관적 락과 비관적 락의 선택지
+#### 소제목
 
-분산락을 채택하기 이전에는 비관적 락으로 동시성 제어를 선택했습니다.
+내용
 
-- **비관적 락**  
-  비관적 락으로 데이터를 조회하면 해당 트랜잭션이 끝나기 전까지는 데이터에 대한 Insert 작업이 불가능합니다.
+- **내용**  
+  내용.
   - 단점: 트래픽이 많은 경우 성능 저하 발생 및 타임아웃 문제.
 
-- **낙관적 락**  
-  낙관적 락은 충돌 발생 시 롤백 처리를 요구하며, 충돌 비용이 높습니다.
-  - 단점: CPU 점유율이 상승하고, 예상치 못한 오류 발생 가능.
 
 ---
 
-#### Redis로 분산락을 채택한 이유
+#### 소제목
 
 1. **Lettuce의 문제점**  
    Lettuce는 스핀락 방식을 사용하여 락이 풀릴 때까지 계속 Redis에 요청을 보냅니다.
@@ -211,31 +207,6 @@
 
 <br>
 
-<details>
-<summary><b>🔩 Jpa로 배치 처리 시 더티체킹 문제</b></summary>
-
-### 배경
-
-- `JpaItemReader` 채택
-  - `스프링 배치`에서 제공하는 `ItemReader` 인터페이스로 데이터를 조회하는 구현체입니다.
-  - Jpa 엔티티의 메서드를 사용하기 위해 `JpaItemReader`를 선택했습니다.
-
----
-
-### 문제
-
-- **더티체킹으로 인한 성능 문제**
-  - 예상보다 더 많은 쿼리가 발생했습니다.
-  - 5만 건을 500개씩 배치 처리할 경우, 100개의 쿼리가 아닌 `100 + 5만`건의 쿼리가 추가 발생.
-  - 데이터 처리 시간: **4분 46초**
-
----
-
-### 해결
-
-- **JdbcPagingItemReader로 변경**
-  - 더티체킹 문제를 제거하며 추가적인 쿼리 발생을 방지했습니다.
-  - 결과적으로 데이터 처리 시간이 기존 4분 46초에서 **60초로 4.6배 개선**되었습니다.
 
 ---
 
@@ -249,7 +220,6 @@
 <br>
 
 ## 📺 프로젝트 설계
-### 🔗API 명세서</br> [➡️ 확인하기](https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=1840269664#gid=1840269664)
 
 <details>
   <summary> 🔗카프카 구조도 </summary>
@@ -273,15 +243,13 @@
 
 <details>
   <summary> 🔗User Flow </summary>
-  <img alt="User flow" src="https://github.com/user-attachments/assets/4e7a36d7-1165-4095-afed-27e6fa886069" width="600">
+  <img alt="User flow" src="https://github.com/user-attachments/assets/246f0e0a-5232-4ea5-bc06-0d8307e144b1" width="600">
 </details>
 
 <details>
   <summary>🔗WBS 일정관리</summary>
   <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=2096235861#gid=2096235861">➡️ 확인하기</a>
 </details>
-
-</br>
 <br><br>
 
 ## 🔧Tech Stack
