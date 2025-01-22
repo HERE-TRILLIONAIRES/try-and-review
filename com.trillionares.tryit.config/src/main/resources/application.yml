@@ -21,4 +21,6 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_DNS_NAME}/eureka
   instance:
-    preferIpAddress: true
+    hostname: ${CONFIG_DNS_NAME}
+    nonSecurePort: 80
+    nonSecurePortEnabled: true
