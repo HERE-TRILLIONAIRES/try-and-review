@@ -5,6 +5,7 @@ import com.trillionares.tryit.product.domain.common.json.JsonUtils;
 import com.trillionares.tryit.product.domain.model.recruitment.Recruitment;
 import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
 import com.trillionares.tryit.product.domain.repository.RecruitmentRepository;
+import com.trillionares.tryit.product.infrastructure.service.RedisService;
 import com.trillionares.tryit.product.presentation.dto.RecruitmentExistAndStatusDto;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.KafkaMessage;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.RecruitmentSubmissionResponseDto;
@@ -14,6 +15,8 @@ import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitment
 import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
 import com.trillionares.tryit.product.presentation.dto.response.RecruitmentIdResponse;
 import com.trillionares.tryit.product.presentation.dto.response.UpdateRecruitmentStatusResponse;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final RedisService redisService;
     private final AuthClient authClient;
 
 
@@ -53,6 +57,11 @@ public class RecruitmentService {
                 .build();
 
         recruitmentRepository.save(recruitment);
+
+        scheduleRecruitmentStatusChange(recruitment.getRecruitmentId(), recruitment.getRecruitmentStartDate(),
+                RecruitmentStatus.STARTED);
+        scheduleRecruitmentStatusChange(recruitment.getRecruitmentId(), recruitment.getRecruitmentEndDate(),
+                RecruitmentStatus.ENDED);
 
         return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
@@ -122,7 +131,6 @@ public class RecruitmentService {
                 recruitment.getRecruitmentStatus());
     }
 
-
     @Transactional
     public boolean checkAndUpdateRecruitment(UUID recruitmentId, int quantity) {
         Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
@@ -183,6 +191,34 @@ public class RecruitmentService {
         }
     }
 
+    private void scheduleRecruitmentStatusChange(UUID recruitmentId, LocalDateTime triggerTime,
+                                                 RecruitmentStatus status) {
+        long delaySeconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), triggerTime);
+
+        if (delaySeconds <= 0) {
+            updateRecruitmentStatusToRedis(recruitmentId, status);
+            return;
+        }
+
+        // Redis에 TTL 설정으로 상태 변경 예약
+        redisService.setDataExpire(
+                "recruitment:status:" + recruitmentId + ":" + status.name(),
+                status.name(),
+                delaySeconds * 1000L
+        );
+
+        log.info("모집 ID {}의 상태 {} 변경이 {} 후에 예약", recruitmentId, status, delaySeconds);
+    }
+
+    public void updateRecruitmentStatusToRedis(UUID recruitmentId, RecruitmentStatus status) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new RuntimeException("Recruitment not found"));
+
+        recruitment.updateStatus(status);
+        recruitmentRepository.save(recruitment);
+
+        log.info("모집 ID {}의 상태가 {}로 업데이트되었습니다.", recruitmentId, status);
+    }
     private void validatePermission(String role) {
         if (!(role.contains("ADMIN") || role.contains("COMPANY"))) {
             throw new RuntimeException("권한이 없습니다.");
@@ -198,3 +234,6 @@ public class RecruitmentService {
     }
 
 }
+
+
+
