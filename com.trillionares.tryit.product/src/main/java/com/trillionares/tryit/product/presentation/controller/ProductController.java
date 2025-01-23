@@ -126,7 +126,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/{productId}/redis")
     public BaseResponseDto<ProductInfoResponseDto> getProductByIdUsingRedis(@PathVariable("productId") UUID productId) {
         try {
             ProductInfoResponseDto responseDto = productService.getProductByIdUsingRedis(productId);
