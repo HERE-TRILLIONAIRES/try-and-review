@@ -6,6 +6,7 @@ import com.trillionares.tryit.product.presentation.dto.common.base.BaseResponseD
 import com.trillionares.tryit.product.presentation.dto.request.CreateRecruitmentRequest;
 import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentRequest;
 import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentStatusRequest;
+import com.trillionares.tryit.product.presentation.dto.response.GetCompletionTimeResponse;
 import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
 import com.trillionares.tryit.product.presentation.dto.response.RecruitmentIdResponse;
 import com.trillionares.tryit.product.presentation.dto.response.UpdateRecruitmentStatusResponse;
@@ -95,5 +96,12 @@ public class RecruitmentController {
         RecruitmentExistAndStatusDto responseDto = recruitmentService.isExistRecruitmentById(recruitmentId);
 
         return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "OK", responseDto);
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<GetCompletionTimeResponse> getCompletionTime(
+            @PathVariable UUID productId
+    ) {
+        return ResponseEntity.ok(recruitmentService.getCompletionTime(productId));
     }
 }
