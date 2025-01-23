@@ -12,18 +12,20 @@ public record StatisticsGetResponseDto(
         UUID userId,
         UUID productId,
         Integer highestScore,
-         Integer lowestScore,
-         Integer reviewCount,
-         Long durationTime,
+        Integer lowestScore,
+        Double averageScore,
+        Integer reviewCount,
+        Long durationTime,
         LocalDateTime createdAt) {
 
-    public static StatisticsGetResponseDto of(UUID statisticsId, UUID userId, UUID productId, Integer highestScore, Integer lowestScore, Integer reviewCount, Long durationTime, LocalDateTime createdAt) {
+    public static StatisticsGetResponseDto of(UUID statisticsId, UUID userId, UUID productId, Integer highestScore, Integer lowestScore, Double averageScore ,Integer reviewCount, Long durationTime, LocalDateTime createdAt) {
         return StatisticsGetResponseDto.builder()
                 .statisticsId(statisticsId)
                 .userId(userId)
                 .productId(productId)
                 .highestScore(highestScore)
                 .lowestScore(lowestScore)
+                .averageScore(averageScore)
                 .reviewCount(reviewCount)
                 .durationTime(durationTime)
                 .createdAt(createdAt)
