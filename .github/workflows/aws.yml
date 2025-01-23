@@ -34,106 +34,6 @@ on:
 env:
   AWS_REGION: ap-northeast-2                  # set this to your preferred AWS region, e.g. us-west-1
 
-  # Auth
-  AUTH_ECR_REPOSITORY: here-trillionaires/try-and-review/auth      # set this to your Amazon ECR repository name
-  AUTH_ECS_SERVICE: auth-service                 # set this to your Amazon ECS service name
-  AUTH_ECS_CLUSTER: auth-cluster                # set this to your Amazon ECS cluster name
-  AUTH_ECS_TASK_DEFINITION: .github/workflows/auth-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  AUTH_CONTAINER_NAME: auth-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  AUTH_WD: ./com.trillionares.tryit.auth
-
-  # trial
-  TRIAL_ECR_REPOSITORY: here-trillionaires/try-and-review/trial        # set this to your Amazon ECR repository name
-  TRIAL_ECS_SERVICE: trial-service                 # set this to your Amazon ECS service name
-  TRIAL_ECS_CLUSTER: trial-cluster                # set this to your Amazon ECS cluster name
-  TRIAL_ECS_TASK_DEFINITION: .github/workflows/trial-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  TRIAL_CONTAINER_NAME: tiral-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  TRIAL_WD: ./com.trillionares.tryit.trial
-
-  # Product
-  PRODUCT_ECR_REPOSITORY: here-trillionaires/try-and-review/product      # set this to your Amazon ECR repository name
-  PRODUCT_ECS_SERVICE: product-service                 # set this to your Amazon ECS service name
-  PRODUCT_ECS_CLUSTER: product-cluster                # set this to your Amazon ECS cluster name
-  PRODUCT_ECS_TASK_DEFINITION: .github/workflows/product-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  PRODUCT_CONTAINER_NAME: product-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  PRODUCT_WD: ./com.trillionares.tryit.product
-
-  # Review
-  REVIEW_ECR_REPOSITORY: here-trillionaires/try-and-review/review      # set this to your Amazon ECR repository name
-  REVIEW_ECS_SERVICE: review-service                 # set this to your Amazon ECS service name
-  REVIEW_ECS_CLUSTER: review-cluster                # set this to your Amazon ECS cluster name
-  REVIEW_ECS_TASK_DEFINITION: .github/workflows/review-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  REVIEW_CONTAINER_NAME: review-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  REVIEW_WD: ./com.trillionares.tryit.review
-
-  # Notification
-  NOTIFICATION_ECR_REPOSITORY: here-trillionaires/try-and-review/notification      # set this to your Amazon ECR repository name
-  NOTIFICATION_ECS_SERVICE: notification-service                 # set this to your Amazon ECS service name
-  NOTIFICATION_ECS_CLUSTER: notification-cluster                # set this to your Amazon ECS cluster name
-  NOTIFICATION_ECS_TASK_DEFINITION: .github/workflows/notification-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  NOTIFICATION_CONTAINER_NAME: notification-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  NOTIFICATION_WD: ./com.trillionares.tryit.notification
-
-  # Statistics
-  STATISTICS_ECR_REPOSITORY: here-trillionaires/try-and-review/statistics      # set this to your Amazon ECR repository name
-  STATISTICS_ECS_SERVICE: statistics-service                 # set this to your Amazon ECS service name
-  STATISTICS_ECS_CLUSTER: statistics-cluster                # set this to your Amazon ECS cluster name
-  STATISTICS_ECS_TASK_DEFINITION: .github/workflows/statistics-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  STATISTICS_CONTAINER_NAME: statistics-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  STATISTICS_WD: ./com.trillionares.tryit.statistics
-
-  # Image-manage
-  IMAGE_MANAGE_ECR_REPOSITORY: here-trillionaires/try-and-review/image-manage      # set this to your Amazon ECR repository name
-  IMAGE_MANAGE_ECS_SERVICE: image-manage-service                 # set this to your Amazon ECS service name
-  IMAGE_MANAGE_ECS_CLUSTER: image-manage-cluster                # set this to your Amazon ECS cluster name
-  IMAGE_MANAGE_ECS_TASK_DEFINITION: .github/workflows/image-manage-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  IMAGE_MANAGE_CONTAINER_NAME: image-manage-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  IMAGE_MANAGE_WD: ./com.trillionares.tryit.image-manage
-
-  # config
-  CONFIG_ECR_REPOSITORY: here-trillionaires/try-and-review/config      # set this to your Amazon ECR repository name
-  CONFIG_ECS_SERVICE: config-service                 # set this to your Amazon ECS service name
-  CONFIG_ECS_CLUSTER: config-cluster                # set this to your Amazon ECS cluster name
-  CONFIG_ECS_TASK_DEFINITION: .github/workflows/config-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  CONFIG_CONTAINER_NAME: config-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  CONFIG_WD: ./com.trillionares.tryit.config
-
-  # server
-  SERVER_ECR_REPOSITORY: here-trillionaires/try-and-review/server      # set this to your Amazon ECR repository name
-  SERVER_ECS_SERVICE: server-service                 # set this to your Amazon ECS service name
-  SERVER_ECS_CLUSTER: server-cluster                # set this to your Amazon ECS cluster name
-  SERVER_ECS_TASK_DEFINITION: .github/workflows/server-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  SERVER_CONTAINER_NAME: server-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  SERVER_WD: ./com.trillionares.tryit.server
-
-  # Gateway
-  GATEWAY_ECR_REPOSITORY: here-trillionaires/try-and-review/gateway      # set this to your Amazon ECR repository name
-  GATEWAY_ECS_SERVICE: gateway-service                 # set this to your Amazon ECS service name
-  GATEWAY_ECS_CLUSTER: gateway-cluster                # set this to your Amazon ECS cluster name
-  GATEWAY_ECS_TASK_DEFINITION: .github/workflows/gateway-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  GATEWAY_CONTAINER_NAME: gateway-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  GATEWAY_WD: ./com.trillionares.tryit.gateway
-
 permissions:
   contents: read
 
@@ -144,16 +44,16 @@ jobs:
     strategy:
       matrix:
         service: [
-          { name: "server", wd: "${{ env.SERVER_WD }}", ecr_repository: "${{ env.SERVER_ECR_REPOSITORY }}", ecs_service: "${{ env.SERVER_ECS_SERVICE }}", ecs_cluster: "${{ env.SERVER_ECS_CLUSTER }}", ecs_task_definition: "${{ env.SERVER_ECS_TASK_DEFINITION }}", container_name: "${{ env.SERVER_CONTAINER_NAME }}" },
-          { name: "config", wd: "${{ env.CONFIG_WD }}", ecr_repository: "${{ env.CONFIG_ECR_REPOSITORY }}", ecs_service: "${{ env.CONFIG_ECS_SERVICE }}", ecs_cluster: "${{ env.CONFIG_ECS_CLUSTER }}", ecs_task_definition: "${{ env.CONFIG_ECS_TASK_DEFINITION }}", container_name: "${{ env.CONFIG_CONTAINER_NAME }}" },
-          { name: "gateway", wd: "${{ env.GATEWAY_WD }}", ecr_repository: "${{ env.GATEWAY_ECR_REPOSITORY }}", ecs_service: "${{ env.GATEWAY_ECS_SERVICE }}", ecs_cluster: "${{ env.GATEWAY_ECS_CLUSTER }}", ecs_task_definition: "${{ env.GATEWAY_ECS_TASK_DEFINITION }}", container_name: "${{ env.GATEWAY_CONTAINER_NAME }}" },
-          { name: "auth", wd: "${{ env.AUTH_WD }}", ecr_repository: "${{ env.AUTH_ECR_REPOSITORY }}", ecs_service: "${{ env.AUTH_ECS_SERVICE }}", ecs_cluster: "${{ env.AUTH_ECS_CLUSTER }}", ecs_task_definition: "${{ env.AUTH_ECS_TASK_DEFINITION }}", container_name: "${{ env.AUTH_CONTAINER_NAME }}" },
-          { name: "trial", wd: "${{ env.TRIAL_WD }}", ecr_repository: "${{ env.TRIAL_ECR_REPOSITORY }}", ecs_service: "${{ env.TRIAL_ECS_SERVICE }}", ecs_cluster: "${{ env.TRIAL_ECS_CLUSTER }}", ecs_task_definition: "${{ env.TRIAL_ECS_TASK_DEFINITION }}", container_name: "${{ env.TRIAL_CONTAINER_NAME }}" },
-          { name: "product", wd: "${{ env.PRODUCT_WD }}", ecr_repository: "${{ env.PRODUCT_ECR_REPOSITORY }}", ecs_service: "${{ env.PRODUCT_ECS_SERVICE }}", ecs_cluster: "${{ env.PRODUCT_ECS_CLUSTER }}", ecs_task_definition: "${{ env.PRODUCT_ECS_TASK_DEFINITION }}", container_name: "${{ env.PRODUCT_CONTAINER_NAME }}" },
-          { name: "review", wd: "${{ env.REVIEW_WD }}", ecr_repository: "${{ env.REVIEW_ECR_REPOSITORY }}", ecs_service: "${{ env.REVIEW_ECS_SERVICE }}", ecs_cluster: "${{ env.REVIEW_ECS_CLUSTER }}", ecs_task_definition: "${{ env.REVIEW_ECS_TASK_DEFINITION }}", container_name: "${{ env.REVIEW_CONTAINER_NAME }}" },
-          { name: "notification", wd: "${{ env.NOTIFICATION_WD }}", ecr_repository: "${{ env.NOTIFICATION_ECR_REPOSITORY }}", ecs_service: "${{ env.NOTIFICATION_ECS_SERVICE }}", ecs_cluster: "${{ env.NOTIFICATION_ECS_CLUSTER }}", ecs_task_definition: "${{ env.NOTIFICATION_ECS_TASK_DEFINITION }}", container_name: "${{ env.NOTIFICATION_CONTAINER_NAME }}" },
-          { name: "statistics", wd: "${{ env.STATISTICS_WD }}", ecr_repository: "${{ env.STATISTICS_ECR_REPOSITORY }}", ecs_service: "${{ env.STATISTICS_ECS_SERVICE }}", ecs_cluster: "${{ env.STATISTICS_ECS_CLUSTER }}", ecs_task_definition: "${{ env.STATISTICS_ECS_TASK_DEFINITION }}", container_name: "${{ env.STATISTICS_CONTAINER_NAME }}" },
-          { name: "image-manage", wd: "${{ env.IMAGE_MANAGE_WD }}", ecr_repository: "${{ env.IMAGE_MANAGE_ECR_REPOSITORY }}", ecs_service: "${{ env.IMAGE_MANAGE_ECS_SERVICE }}", ecs_cluster: "${{ env.IMAGE_MANAGE_ECS_CLUSTER }}", ecs_task_definition: "${{ env.IMAGE_MANAGE_ECS_TASK_DEFINITION }}", container_name: "${{ env.IMAGE_MANAGE_CONTAINER_NAME }}" }
+          { name: "server", wd: "./com.trillionares.tryit.server", ecr_repository: "here-trillionaires/try-and-review/server", ecs_service: "server-service", ecs_cluster: "server-cluster", ecs_task_definition: ".github/workflows/server-task-revision1.json", container_name: "server-container" },
+          { name: "config", wd: "./com.trillionares.tryit.config", ecr_repository: "here-trillionaires/try-and-review/config", ecs_service: "config-service", ecs_cluster: "config-cluster", ecs_task_definition: ".github/workflows/config-task-revision1.json", container_name: "config-container" },
+          { name: "gateway", wd: "./com.trillionares.tryit.gateway", ecr_repository: "here-trillionaires/try-and-review/gateway", ecs_service: "gateway-service", ecs_cluster: "gateway-cluster", ecs_task_definition: ".github/workflows/gateway-task-revision1.json", container_name: "gateway-container" },
+          { name: "auth", wd: "./com.trillionares.tryit.auth", ecr_repository: "here-trillionaires/try-and-review/auth", ecs_service: "auth-service", ecs_cluster: "auth-cluster", ecs_task_definition: ".github/workflows/auth-task-revision1.json", container_name: "auth-container" },
+          { name: "trial", wd: "./com.trillionares.tryit.trial", ecr_repository: "here-trillionaires/try-and-review/trial", ecs_service: "trial-service", ecs_cluster: "trial-cluster", ecs_task_definition: ".github/workflows/trial-task-revision1.json", container_name: "trial-container" },
+          { name: "product", wd: "./com.trillionares.tryit.product", ecr_repository: "here-trillionaires/try-and-review/product", ecs_service: "product-service", ecs_cluster: "product-cluster", ecs_task_definition: ".github/workflows/product-task-revision1.json", container_name: "product-container" },
+          { name: "review", wd: "./com.trillionares.tryit.review", ecr_repository: "here-trillionaires/try-and-review/review", ecs_service: "review-service", ecs_cluster: "review-cluster", ecs_task_definition: ".github/workflows/review-task-revision1.json", container_name: "review-container" },
+          { name: "notification", wd: "./com.trillionares.tryit.notification", ecr_repository: "here-trillionaires/try-and-review/notification", ecs_service: "notification-service", ecs_cluster: "notification-cluster", ecs_task_definition: ".github/workflows/notification-task-revision1.json", container_name: "notification-container" },
+          { name: "statistics", wd: "./com.trillionares.tryit.statistics", ecr_repository: "here-trillionaires/try-and-review/statistics", ecs_service: "statistics-service", ecs_cluster: "statistics-cluster", ecs_task_definition: ".github/workflows/statistics-task-revision1.json", container_name: "statistics-container" },
+          { name: "image-manage", wd: "./com.trillionares.tryit.image-manage", ecr_repository: "here-trillionaires/try-and-review/image-manage", ecs_service: "image-manage-service", ecs_cluster: "image-manage-cluster", ecs_task_definition: ".github/workflows/image-manage-task-revision1.json", container_name: "image-manage-container" }
         ]
     steps:
       - name: Checkout
@@ -178,7 +78,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
