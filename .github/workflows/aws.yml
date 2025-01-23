@@ -28,7 +28,7 @@ name: Deploy to Amazon ECS
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main" ]
     #branches: [ "develop" ] #branches: [ "main" ]
 
 env:
