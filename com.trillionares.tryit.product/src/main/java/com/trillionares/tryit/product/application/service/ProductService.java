@@ -224,7 +224,7 @@ public class ProductService {
 
             // TODO: --------------
 
-            responseDto.add(ProductInfoResponseDto.from(product, seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList));
+            responseDto.add(ProductInfoResponseDto.from(product, product.getUserId(), seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList));
         }
 
         return responseDto;
@@ -266,7 +266,7 @@ public class ProductService {
 
         ImageUrlDto productMainImgURL = getImageUrlById(product.getProductImgId());
 
-        return ProductInfoResponseDto.from(product, seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
+        return ProductInfoResponseDto.from(product, product.getUserId(), seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
     }
 
     @Transactional

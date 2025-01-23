@@ -14,8 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductInfoResponseDto {
     private UUID productId;
-    private String seller;
     private String name;
+    private UUID userId;
+    private String seller;
     private String content;
     private String category;
     private String mainProductImgUrl;
@@ -23,12 +24,13 @@ public class ProductInfoResponseDto {
     private List<String> contentImgUrlList;
 
     public static ProductInfoResponseDto from(
-            Product product, String seller, String allCategory, String dummyURL,
+            Product product, UUID userId, String seller, String allCategory, String dummyURL,
             List<String> contentImgDummydummyURLList) {
 
 
         return ProductInfoResponseDto.builder()
             .productId(product.getProductId())
+            .userId(userId)
             .seller(seller)
             .name(product.getProductName())
             .content(product.getProductContent())
