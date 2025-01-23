@@ -38,6 +38,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Services
     runs-on: ubuntu-latest
+    timeout-minutes: 360 # 제한 시간을 6시간으로 설정
     strategy:
       matrix:
         service: [
@@ -45,7 +46,7 @@ jobs:
           { name: "config", wd: "./com.trillionares.tryit.config", ecr_repository: "here-trillionaires/try-and-review/config", ecs_service: "config-service", ecs_cluster: "config-cluster", ecs_task_definition: ".github/workflows/config-task-revision1.json", container_name: "config-container" },
           { name: "gateway", wd: "./com.trillionares.tryit.gateway", ecr_repository: "here-trillionaires/try-and-review/gateway", ecs_service: "gateway-service", ecs_cluster: "gateway-cluster", ecs_task_definition: ".github/workflows/gateway-task-revision1.json", container_name: "gateway-container" },
           { name: "auth", wd: "./com.trillionares.tryit.auth", ecr_repository: "here-trillionaires/try-and-review/auth", ecs_service: "auth-service", ecs_cluster: "auth-cluster", ecs_task_definition: ".github/workflows/auth-task-revision1.json", container_name: "auth-container" },
-          { name: "trial", wd: "./com.trillionares.tryit.trial", ecr_repository: "here-trillionaires/try-and-review/trial", ecs_service: "trial-service", ecs_cluster: "trial-cluster", ecs_task_definition: ".github/workflows/trial-task-revision1.json", container_name: "trial-container" },
+          { name: "trial", wd: "./com.trillionares.tryit.trial", ecr_repository: "here-trillionaires/try-and-review/trial", ecs_service: "trial-service", ecs_cluster: "trial-cluster", ecs_task_definition: ".github/workflows/trial-task-revision1.json", container_name: "tiral-container " },
           { name: "product", wd: "./com.trillionares.tryit.product", ecr_repository: "here-trillionaires/try-and-review/product", ecs_service: "product-service", ecs_cluster: "product-cluster", ecs_task_definition: ".github/workflows/product-task-revision1.json", container_name: "product-container" },
           { name: "review", wd: "./com.trillionares.tryit.review", ecr_repository: "here-trillionaires/try-and-review/review", ecs_service: "review-service", ecs_cluster: "review-cluster", ecs_task_definition: ".github/workflows/review-task-revision1.json", container_name: "review-container" },
           { name: "notification", wd: "./com.trillionares.tryit.notification", ecr_repository: "here-trillionaires/try-and-review/notification", ecs_service: "notification-service", ecs_cluster: "notification-cluster", ecs_task_definition: ".github/workflows/notification-task-revision1.json", container_name: "notification-container" },
