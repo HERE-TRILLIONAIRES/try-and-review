@@ -31,7 +31,8 @@ public class StatisticsService {
     public StatisticsCreateResponseDto createStatistics(StatisticsCreateRequestDto statisticsCreateRequestDto) {
         Statistics statistics =  statisticsRepository.save(Statistics.of(statisticsCreateRequestDto.userId(),
                 statisticsCreateRequestDto.productId(),statisticsCreateRequestDto.highestScore(),
-                statisticsCreateRequestDto.lowestScore(),statisticsCreateRequestDto.reviewCount(),statisticsCreateRequestDto.durationTime()));
+                statisticsCreateRequestDto.lowestScore(),statisticsCreateRequestDto.averageScore(),
+                statisticsCreateRequestDto.reviewCount(),statisticsCreateRequestDto.durationTime()));
         return StatisticsCreateResponseDto.of(statistics.getStatisticsId(),statistics.getCreatedAt());
     }
 

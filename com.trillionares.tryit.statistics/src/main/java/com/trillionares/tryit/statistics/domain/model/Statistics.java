@@ -26,23 +26,27 @@ public class Statistics extends BaseEntity {
     private UUID productId;
 
     @Column(name = "highest_score", nullable = false)
-    private int highestScore;
+    private Integer highestScore;
 
     @Column(name = "lowest_score", nullable = false)
-    private int lowestScore;
+    private Integer lowestScore;
+
+    @Column(name = "average_score", nullable = false)
+    private Double averageScore;
 
     @Column(name = "review_count", nullable = false)
-    private int reviewCount;
+    private Integer reviewCount;
 
     @Column(name = "duration_time", nullable = false)
-    private long durationTime;
+    private Long durationTime;
 
-    public static Statistics of(UUID userId, UUID productId, int highestScore, int lowestScore, int reviewCount, long durationTime) {
+    public static Statistics of(UUID userId, UUID productId, Integer highestScore, Integer lowestScore, Double averageScore,Integer reviewCount, Long durationTime) {
         return Statistics.builder()
                 .userId(userId)
                 .productId(productId)
                 .highestScore(highestScore)
                 .lowestScore(lowestScore)
+                .averageScore(averageScore)
                 .reviewCount(reviewCount)
                 .durationTime(durationTime)
                 .build();
