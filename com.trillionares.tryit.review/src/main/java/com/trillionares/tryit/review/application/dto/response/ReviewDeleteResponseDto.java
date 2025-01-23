@@ -7,11 +7,11 @@ import java.util.UUID;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record ReviewDeleteResponseDto(
-        UUID productId) {
+        UUID reviewId) {
 
-    public static ReviewDeleteResponseDto from(UUID productId) {
+    public static ReviewDeleteResponseDto from(UUID reviewId) {
         return ReviewDeleteResponseDto.builder()
-                .productId(productId)
+                .reviewId(reviewId)
                 .build();
     }
 }
