@@ -1,6 +1,7 @@
 package com.trillionares.tryit.product.presentation.dto.response;
 
 import com.trillionares.tryit.product.domain.model.product.Product;
+import com.trillionares.tryit.product.domain.model.product.ProductItem;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -38,5 +39,18 @@ public class ProductInfoResponseDto {
             .mainProductImgUrl(dummyURL)
             .contentImgUrlList(contentImgDummydummyURLList)
             .build();
+    }
+
+    public static ProductInfoResponseDto ofItem(ProductItem productItem) {
+        return ProductInfoResponseDto.builder()
+                .productId(productItem.getProductId())
+                .userId(productItem.getUserId())
+                .seller(productItem.getSeller())
+                .name(productItem.getProductName())
+                .content(productItem.getProductContent())
+                .category(productItem.getCategory())
+                .mainProductImgUrl(productItem.getProductImgUrl())
+                .contentImgUrlList(null)
+                .build();
     }
 }
