@@ -28,21 +28,11 @@ name: Deploy to Amazon ECS
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "deploy/test" ]
     #branches: [ "develop" ] #branches: [ "main" ]
 
 env:
   AWS_REGION: ap-northeast-2                  # set this to your preferred AWS region, e.g. us-west-1
-
-  # Auth
-  AUTH_ECR_REPOSITORY: here-trillionaires/try-and-review/auth      # set this to your Amazon ECR repository name
-  AUTH_ECS_SERVICE: auth-service                 # set this to your Amazon ECS service name
-  AUTH_ECS_CLUSTER: auth-cluster                # set this to your Amazon ECS cluster name
-  AUTH_ECS_TASK_DEFINITION: .github/workflows/auth-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  AUTH_CONTAINER_NAME: auth-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  AUTH_WD: ./com.trillionares.tryit.auth
 
   # trial
   ECR_REPOSITORY: here-trillionaires/try-and-review/trial        # set this to your Amazon ECR repository name
@@ -64,36 +54,6 @@ env:
   # containerDefinitions section of your task definition
   PRODUCT_WD: ./com.trillionares.tryit.product
 
-  # Review
-  REVIEW_ECR_REPOSITORY: here-trillionaires/try-and-review/review      # set this to your Amazon ECR repository name
-  REVIEW_ECS_SERVICE: review-service                 # set this to your Amazon ECS service name
-  REVIEW_ECS_CLUSTER: review-cluster                # set this to your Amazon ECS cluster name
-  REVIEW_ECS_TASK_DEFINITION: .github/workflows/review-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  REVIEW_CONTAINER_NAME: review-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  REVIEW_WD: ./com.trillionares.tryit.review
-
-  # Notification
-  NOTIFICATION_ECR_REPOSITORY: here-trillionaires/try-and-review/notification      # set this to your Amazon ECR repository name
-  NOTIFICATION_ECS_SERVICE: notification-service                 # set this to your Amazon ECS service name
-  NOTIFICATION_ECS_CLUSTER: notification-cluster                # set this to your Amazon ECS cluster name
-  NOTIFICATION_ECS_TASK_DEFINITION: .github/workflows/notification-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  NOTIFICATION_CONTAINER_NAME: notification-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  NOTIFICATION_WD: ./com.trillionares.tryit.notification
-
-  # Statistics
-  STATISTICS_ECR_REPOSITORY: here-trillionaires/try-and-review/statistics      # set this to your Amazon ECR repository name
-  STATISTICS_ECS_SERVICE: statistics-service                 # set this to your Amazon ECS service name
-  STATISTICS_ECS_CLUSTER: statistics-cluster                # set this to your Amazon ECS cluster name
-  STATISTICS_ECS_TASK_DEFINITION: .github/workflows/statistics-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  STATISTICS_CONTAINER_NAME: statistics-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  STATISTICS_WD: ./com.trillionares.tryit.statistics
-
   # Image-manage
   IMAGE_MANAGE_ECR_REPOSITORY: here-trillionaires/try-and-review/image-manage      # set this to your Amazon ECR repository name
   IMAGE_MANAGE_ECS_SERVICE: image-manage-service                 # set this to your Amazon ECS service name
@@ -103,36 +63,6 @@ env:
   IMAGE_MANAGE_CONTAINER_NAME: image-manage-container           # set this to the name of the container in the
   # containerDefinitions section of your task definition
   IMAGE_MANAGE_WD: ./com.trillionares.tryit.image-manage
-
-  # config
-  CONFIG_ECR_REPOSITORY: here-trillionaires/try-and-review/config      # set this to your Amazon ECR repository name
-  CONFIG_ECS_SERVICE: config-service                 # set this to your Amazon ECS service name
-  CONFIG_ECS_CLUSTER: config-cluster                # set this to your Amazon ECS cluster name
-  CONFIG_ECS_TASK_DEFINITION: .github/workflows/config-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  CONFIG_CONTAINER_NAME: config-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  CONFIG_WD: ./com.trillionares.tryit.config
-
-  # server
-  SERVER_ECR_REPOSITORY: here-trillionaires/try-and-review/server      # set this to your Amazon ECR repository name
-  SERVER_ECS_SERVICE: server-service                 # set this to your Amazon ECS service name
-  SERVER_ECS_CLUSTER: server-cluster                # set this to your Amazon ECS cluster name
-  SERVER_ECS_TASK_DEFINITION: .github/workflows/server-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  SERVER_CONTAINER_NAME: server-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  SERVER_WD: ./com.trillionares.tryit.server
-
-  # Gateway
-  GATEWAY_ECR_REPOSITORY: here-trillionaires/try-and-review/gateway      # set this to your Amazon ECR repository name
-  GATEWAY_ECS_SERVICE: gateway-service                 # set this to your Amazon ECS service name
-  GATEWAY_ECS_CLUSTER: gateway-cluster                # set this to your Amazon ECS cluster name
-  GATEWAY_ECS_TASK_DEFINITION: .github/workflows/gateway-task-revision1.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  GATEWAY_CONTAINER_NAME: gateway-container           # set this to the name of the container in the
-  # containerDefinitions section of your task definition
-  GATEWAY_WD: ./com.trillionares.tryit.gateway
 
 permissions:
   contents: read
@@ -151,74 +81,6 @@ jobs: #stages
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      # server
-      - name: Grant execute permission for server gradlew
-        run: chmod +x gradlew
-        working-directory: ${{ env.SERVER_WD }}
-
-      #- name: Build with server Gradle
-      - name: Build with Test without server Gradle
-        #run: ./gradlew clean build
-        run: ./gradlew clean build -x test
-        working-directory: ${{ env.SERVER_WD }}
-
-      - name: Upload server Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: server-build-libs
-          path: ${{ env.SERVER_WD }}/build/libs/*.jar
-
-      # config
-      - name: Grant execute permission for config gradlew
-        run: chmod +x gradlew
-        working-directory: ${{ env.CONFIG_WD }}
-
-      #- name: Build with config Gradle
-      - name: Build with Test without config Gradle
-        #run: ./gradlew clean build
-        run: ./gradlew clean build -x test
-        working-directory: ${{ env.CONFIG_WD }}
-
-      - name: Upload config Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: config-build-libs
-          path: ${{ env.CONFIG_WD }}/build/libs/*.jar
-
-      # gateway
-      - name: Grant execute permission for gateway gradlew
-        run: chmod +x gradlew
-        working-directory: ${{ env.GATEWAY_WD }}
-
-      #- name: Build with gateway Gradle
-      - name: Build with Test without gateway Gradle
-        #run: ./gradlew clean build
-        run: ./gradlew clean build -x test
-        working-directory: ${{ env.GATEWAY_WD }}
-
-      - name: Upload gateway Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: gateway-build-libs
-          path: ${{ env.GATEWAY_WD }}/build/libs/*.jar
-
-      # auth
-      - name: Grant execute permission for auth gradlew
-        run: chmod +x gradlew
-        working-directory: ${{ env.AUTH_WD }}
-
-      #- name: Build with auth Gradle
-      - name: Build with Test without auth Gradle
-        #run: ./gradlew clean build
-        run: ./gradlew clean build -x test
-        working-directory: ${{ env.AUTH_WD }}
-
-      - name: Upload auth Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: auth-build-libs
-          path: ${{ env.AUTH_WD }}/build/libs/*.jar
 
       # trial
       - name: Grant execute permission for trial gradlew
@@ -254,57 +116,6 @@ jobs: #stages
           name: product-build-libs
           path: ${{ env.PRODUCT_WD }}/build/libs/*.jar
 
-      # review
-      - name: Grant execute permission for review gradlew
-        run: chmod +x gradlew
-        working-directory: ${{ env.REVIEW_WD }}
-
-      #- name: Build with review Gradle
-      - name: Build with Test without review Gradle
-        #run: ./gradlew clean build
-        run: ./gradlew clean build -x test
-        working-directory: ${{ env.REVIEW_WD }}
-
-      - name: Upload review Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: review-build-libs
-          path: ${{ env.REVIEW_WD }}/build/libs/*.jar
-
-      # notification
-      - name: Grant execute permission for notification gradlew
-        run: chmod +x gradlew
-        working-directory: ${{ env.NOTIFICATION_WD }}
-
-      #- name: Build with notification Gradle
-      - name: Build with Test without notification Gradle
-        #run: ./gradlew clean build
-        run: ./gradlew clean build -x test
-        working-directory: ${{ env.NOTIFICATION_WD }}
-
-      - name: Upload notification Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: notification-build-libs
-          path: ${{ env.NOTIFICATION_WD }}/build/libs/*.jar
-
-      # statistics
-      - name: Grant execute permission for statistics gradlew
-        run: chmod +x gradlew
-        working-directory: ${{ env.STATISTICS_WD }}
-
-      #- name: Build with statistics Gradle
-      - name: Build with Test without statistics Gradle
-        #run: ./gradlew clean build
-        run: ./gradlew clean build -x test
-        working-directory: ${{ env.STATISTICS_WD }}
-
-      - name: Upload statistics Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: statistics-build-libs
-          path: ${{ env.STATISTICS_WD }}/build/libs/*.jar
-
       # image-manage
       - name: Grant execute permission for image-manage gradlew
         run: chmod +x gradlew
@@ -334,34 +145,6 @@ jobs: #stages
         uses: actions/checkout@v4
 
       # Service Down load ---------------------------------------------------
-      # Server
-      - name: Download server Build Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: server-build-libs
-          path: ${{ env.SERVER_WD }}/build/libs
-
-      # Config
-      - name: Download config Build Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: config-build-libs
-          path: ${{ env.CONFIG_WD }}/build/libs
-
-      # Gateway
-      - name: Download gateway Build Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: gateway-build-libs
-          path: ${{ env.GATEWAY_WD }}/build/libs
-
-      # Auth
-      - name: Download auth Build Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: auth-build-libs
-          path: ${{ env.AUTH_WD }}/build/libs
-
       # Trial
       - name: Download trial Build Artifacts
         uses: actions/download-artifact@v3
@@ -375,27 +158,6 @@ jobs: #stages
         with:
           name: product-build-libs
           path: ${{ env.PRODUCT_WD }}/build/libs
-
-      # Review
-      - name: Download review Build Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: review-build-libs
-          path: ${{ env.REVIEW_WD }}/build/libs
-
-      # Notification
-      - name: Download notification Build Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: notification-build-libs
-          path: ${{ env.NOTIFICATION_WD }}/build/libs
-
-      # Statistics
-      - name: Download statistics Build Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: statistics-build-libs
-          path: ${{ env.STATISTICS_WD }}/build/libs
 
       # Image-manage
       - name: Download image-manage Build Artifacts
@@ -417,169 +179,6 @@ jobs: #stages
         uses: aws-actions/amazon-ecr-login@v1
 
       # Docker BUILD--------------------------------------------------------------
-      # Server
-      - name: Server - Build, tag, and push server image to Amazon ECR
-        id: server-build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/${{ env.SERVER_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.SERVER_WD }}
-          docker push $ECR_REGISTRY/${{ env.SERVER_ECR_REPOSITORY }}:${{ github.sha }}
-          echo "image=$ECR_REGISTRY/${{ env.SERVER_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new server image ID in the Amazon ECS task definition
-        id: server-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.SERVER_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.SERVER_CONTAINER_NAME }}
-          image: ${{ steps.server-build-image.outputs.image }}
-
-      - name: Deploy server Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.server-task-def.outputs.task-definition }}
-          service: ${{ env.SERVER_ECS_SERVICE }}
-          cluster: ${{ env.SERVER_ECS_CLUSTER }}
-          wait-for-service-stability: true
-
-      # Config
-      - name: Config - Build, tag, and push server image to Amazon ECR
-        id: config-build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/${{ env.CONFIG_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.CONFIG_WD }}
-          docker push $ECR_REGISTRY/${{ env.CONFIG_ECR_REPOSITORY }}:${{ github.sha }}
-          echo "image=$ECR_REGISTRY/${{ env.CONFIG_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new config image ID in the Amazon ECS task definition
-        id: config-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.CONFIG_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONFIG_CONTAINER_NAME }}
-          image: ${{ steps.config-build-image.outputs.image }}
-          environment-variables: |
-            EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-            CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
-            GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
-            AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
-            TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
-            PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
-            REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
-            NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
-            STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
-            IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
-            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
-            DB_URL=${{ secrets.DB_URL }}
-            DB_NOTIFICATION_USERNAME=${{ secrets.DB_NOTIFICATION_USERNAME }}
-            DB_NOTIFICATION_PASSWORD=${{ secrets.DB_NOTIFICATION_PASSWORD }}
-            SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
-            KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
-            NOTIFICATION_REDIS_HOST=${{ secrets.NOTIFICATION_REDIS_HOST }}
-            NOTIFICATION_REDIS_PORT=${{ secrets.NOTIFICATION_REDIS_PORT }}
-            REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
-            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-
-      - name: Deploy config Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.config-task-def.outputs.task-definition }}
-          service: ${{ env.CONFIG_ECS_SERVICE }}
-          cluster: ${{ env.CONFIG_ECS_CLUSTER }}
-          wait-for-service-stability: true
-
-      # Gateway
-      - name: Gateway - Build, tag, and push server image to Amazon ECR
-        id: gateway-build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.GATEWAY_WD }}
-          docker push $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}
-          echo "image=$ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new gateway image ID in the Amazon ECS task definition
-        id: gateway-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.GATEWAY_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.GATEWAY_CONTAINER_NAME }}
-          image: ${{ steps.gateway-build-image.outputs.image }}
-          environment-variables: |
-            EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-            CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
-            GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
-            AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
-            TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
-            PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
-            REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
-            NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
-            STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
-            IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
-            SECRET_KEY=${{ secrets.SECRET_KEY }}
-            KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
-
-      - name: Deploy gateway Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.gateway-task-def.outputs.task-definition }}
-          service: ${{ env.GATEWAY_ECS_SERVICE }}
-          cluster: ${{ env.GATEWAY_ECS_CLUSTER }}
-          wait-for-service-stability: true
-
-      # Auth
-      - name: Auth - Build, tag, and push server image to Amazon ECR
-        id: auth-build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/${{ env.AUTH_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.AUTH_WD }}
-          docker push $ECR_REGISTRY/${{ env.AUTH_ECR_REPOSITORY }}:${{ github.sha }}
-          echo "image=$ECR_REGISTRY/${{ env.AUTH_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new auth image ID in the Amazon ECS task definition
-        id: auth-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.AUTH_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.AUTH_CONTAINER_NAME }}
-          image: ${{ steps.auth-build-image.outputs.image }}
-          environment-variables: |
-            EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-            CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
-            GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
-            AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
-            TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
-            PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
-            REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
-            NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
-            STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
-            IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
-            DB_URL=${{ secrets.DB_URL }}
-            DB_AUTH_USERNAME=${{ secrets.DB_AUTH_USERNAME }}
-            DB_AUTH_PASSWORD=${{ secrets.DB_AUTH_PASSWORD }}
-            SECRET_KEY=${{ secrets.SECRET_KEY }}
-            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
-            KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
-            REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
-            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-            AUTH_REDIS_HOST=${{ secrets.AUTH_REDIS_HOST }}
-            AUTH_REDIS_PORT=${{ secrets.AUTH_REDIS_PORT }}
-
-      - name: Deploy auth Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.auth-task-def.outputs.task-definition }}
-          service: ${{ env.AUTH_ECS_SERVICE }}
-          cluster: ${{ env.AUTH_ECS_CLUSTER }}
-          wait-for-service-stability: true
-
       # Trial
       - name: Trial - Build, tag, and push image to Amazon ECR
         id: trial-build-image
@@ -674,148 +273,6 @@ jobs: #stages
           task-definition: ${{ steps.product-task-def.outputs.task-definition }}
           service: ${{ env.PRODUCT_ECS_SERVICE }}
           cluster: ${{ env.PRODUCT_ECS_CLUSTER }}
-          wait-for-service-stability: true
-
-      # Review
-      - name: Review - Build, tag, and push server image to Amazon ECR
-        id: review-build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/${{ env.REVIEW_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.REVIEW_WD }}
-          docker push $ECR_REGISTRY/${{ env.REVIEW_ECR_REPOSITORY }}:${{ github.sha }}
-          echo "image=$ECR_REGISTRY/${{ env.REVIEW_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new review image ID in the Amazon ECS task definition
-        id: review-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.REVIEW_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.REVIEW_CONTAINER_NAME }}
-          image: ${{ steps.review-build-image.outputs.image }}
-          environment-variables: |
-            EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-            CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
-            GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
-            AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
-            TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
-            PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
-            REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
-            NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
-            STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
-            IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
-            DB_URL=${{ secrets.DB_URL }}
-            DB_REVIEW_USERNAME=${{ secrets.DB_REVIEW_USERNAME }}
-            DB_REVIEW_PASSWORD=${{ secrets.DB_REVIEW_PASSWORD }}
-            REVIEW_REDIS_HOST=${{ secrets.REVIEW_REDIS_HOST }}
-            REVIEW_REDIS_PORT=${{ secrets.REVIEW_REDIS_PORT }}
-            REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
-            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
-            KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
-
-      - name: Deploy review Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.review-task-def.outputs.task-definition }}
-          service: ${{ env.REVIEW_ECS_SERVICE }}
-          cluster: ${{ env.REVIEW_ECS_CLUSTER }}
-          wait-for-service-stability: true
-
-      # Notification
-      - name: Notification - Build, tag, and push server image to Amazon ECR
-        id: notification-build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/${{ env.NOTIFICATION_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.NOTIFICATION_WD }}
-          docker push $ECR_REGISTRY/${{ env.NOTIFICATION_ECR_REPOSITORY }}:${{ github.sha }}
-          echo "image=$ECR_REGISTRY/${{ env.NOTIFICATION_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new notification image ID in the Amazon ECS task definition
-        id: notification-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.NOTIFICATION_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.NOTIFICATION_CONTAINER_NAME }}
-          image: ${{ steps.notification-build-image.outputs.image }}
-          environment-variables: |
-            EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-            CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
-            GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
-            AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
-            TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
-            PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
-            REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
-            NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
-            STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
-            IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
-            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
-            DB_URL=${{ secrets.DB_URL }}
-            DB_NOTIFICATION_USERNAME=${{ secrets.DB_NOTIFICATION_USERNAME }}
-            DB_NOTIFICATION_PASSWORD=${{ secrets.DB_NOTIFICATION_PASSWORD }}
-            SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
-            KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
-            NOTIFICATION_REDIS_HOST=${{ secrets.NOTIFICATION_REDIS_HOST }}
-            NOTIFICATION_REDIS_PORT=${{ secrets.NOTIFICATION_REDIS_PORT }}
-            REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
-            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-
-      - name: Deploy notification Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.notification-task-def.outputs.task-definition }}
-          service: ${{ env.NOTIFICATION_ECS_SERVICE }}
-          cluster: ${{ env.NOTIFICATION_ECS_CLUSTER }}
-          wait-for-service-stability: true
-
-      # Statistics
-      - name: Statistics - Build, tag, and push server image to Amazon ECR
-        id: statistics-build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/${{ env.STATISTICS_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.STATISTICS_WD }}
-          docker push $ECR_REGISTRY/${{ env.STATISTICS_ECR_REPOSITORY }}:${{ github.sha }}
-          echo "image=$ECR_REGISTRY/${{ env.STATISTICS_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new statistics image ID in the Amazon ECS task definition
-        id: statistics-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.STATISTICS_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.STATISTICS_CONTAINER_NAME }}
-          image: ${{ steps.statistics-build-image.outputs.image }}
-          environment-variables: |
-            EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
-            CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
-            GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
-            AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
-            TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
-            PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
-            REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
-            NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
-            STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
-            IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
-            DB_URL=${{ secrets.DB_URL }}
-            DB_STATISTICS_USERNAME=${{ secrets.DB_STATISTICS_USERNAME }}
-            DB_STATISTICS_PASSWORD=${{ secrets.DB_STATISTICS_PASSWORD }}
-            STATISTICS_REDIS_HOST=${{ secrets.STATISTICS_REDIS_HOST }}
-            STATISTICS_REDIS_PORT=${{ secrets.STATISTICS_REDIS_PORT }}
-            REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
-            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
-            KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
-
-      - name: Deploy statistics Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.statistics-task-def.outputs.task-definition }}
-          service: ${{ env.STATISTICS_ECS_SERVICE }}
-          cluster: ${{ env.STATISTICS_ECS_CLUSTER }}
           wait-for-service-stability: true
 
       # Image-manage
