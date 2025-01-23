@@ -219,6 +219,7 @@ jobs:
 
   build-and-deploy-other-services:
     name: Build and Deploy Services
+    needs: deploy-config
     runs-on: ubuntu-latest
     timeout-minutes: 360 # 제한 시간을 6시간으로 설정
     strategy:
