@@ -80,8 +80,8 @@ public class ReviewService {
         if(reviewValidation.isNotDeleteValidation(role,review.getUserId(),reviewGetUserByUsernameResponseDto.getData().getUserId()))
             throw new GlobalException(ErrorCode.REVIEW_DELETE_FORBIDDEN);
 
-        reviewRepository.deleteById(reviewId);
-        return ReviewDeleteResponseDto.from(reviewId);
+        reviewRepository.deleteById(review.getReviewId());
+        return ReviewDeleteResponseDto.from(review.getReviewId());
     }
 
     @Transactional(readOnly = true)
