@@ -9,8 +9,11 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.trillionares.tryit.auth.domain.model.QUser;
+import com.trillionares.tryit.auth.domain.model.Role;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +33,8 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom{
 
   @Override
   public Page<UserResponseDto> findAllByConditions(
-      List<UUID> userIdList, Predicate predicate, Pageable pageable
+      List<UUID> userIdList, String username, String email, Role role,
+      LocalDateTime startDateTime, LocalDateTime endDateTime, Predicate predicate, Pageable pageable
   ) {
 
     QUser user = QUser.user;

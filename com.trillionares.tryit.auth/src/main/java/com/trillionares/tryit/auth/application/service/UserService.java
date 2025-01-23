@@ -12,6 +12,8 @@ import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.UserInfoUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -128,11 +130,12 @@ public class UserService {
   // 사용자 목록 조회 queryDsl+paging
   @Transactional(readOnly = true)
   @PreAuthorize("hasAuthority('ADMIN')")
-  public PagedModel<UserResponseDto> getUsers(List<UUID> uuidList, Predicate predicate,
+  public PagedModel<UserResponseDto> getUsers(List<UUID> uuidList, String username, String email, Role role,
+      LocalDateTime startDateTime, LocalDateTime endDateTime, Predicate predicate,
       Pageable pageable) {
 
     Page<UserResponseDto> userResponseDtoPage
-        = userRepository.findAllByConditions(uuidList, predicate, pageable);
+        = userRepository.findAllByConditions(uuidList, username, email, role, startDateTime, endDateTime, predicate, pageable);
 
     return new PagedModel<>(userResponseDtoPage);
   }
