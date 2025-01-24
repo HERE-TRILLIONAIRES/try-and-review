@@ -1,4 +1,5 @@
 <h1><img src="https://github.com/user-attachments/assets/e6ed9501-3146-449e-a6c1-f76236d2b4d4" alt="icon" width="65" height="65" />     Try-it</h1>
+
 <div  align="center">
   <img width="50%" src="https://github.com/user-attachments/assets/0d2b125d-4a4f-4c75-80ef-04c7ddea53ee" alt="LOGO">
 </div>
@@ -187,6 +188,7 @@
 ---
 
 ### **QueryDSL 기반의 페이징 및 정렬 기능 구현**
+
 - 모든 서비스 목록 조회기능에 동적으로 조회하고 페이징 처리 적용
 - 알림 서비스 기준 알림전송상태, 사용자 ID, 기간을 동적 검색조건으로 사용하여 페이징된 알림 목록을 조회
 - 상품 서비스 기준 등록된 시점, 등록한 사람을 동적 검색조건으로 사용하여 페이징된 상품 목록을 조회
@@ -199,6 +201,8 @@
 - [모집 상태 관리 기술적 의사결정: Redis TTL 기반 접근](https://www.notion.so/teamsparta/Redis-TTL-4212db09208f4c97aa049f6193c26313)
 - [이미지 처리시 비동기 도입 이유](https://www.notion.so/teamsparta/3d5cbce944d54ffb9468953e08ad3d0a)
 - [사용자 조회 시 Redis 적용](https://www.notion.so/teamsparta/Redis-2b2b14a48c404da489b1dece8d11398c)
+
+<br>
 
 ## 🚀트러블 슈팅
 - [@Valid, @Validated 예외 처리](https://www.notion.so/teamsparta/Valid-Validated-1d94ef6b0af542b1a93f30b98e84412a)
@@ -252,17 +256,17 @@
 |<p align="left"> 🐥리더 <br/>- 알림기능 <br/>- 아키텍쳐 설계 및 초기구성<br/>- 일정관리</p>|<p align="left">🐥부리더 <br/>- 리뷰기능<br/>- 통계기능<br/><br/></p>|<p align="left">🐥팀원 <br/>- 상품, 이미지 업로드 기능<br/>- 체험단 신청기능<br/>- AWS 배포</p>|<p align="left">🐥팀원 <br/>- 체험단 모집<br/>- 모집상태 관리<br/><br/></p>|<p align="left">🐥팀원 <br/>- 사용자 기능<br/>- JWT 기반 인증 기능<br/>- Gateway 설정<br/>  </p>|
 
 
-### **Ground Rule**
+### 📌**Ground Rule**
 
-🍁 **문제 발생 시 즉시 공유**
+**문제 발생 시 즉시 공유**
 
 - 문제가 발생하면 팀원들에게 빠르게 상황을 공유하여 협력 해결.
 
-🍁 **목표를 위한 노력**
+**목표를 위한 노력**
 
 - WBS 일정관리를 통해 매일 목표는 매일 달성 할 수 있도록 노력하기.
 
-🍁 **사실과 근거에 기반한 피드백**
+**사실과 근거에 기반한 피드백**
 
 - 서로 존중하며 감정이 아닌 사실과 근거에 기반안 피드백 주기.
 - 질문이나 배워가는 점 또한 피드백이 될 수 있음.
@@ -274,6 +278,9 @@
 - `main` : 서비스 운영 브랜치입니다.
 - `develop` : 개발 환경 브랜치입니다. 개별적으로 작업했던 내용을 합치고 검토합니다.
 - `feat/(서비스명)/...` : (서비스이름) 서비스별 세부 브랜치입니다.
+- `fix/(서비스명)...` : (서비스이름) 서비스별 수정되는 작업들을 위한 브랜치입니다.
+- `deploy/...` : CI/CD를 위한 브랜치 입니다.
+
 ### Commit & Pull-Request Message
 |    Division    | Message |
 |:--------------:| :--- |
@@ -286,8 +293,9 @@
 <br>
 
 ## 📁 프로젝트 파일 구조
-1. 마이크로서비스 아키텍처 구조<br>
-   프로젝트는 Microservices Architecture와 DDD(Domain-Driven Design) 기반의 Layered Architecture를 적용하여 구성되어 있습니다.
+
+1. **마이크로서비스** 아키텍처 구조<br>
+   프로젝트는 **Microservices Architecture와 DDD(Domain-Driven Design) 기반**의 Layered Architecture를 적용하여 구성되어 있습니다.
 ```text
 ├─ com.trillionares.tryit.*  // 각 마이크로서비스
 │  ├─ auth                   // 인증/인가 서비스
@@ -306,8 +314,8 @@
 └─ prometheus              // 모니터링 시스템
 ```
 
-2. 계층형 아키텍처 구조<br>
-   각 마이크로서비스는 DDD 기반의 계층형 아키텍처로 구성되어 있습니다.
+2. **계층형** 아키텍처 구조<br>
+   각 마이크로서비스는 **DDD 기반의 계층형** 아키텍처로 구성되어 있습니다.
 ``` text
 com.trillionares.tryit.[service-name]
 ├─ application             // 비즈니스 처리 계층
@@ -328,20 +336,24 @@ com.trillionares.tryit.[service-name]
 ```
 <br>
 
-## 성과 및 회고
+## 👣 성과 및 회고
 
 ### 잘된 점
-- **제목**
-  - 
+
+- **일정 관리가 잘 이루어짐**
+    - WBS로 일정관리를 한 덕분에 한눈에 팀원들의 진행 상황이 파악됨
+    - 목표 달성까지 얼마나 남았는지 확인이 가능
 
 ---
 
 ### 아쉬운 점
+
 - **제목**
     - 내용
 ---
 
 ### 향후 계획
+
 - **제목**
     - 내용
 
