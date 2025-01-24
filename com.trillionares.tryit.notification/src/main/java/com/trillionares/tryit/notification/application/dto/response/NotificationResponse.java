@@ -15,21 +15,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class NotificationResponse {
-    private UUID notificationId;
-    private UUID userId;
-    private UUID submissionId;
-    private NotificationStatus notificationStatus;
-    private Integer attemptCount;
-    private LocalDateTime createdAt;
-    private String createdBy;
 
-    public static NotificationResponse from(Notification notification) {
-        return NotificationResponse.builder()
-                .notificationId(notification.getNotificationId())
-                .userId(notification.getUserId())
-                .submissionId(notification.getSubmissionId())
-                .notificationStatus(notification.getNotificationStatus())
-                .attemptCount(notification.getAttemptCount())
-                .build();
-    }
+  private UUID notificationId;
+  private UUID userId;
+  private UUID submissionId;
+  private NotificationStatus notificationStatus;
+  private Integer attemptCount;
+  private LocalDateTime createdAt;
+  private String createdBy;
+
+  public static NotificationResponse from(Notification notification) {
+    return NotificationResponse.builder()
+        .notificationId(notification.getNotificationId())
+        .userId(notification.getUserId())
+        .submissionId(notification.getSubmissionId())
+        .notificationStatus(notification.getNotificationStatus())
+        .attemptCount(notification.getAttemptCount())
+        .createdAt(notification.getCreatedAt())
+        .createdBy(notification.getCreatedBy())
+        .build();
+  }
 }

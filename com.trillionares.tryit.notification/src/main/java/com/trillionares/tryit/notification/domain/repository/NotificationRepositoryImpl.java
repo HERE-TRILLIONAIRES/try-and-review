@@ -2,10 +2,12 @@ package com.trillionares.tryit.notification.domain.repository;
 
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.trillionares.tryit.notification.application.dto.response.NotificationResponse;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
 import com.trillionares.tryit.notification.domain.model.QNotification;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +27,51 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
   private final JPAQueryFactory queryFactory;
   private final QNotification notification = QNotification.notification;
 
-  public Page<NotificationResponse> findByNotificationStatus(NotificationStatus status, Pageable pageable) {
+  public Page<NotificationResponse> findBySearch(
+      NotificationStatus status,
+      UUID userId,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      Pageable pageable) {
+
+    List<NotificationResponse> content = queryFactory
+        .select(Projections.constructor(NotificationResponse.class,
+            notification.notificationId,
+            notification.userId,
+            notification.submissionId,
+            notification.notificationStatus,
+            notification.attemptCount,
+            notification.createdAt,
+            notification.createdBy))
+        .from(notification)
+        .where(notification.notificationStatus.eq(status),
+            userId != null ? notification.userId.eq(userId) : null,
+            dateRange(startDate, endDate))
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .orderBy(notification.createdAt.desc())
+        .fetch();
+
+    long total = Optional.ofNullable(queryFactory
+            .select(notification.count())
+            .from(notification)
+            .where(notification.notificationStatus.eq(status),
+                userId != null ? notification.userId.eq(userId) : null,
+                startDate != null && endDate != null ?
+                    notification.createdAt.between(startDate, endDate) : null)
+            .fetchOne())
+        .orElse(0L);
+
+    return new PageImpl<>(content, pageable, total);
+  }
+
+  private BooleanExpression dateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    return startDate != null && endDate != null ?
+        notification.createdAt.between(startDate, endDate) : null;
+  }
+
+  public Page<NotificationResponse> findByNotificationStatus(NotificationStatus status,
+      Pageable pageable) {
 
     List<NotificationResponse> content = queryFactory
         .select(Projections.constructor(NotificationResponse.class,
@@ -80,10 +126,11 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
             .select(notification.count())
             .from(notification)
             .where(notification.notificationStatus.eq(status),
-            notification.userId.eq(userId))
+                notification.userId.eq(userId))
             .fetchOne())
         .orElse(0L);
 
     return new PageImpl<>(content, pageable, total);
   }
 }
+
