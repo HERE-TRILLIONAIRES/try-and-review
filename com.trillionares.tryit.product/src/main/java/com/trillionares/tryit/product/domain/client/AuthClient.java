@@ -16,5 +16,5 @@ public interface AuthClient {
     BaseResponseDto<InfoByUsernameResponseDto> getUserByUsername(@PathVariable("username") String username);
 
     @GetMapping("/users/internals/{userId}")
-    BaseResponseDto<UserResponseDto> getUserInfo(@PathVariable UUID userId);
+    BaseResponseDto<UserResponseDto> getUserInfo(@PathVariable("userId") UUID userId);
 }
