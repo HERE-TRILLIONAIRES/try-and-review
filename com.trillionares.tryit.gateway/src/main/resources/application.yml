@@ -8,46 +8,39 @@ spring:
     name: gateway-service  # 애플리케이션 이름을 'gateway-service'로 설정
   cloud:
     gateway:
-      routes: # Spring Cloud Gateway의 라우팅 설정
-        - id: auth-service           # 라우트 식별자
-          uri: ${AUTH_DNS_NAME}           # 라우트 식별자
-#          uri: lb://auth-service    # 'auth-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
           predicates:
             - Path=/auth/**,/users/**,/auth-service/**
 
         - id: product-service
-          uri: ${PRODUCT_DNS_NAME}
-#          uri: lb://product-service
+          uri: lb://product-service
           predicates:
             - Path=/api/products/**,/api/categories/**,/recruitments/**
 
         - id: review-service
-          uri: ${REVIEW_DNS_NAME}
-#          uri: lb://review-service
+          uri: lb://review-service
           predicates:
             - Path=/reviews/**
 
         - id: image-manage-service
-          uri: ${IMAGE_MANAGE_DNS_NAME}
-#          uri: lb://image-manage-service
+          uri: lb://image-manage-service
           predicates:
             - Path=/api/images/**,/api/s3/**
 
         - id: statistics-service
-          uri: ${STATISTICS_DNS_NAME}
-#          uri: lb://statistics-service
+          uri: lb://statistics-service
           predicates:
             - Path=/statistics/**
 
         - id: notification-service
-          uri: ${NOTIFICATION_DNS_NAME}
-#          uri: lb://notification-service
+          uri: lb://notification-service
           predicates:
             - Path=/notifications/**
 
         - id: recruitment-service
-          uri: ${TRIAL_DNS_NAME}
-#          uri: lb://recruitment-service
+          uri: lb://recruitment-service
           predicates:
             - Path=/api/submissions/**
 
@@ -68,6 +61,10 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_DNS_NAME}/eureka
+  instance:
+    hostname: ${GATEWAY_DNS_NAME}
+    nonSecurePort: 80
+    nonSecurePortEnabled: true
 
 service:
   jwt:

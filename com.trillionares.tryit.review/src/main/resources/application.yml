@@ -3,7 +3,7 @@ spring:
     name: review-service
 
   config:
-    import: configserver:${CONFIG_DNS_NAME}
+    import: configserver:http://${CONFIG_DNS_NAME}
 
   datasource: # database
     url: ${DB_URL}
@@ -33,6 +33,10 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_DNS_NAME}/eureka
+  instance:
+    hostname: ${REVIEW_DNS_NAME}
+    nonSecurePort: 80
+    nonSecurePortEnabled: true
 
 openapi:
   service:

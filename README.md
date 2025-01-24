@@ -20,12 +20,73 @@
 <br>
 
 ## 🥅 프로젝트 목표
-1. **대규모 트래픽이 예상되는 인기 체험단 모집 시 신청자 대기열을 안정적으로 관리합니다.**
+1. **대규모 트래픽 대응**
+  - Redis와 Kafka를 활용한 비동기 처리를 통해 API 요청 200req/sec 이상 처리.
 
-2. **Kafka 를활용해 체험단 상태변경을 실시간으로 감지하고 이벤트 기반으로 알림을 발행하는 시스템 구축합니다.**
+2. **성능 최적화**
+  - Redis 기반 캐싱으로 가장 빈번하게 호출되는 api의 조회 성능을 2배 이상 향상.
+  - 응답속도 개선과 함께 데이터베이스 부하 감소
 
-3. **자주 조회되는 정보들은 캐싱을 통해 데이터베이스의 부하를 감소시킵니다.**
+3. **운영 및 배포 효율화**
+  - Docker와 Github Actions를 이용한 CI/CD 파이프라인 구축으로 배포 자동화.
+  - Prometheus와 Grafana를 활용한 실시간 모니터링으로 시스템 안정성 확보.
 
+4. **데이터 일관성 및 트랜잭션 관리**
+  - Kafka를 활용해 체험단 상태변경을 실시간으로 감지하고 이벤트 기반 트랜잭션 처리.
+  - 대규모 트래픽이 예상되는 인기 체험단 모집 시 신청자 대기열을 안정적으로 관리
+  - 중복 및 데이터 손실을 방지하는 Kafka Batch Listener 구현.
+
+<br>
+
+## 🗝️ KEY Summary
+
+### **제목**
+
+1. **한 줄 요약**
+  - Redis 도입으로 기존 DB 조회보다 **348% 성능 개선**
+  - 대규모 트래픽 환경에서도 안정적인 서비스 유지
+
+   ![성능 개선 이미지]
+
+2. **도입 배경**
+  - 상품의 최저가를 제공하기 위해 외부 서버에서 제공하는 타임세일 상품의 할인율과  
+    상품 자체의 할인율을 비교하는 기능이 필요
+
+3. **기술적 선택지**
+
+  1. **DB 데이터 적재**
+    - 스케줄링 작업으로 짧은 시간 내 대량의 데이터를 수정하는 것은 데이터베이스에 과도한 부하 발생
+    - 상품 자체의 할인율과 타임세일 할인율을 분리하여 별도 컬럼 저장 필요
+
+  2. **Redis 캐싱**
+    - 실시간 최저가 할인율로 최신 정보와 가격 제공
+    - TTL 설정으로 타임세일 종료 시 자동 데이터 삭제
+
+   **결론:** Redis 도입을 결정하여 성능 및 효율성을 크게 개선
+
+### 🍁 **트러블 슈팅 : LazyConnectionDataSourceProxy - 불필요한 커넥션 점유 해결**
+
+1. **배경**
+  - **스프링 배치 5버전 도입**
+    - 정산은 실시간이 아닌, 이용자가 적은 시간에 일괄 처리하도록 배치 선택
+    - 메인 DB와 배치 메타데이터 DB 분리 필요
+  - **배치 메타데이터 테이블 생성 필수화**
+    - 메타데이터 전용 DB를 나누는 구조로 전환
+  - **멀티 DataSource 구성**
+    - 메인 DataSource와 배치 DataSource로 데이터베이스 모듈 구분
+
+2. **문제**
+  - 실제 DB 요청 없이도 불필요한 커넥션 점유 발생
+    - 스프링은 트랜잭션 진입 시 커넥션 풀에서 커넥션을 점유
+    - 멀티 DataSource로 인해 두 DataSource 모두 커넥션 점유
+
+3. **해결 방안**
+  - **LazyConnectionDataSourceProxy 클래스 사용**
+    - 실제 DB 요청 전까지 커넥션 점유를 지연시키는 프록시 DataSource 활용
+
+   ![LazyConnectionDataSourceProxy 이미지]
+
+  - 이를 통해 **실제 DB 요청 시에만 커넥션 점유**로 불필요한 리소스 낭비를 해결
 
 <br>
 
@@ -44,31 +105,31 @@
 
 ### 💾 **데이터베이스 및 캐싱**
 1. **Redis**
-- **적용 위치**: 캐시 서버
-- **사용 이유**: 인증과 권한 확인으로 호출이 빈번하게 일어나는 사용자 조회 성능 향상, 회원정보 수정 시 데이터 자동 삭제.
+  - **적용 위치**: 캐시 서버
+  - **사용 이유**: 인증과 권한 확인으로 호출이 빈번하게 일어나는 사용자 조회 성능 향상, 회원정보 수정 시 데이터 자동 삭제.
 
 ---
 
 ### 📬 **메시징 시스템**
 1. **Apache Kafka**
-- **적용 위치**: 서비스 간 비동기 통신
-- **사용 이유**: 대규모 메시지 처리를 위한 안정적 메시징 큐 구현.
-- **구체적 역할**: 체험단 신청 시 재고 차감, 체험단 신청의 결과를 사용자에게 슬랙 메세지로 알림.
+  - **적용 위치**: 서비스 간 비동기 통신
+  - **사용 이유**: 대규모 메시지 처리를 위한 안정적 메시징 큐 구현.
+  - **구체적 역할**: 체험단 신청 시 재고 차감, 체험단 신청의 결과를 사용자에게 슬랙 메세지로 알림.
 
 ---
 
 ### 🌐 **인프라 및 배포**
 1. **Docker**
-- **적용 위치**: 모든 서비스 컨테이너화
-- **사용 이유**: 환경 이식성과 배포 속도 개선.
+  - **적용 위치**: 모든 서비스 컨테이너화
+  - **사용 이유**: 환경 이식성과 배포 속도 개선.
 
 2. **Github Actions**
-- **적용 위치**: CI/CD 파이프라인
-- **사용 이유**: 자동화된 코드 품질 검사와 배포 구현.
+  - **적용 위치**: CI/CD 파이프라인
+  - **사용 이유**: 자동화된 코드 품질 검사와 배포 구현.
 
 3. **Prometheus & Grafana**
-- **적용 위치**: 실시간 모니터링
-- **사용 이유**: 주요 메트릭(트래픽, CPU 사용량 등) 수집 및 시각화로 장애 발생 시 빠른 대응 가능.
+  - **적용 위치**: 실시간 모니터링
+  - **사용 이유**: 주요 메트릭(트래픽, CPU 사용량 등) 수집 및 시각화로 장애 발생 시 빠른 대응 가능.
 
 </details>
 
@@ -76,62 +137,85 @@
 
 ## ✨ 주요 기능
 
-### **Kafka 기반 체험단 모집 - 신청 - 알림 이벤트 처리**
-- Kafka를 통해 체험단 신청 이벤트를 비동기로 처리하여 시스템 부하 분산
-  <details>
-  <summary> 신청자 정보와 체험단 정보를 포함한 이벤트 메시지 발행 및 구독 </summary>
-  - 기존 단일 파티션, 단일 머신으로 요청량이 증가함에 따라 처리 오류율을 보임
-        - 이에 파티션 수를 늘리고, 머신 2대로 처리 성능을 개선
- </details>
-  <details>
-  <summary> 사용자별 Slack Webhook을 통한 실시간 알림 발송 </summary>
-  - Kafka Consumer를 통한 체험단 상태 변경 이벤트(신청/당첨/낙첨/리뷰) 구독 및 처리
-    - 알림 발송 실패 시 자동 재시도 로직 구현 및 중복 메시지 검증을 통한 알림 무결성 보장
-    - <img alt="image" src="https://github.com/user-attachments/assets/c0fad59f-3bce-4ff3-bf32-3f209fd2c40e" width="700">
-</details>
+### **체험단 신청: Kafka를 통한 비동기 처리**
+- 대용량 트래픽을 수용하기 위해 Kafka를 활용한 비동기 체험단 신청 시스템 구현.
 
 ---
 
-### **Redis 캐싱 기반 사용자 정보 조회**
-- TTL 주기를 짧게 갱신해서 TTI를 줄이고, 리소스 활용을 효율적으로 개선하여 사용자 조회 성능 향상
-- 캐싱을 적용하여 데이터베이스에 직접 가지 않고 빠르게 조회 가능
-  <details>
-  <summary> 캐싱 적용 후 응답시간이 458ms에서 40ms로 약 91.26% 감소 </summary>
-  - 관련 내용: [👥사용자 조회 시 Redis 적용](https://www.notion.so/teamsparta/Redis-2b2b14a48c404da489b1dece8d11398c) 
-</details> 
+### **체험단 신청 완료 처리: Saga 패턴 적용**
+- 각 서비스 간 독립적 트랜잭션 관리를 위해 Saga(Choreography) 패턴 적용.
+  - **주요 흐름**: `상품 재고확인 & 차감` → `선착순 내에 들었는지 확인 & 상태 변경` → `신청 상태에 대한 알림 슬랙으로 발송`.
+- 오류 발생 시 자동 롤백을 통해 데이터 일관성 유지.
 
 ---
 
-### **Redis TTL 기반 체험단 모집 상태 관리**
-- 모집 시작 및 종료 시점을 자동으로 관리하도록 Redis TTL 기능 활용해 모집 상태 관리 최적화
+### **슬랙 알림 발송: Kafka와 슬랙 API 활용**
+- Kafka를 활용하여 비동기 체험단 신청 완료시 이벤트를 통해 사용자에게 알림이 가는 시스템 구현.
+- 슬랙 API를 이용하여 사용자에게 알림 발송.
 
 ---
 
-### **상품 관리 관련된 개선**
-- 이미지 데이터를 DB에 저장하는데 전체 API 수행시간의 14%를 차지.
-    - Front가 있다는 가정하에 이미지 업로드 로직을 Front에서 비동기로 분리한다면,
-      이미지 데이터를 DB에 저장하는데 전체 API 수행시간의 29%를 차지함.
+### **기업용 통계 제공: Spring Scheduler, Batch 활용**
+- 특정 시간에 Scheduler와 통계 생성 대용량 Batch 처리를 통해 통계 자동 생성.
+- 본인이 등록한 해당 상품 한정 통계 조회 제한 처리
 
 ---
 
-### **QueryDSL 기반의 페이징 및 정렬 기능 구현**
-- 모든 서비스 목록 조회기능에 동적으로 조회하고 페이징 처리 적용
-- 알림 서비스 기준 알림전송상태, 사용자 ID, 기간을 동적 검색조건으로 사용하여 페이징된 알림 목록을 조회
+### **사용자 조회: Redis 캐싱 활용**
+- Redis 캐싱을 이용해 사용자 조회.
+- 짧은 TTL 설정으로 리소스 절약 및 캐싱 효율성 극대화.
 
 <br>
 
-## 🎯기술적 의사결정
-- [Long vs UUID](https://www.notion.so/teamsparta/Long-vs-UUID-9b6d255d98e34ea88e87ee38d793f214)
-- [final 키워드 사용](https://www.notion.so/teamsparta/final-62b6fb5bc10d4a2d9f6594d2e0af9568)
-- [모집 상태 관리 기술적 의사결정: Redis TTL 기반 접근](https://www.notion.so/teamsparta/Redis-TTL-4212db09208f4c97aa049f6193c26313)
-- [이미지 처리시 비동기 도입 이유](https://www.notion.so/teamsparta/3d5cbce944d54ffb9468953e08ad3d0a)
-- [사용자 조회 시 Redis 적용](https://www.notion.so/teamsparta/Redis-2b2b14a48c404da489b1dece8d11398c)
+## 🚀기술적 고도화
 
-## 🚀트러블 슈팅
-- [@Valid, @Validated 예외 처리](https://www.notion.so/teamsparta/Valid-Validated-1d94ef6b0af542b1a93f30b98e84412a)
-- [Checked Exception 처리 개선](https://www.notion.so/teamsparta/Checked-Exception-caa55024912f4dc68c6c67a14b72e302)
-- [MultipartFile을 FeignClient로 전송하기](https://www.notion.so/teamsparta/MultipartFile-FeignClient-7df1bd0ba0ab46be80510e51c13ac130)
-- [배포 & CI/CD](https://www.notion.so/teamsparta/CI-CD-176776321f3047b5bdb8a7648af77c7d)
+<details>
+<summary><b>🔩 제목</b></summary>
+
+### 제목
+---
+
+#### 소제목
+
+내용
+
+- **내용**  
+  내용.
+  - 단점: 트래픽이 많은 경우 성능 저하 발생 및 타임아웃 문제.
+
+
+---
+
+#### 소제목
+
+1. **Lettuce의 문제점**  
+   Lettuce는 스핀락 방식을 사용하여 락이 풀릴 때까지 계속 Redis에 요청을 보냅니다.
+  - 결과적으로 Redis CPU 점유율이 높아지는 문제가 발생.
+
+2. **Redisson의 장점**  
+   Redisson은 Pub-Sub 구조로 락이 종료될 때 이벤트를 발행하며, 락 요청을 효율적으로 처리합니다.
+  - 결과적으로 Redis CPU 점유율이 낮아집니다.
+
+---
+
+### 적용 후
+
+- **CPU 점유율:** 기존 60% → 30% 감소
+- **TPS:** 기존 1400 → 2500으로 향상
+
+</details>
+
+<br>
+
+
+---
+
+### 향후 계획
+
+- **Java 21의 가상 스레드 활용**
+  - `TaskExecutor`를 재구성하여 병렬 처리 효율성을 극대화할 예정입니다.
+
+</details>
 
 <br>
 
@@ -165,39 +249,18 @@
 <details>
   <summary>🔗WBS 일정관리</summary>
   <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=2096235861#gid=2096235861">➡️ 확인하기</a>
-  <img alt="wbs" src="https://github.com/user-attachments/assets/8259f1a5-7ced-43b8-bed5-8fb24526480d" width="600">
 </details>
 <br><br>
 
 ## 🔧Tech Stack
-### 🔗 Infrastructure
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"><img src="https://img.shields.io/badge/Amazon Web Services-232F3E?style=for-the-badge&logo=Amazon Web Services&logoColor=white"><img src="https://img.shields.io/badge/Amazon S3-569A31?style=for-the-badge&logo=Amazon S3&logoColor=white"><img src="https://img.shields.io/badge/Amazon RDS-527FFF?style=for-the-badge&logo=Amazon RDS&logoColor=white"><img src="https://img.shields.io/badge/Amazon ECS-FF9900?style=for-the-badge&logo=Amazon ECS&logoColor=white">
-
-### 💻 Backend
-<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"><img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white"><img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white"><img src="https://img.shields.io/badge/Redis-FF4438?style=for-the-badge&logo=Redis&logoColor=white"><img src="https://img.shields.io/badge/Apache Kafka-231F20?style=for-the-badge&logo=Apache Kafka&logoColor=white"><img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=PostgreSQL&logoColor=white"><img src="https://img.shields.io/badge/Zipkin-FF9E0F?style=for-the-badge&logoColor=white"><img src="https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=Grafana&logoColor=white">
-
-### 🛠 Tools
-<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white">
-<img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white"><img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white">
-<details>
-  <summary> 👉기술 선택 이유 자세히 확인하기 </summary>
-
-| **항목** | **설명** |
-| --- | --- |
-| **Redis** | 메모리에서 직접 데이터를 가져오기 때문에 조회 속도가 빨라서 응답속도와 데이터베이스에 쌓이는 부하를 줄이고자 사용<br>MSA에서 서비스간 느슨한 결합과 확장성을 위해 사용<br>한정된 인원이 당첨이 보장될 수 있도록 Redis Pub/Sub 및 분산락 사용 |
-| **Kafka** | 분산 메시지 큐 시스템으로 대량의 데이터 처리에도 수평확장을 통해 처리량을 유지하는데 적합<br>이벤트 중심 아키텍처로 높은 성능으로 높은 처리량을 제공<br>메시지를 로그 형식으로 저장하며, 데이터 손실을 방지하고 장애 상황에서도 데이터를 안전하게 관리할 기능을 제공<br>비동기 메시징으로 MSA 서비스간 느슨한 결합을 제공 |
-| **QueryDSL** | BooleanBuilder를 사용해 조건을 쉽게 추가 또는 제거하여 동적 쿼리를 작성할 때 조건을 유연하게 사용할 수 있음<br>이외에도 페이징, 정렬등 쿼리 기능 제공 |
-| **Slack API** | 슬랙 API는 실시간 알림을 위해 Webhook과 다양한 SDK를 통해 손쉬운 시스템 통합이 가능<br>REST API와 WebSocket 기반의 실시간 통신 지원의 장점 |
-| **PostgreSQL** | ACID 트랜잭션을 기본적으로 지원하고, 다양한 데이터 타입(배열, JSON, HSTORE, UUID, XML 등)을 기본적으로 제공하며, 오픈소스이고 상용 라이선스 비용이 없어서 비용 효율성이 좋음 |
-| **AWS S3** | AWS에서 제공하는 정적서버로 정적 파일을 안전하게 관리할 수 있음<br>타 서비스와 연동이 쉬움<br>클라우드상에서 확장과, 내구성, 고가용성, 비용, 보안 등 다양한 기능 제공 |
-| **ECR + ECS** | 컨테이너화된 애플리케이션의 배포와 관리를 간소화하기 위해 사용<br>EC2와 달리 별도의 인프라 관리 없이 애플리케이션 실행 가능 |
-| **Github Action** | Github과 연계해 다양한 편의 기능 제공<br>CI / CD를 자동화하며 branch의 변경사항이 있을때, 자동으로 감지해 배포로직을 수행하며 휴먼 에러를 줄일 수 있다. |
-| **Zipkin** | MSA에서는 하나의 요청이 여러 서비스에 걸쳐 처리되기 때문에, 요청이 어디서 얼마나 시간이 걸렸는지 확인하기 어려운데, Zipkin은 요청의 시작부터 끝까지의 경로를 시각적으로 보여주고 서비스에서의 처리 시간(지연 시간)을 수집하고 분석할 수 있어서 사용하게 됨 |
-| **Grafana** | 모니터링을 통해 서버의 성능을 모니터링하고, 개발자에게 Slack과 연동해 알림을 제공할 수 있어 서버의 처리량이 급증할때 대비할 수 있음. |
-| **Open Feign** | 서비스간 동기 통신이 필요한 경우에 사용 |
-
-</details>
-
+### Tools
+| Git | Github | Slack |
+| :---: | :---: | :---: |
+| <img alt="git logo" src="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.svg" width="65" height="65" > | <img alt="github logo" src="https://techstack-generator.vercel.app/github-icon.svg" width="65" height="65"> | <img alt="Slack logo" src="https://github.com/user-attachments/assets/708bcf8f-f064-40e9-b060-a7b3438107da" height="65" width="65">|
+### Back-end
+| Java | PostgreSQL | Docker | AWS | Spring | Spring<br>Boot | Kafka | Redis | Zipkin |
+| :---: | :---: | :---: | :---: | :---: | :---: |-------|-------|--------|
+| <div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/java-icon.svg" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/3a2dd96d-0989-4ce0-b178-84bf23b2e60c" alt="PostgreSQL logo" width="65" height="65" /></div>| <div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/docker-icon.svg" alt="icon" width="55"/></div> | <div style="display: flex; align-items: flex-start;"><img src="https://techstack-generator.vercel.app/aws-icon.svg" alt="icon" width="65" height="65" /></div> | <img alt="spring logo" src="https://www.vectorlogo.zone/logos/springio/springio-icon.svg" height="50" width="50" > | <img alt="spring-boot logo" src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > |   <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/6f1f5691-2609-4e77-a628-e84f3a54854fc" alt="Kafka logo" width="65" height="65" /></div>    |    <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/88e14b10-c73e-491c-8f9a-dd43abf49b8f" alt="Redis logo" width="65" height="65" /></div>   |   <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/66d6cfd6-6b67-4ecc-b9f9-5ea6c7cb4352" alt="Zipkin logo" width="65" height="65" /></div>     |
 <br/>
 <br>
 
@@ -279,16 +342,16 @@ com.trillionares.tryit.[service-name]
 
 ### 잘된 점
 - **제목**
-    - 그거슨
+  - 내용
 
 ---
 
 ### 아쉬운 점
 - **제목**
-    - 내용
+  - 내용
 ---
 
 ### 향후 계획
 - **제목**
-    - 내용
+  - 내용
 

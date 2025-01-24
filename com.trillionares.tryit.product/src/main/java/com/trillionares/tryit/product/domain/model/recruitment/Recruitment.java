@@ -3,6 +3,7 @@ package com.trillionares.tryit.product.domain.model.recruitment;
 import com.trillionares.tryit.product.domain.common.base.BaseEntity;
 import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
 import jakarta.persistence.*;
+import java.time.Duration;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -51,6 +52,12 @@ public class Recruitment extends BaseEntity {
     @Column(name = "max_participants", nullable = false)
     private Long maxParticipants;
 
+    @Column(name = "actual_end_date ")
+    private LocalDateTime actualEndDate;
+
+    @Column(name = "completion_time")
+    private long completionTime;
+
     public void updateRecruitment(String title, String description, LocalDateTime startTime,
                                   Long during, LocalDateTime endTime, Long maxParticipants) {
         if (title != null) {
@@ -79,6 +86,21 @@ public class Recruitment extends BaseEntity {
 
     public void updateCurrentParticipants(long currentParticipants) {
         this.currentParticipants = currentParticipants;
+    }
+
+    public void updateActualEndDate(LocalDateTime actualEndDate) {
+        this.actualEndDate = actualEndDate;
+    }
+
+    public void updateCompletionTime(long completionTime) {
+        this.completionTime = completionTime;
+    }
+
+    public long calculateDurationInMillis() {
+        if (this.actualEndDate != null && this.recruitmentStartDate != null) {
+            return Duration.between(this.recruitmentStartDate, this.actualEndDate).toMillis();
+        }
+        return 0;
     }
 }
 

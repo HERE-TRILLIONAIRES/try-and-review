@@ -31,7 +31,8 @@ public class StatisticsService {
     public StatisticsCreateResponseDto createStatistics(StatisticsCreateRequestDto statisticsCreateRequestDto) {
         Statistics statistics =  statisticsRepository.save(Statistics.of(statisticsCreateRequestDto.userId(),
                 statisticsCreateRequestDto.productId(),statisticsCreateRequestDto.highestScore(),
-                statisticsCreateRequestDto.lowestScore(),statisticsCreateRequestDto.reviewCount(),statisticsCreateRequestDto.durationTime()));
+                statisticsCreateRequestDto.lowestScore(),statisticsCreateRequestDto.averageScore(),
+                statisticsCreateRequestDto.reviewCount(),statisticsCreateRequestDto.durationTime()));
         return StatisticsCreateResponseDto.of(statistics.getStatisticsId(),statistics.getCreatedAt());
     }
 
@@ -42,8 +43,8 @@ public class StatisticsService {
 
         return statisticsRepository.findAll().stream().map(statistics -> StatisticsGetResponseDto.of(
                 statistics.getStatisticsId(),statistics.getUserId(),statistics.getProductId(),
-                statistics.getHighestScore(),statistics.getLowestScore(), statistics.getReviewCount(),
-                statistics.getDurationTime(),statistics.getCreatedAt())).collect(Collectors.toList());
+                statistics.getHighestScore(),statistics.getLowestScore(),statistics.getAverageScore(),
+                statistics.getReviewCount(),statistics.getDurationTime(),statistics.getCreatedAt())).collect(Collectors.toList());
     }
 
     public List<StatisticsGetResponseDto> getStatistics(UUID userId, String role, String username) {
@@ -56,7 +57,7 @@ public class StatisticsService {
 
         return statisticsRepository.findAllByUserId(userId).stream().map(statistics -> StatisticsGetResponseDto.of(
                 statistics.getStatisticsId(),statistics.getUserId(),statistics.getProductId(),
-                statistics.getHighestScore(),statistics.getLowestScore(), statistics.getReviewCount(),
-                statistics.getDurationTime(),statistics.getCreatedAt())).collect(Collectors.toList());
+                statistics.getHighestScore(),statistics.getLowestScore(),statistics.getAverageScore(),
+                statistics.getReviewCount(),statistics.getDurationTime(),statistics.getCreatedAt())).collect(Collectors.toList());
     }
 }

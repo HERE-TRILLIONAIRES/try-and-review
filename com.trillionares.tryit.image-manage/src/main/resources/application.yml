@@ -2,7 +2,7 @@ spring:
   application:
     name: image-manage-service
   config:
-    import: configserver:${CONFIG_DNS_NAME}
+    import: configserver:http://${CONFIG_DNS_NAME}
   datasource:
     url: ${DB_URL}
     username: ${DB_PRODUCT_USERNAME}
@@ -52,6 +52,10 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_DNS_NAME}/eureka
+  instance:
+    hostname: ${IMAGE_MANAGE_DNS_NAME}
+    nonSecurePort: 80
+    nonSecurePortEnabled: true
 
 openapi:
   service:

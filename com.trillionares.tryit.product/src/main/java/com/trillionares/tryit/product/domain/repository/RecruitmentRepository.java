@@ -13,4 +13,6 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, UUID>,
     @Query("SELECT r.userId FROM Recruitment r WHERE r.recruitmentId = :recruitmentId")
     Optional<UUID> findOwnerIdByRecruitmentId(@Param("recruitmentId") UUID recruitmentId);
 
+    Optional<Recruitment> findByProductId(UUID productId);
+
 }
