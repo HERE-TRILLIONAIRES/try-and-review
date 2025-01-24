@@ -126,6 +126,25 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/{productId}/redis")
+    public BaseResponseDto<ProductInfoResponseDto> getProductByIdUsingRedis(@PathVariable("productId") UUID productId) {
+        try {
+            ProductInfoResponseDto responseDto = productService.getProductByIdUsingRedis(productId);
+
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, ProductMessage.SEARCH_PRODUCT_SUCESS.getMessage(), responseDto);
+        } catch (CategoryNotFoundException cnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
+        } catch (ProductNotFoundException pnfe) {
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pnfe.getMessage(), null);
+        } catch (ProductMainImageNotFoundException pminfe){
+            return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, pminfe.getMessage(), null);
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
+        } catch (Exception e) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
+        }
+    }
+
     @PutMapping("/{productId}")
     public BaseResponseDto<ProductIdResponseDto> updateProduct(
             @RequestHeader("X-Auth-Username") String username,

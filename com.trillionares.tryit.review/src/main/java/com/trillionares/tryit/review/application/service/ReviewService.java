@@ -8,6 +8,7 @@ import com.trillionares.tryit.review.domain.client.TrialClient;
 import com.trillionares.tryit.review.domain.model.Review;
 import com.trillionares.tryit.review.domain.repository.ReviewRepository;
 import com.trillionares.tryit.review.domain.service.ReviewValidation;
+import com.trillionares.tryit.review.infrastructure.persistence.ReviewQueryRepository;
 import com.trillionares.tryit.review.libs.exception.ErrorCode;
 import com.trillionares.tryit.review.libs.exception.GlobalException;
 import com.trillionares.tryit.review.presentation.dto.BaseResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.trillionares.tryit.review.libs.exception.ErrorCode.REVIEW_CREATE_FORBIDDEN;
@@ -25,6 +27,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ReviewValidation reviewValidation;
+    private final ReviewQueryRepository reviewQueryRepository;
     private final TrialClient trialClient;
     private final AuthClient authClient;
 
@@ -77,7 +80,12 @@ public class ReviewService {
         if(reviewValidation.isNotDeleteValidation(role,review.getUserId(),reviewGetUserByUsernameResponseDto.getData().getUserId()))
             throw new GlobalException(ErrorCode.REVIEW_DELETE_FORBIDDEN);
 
-        reviewRepository.deleteById(reviewId);
-        return ReviewDeleteResponseDto.from(reviewId);
+        reviewRepository.deleteById(review.getReviewId());
+        return ReviewDeleteResponseDto.from(review.getReviewId());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewStatisticsDataResponseDto> getReviewStatistics() {
+        return reviewQueryRepository.getReviewStatistics();
     }
 }

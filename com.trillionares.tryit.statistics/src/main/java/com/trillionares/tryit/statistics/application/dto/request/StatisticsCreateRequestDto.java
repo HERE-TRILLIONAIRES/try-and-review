@@ -22,6 +22,7 @@ public record StatisticsCreateRequestDto(
                 .productId(statisticsCreateRequest.getProductId())
                 .highestScore(statisticsCreateRequest.getHighestScore())
                 .lowestScore(statisticsCreateRequest.getLowestScore())
+                .averageScore(statisticsCreateRequest.getAverageScore())
                 .reviewCount(statisticsCreateRequest.getReviewCount())
                 .durationTime(statisticsCreateRequest.getDurationTime())
                 .build();

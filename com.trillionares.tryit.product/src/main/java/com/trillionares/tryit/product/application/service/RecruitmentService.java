@@ -12,6 +12,7 @@ import com.trillionares.tryit.product.presentation.dto.common.kafka.RecruitmentS
 import com.trillionares.tryit.product.presentation.dto.request.CreateRecruitmentRequest;
 import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentRequest;
 import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentStatusRequest;
+import com.trillionares.tryit.product.presentation.dto.response.GetCompletionTimeResponse;
 import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
 import com.trillionares.tryit.product.presentation.dto.response.RecruitmentIdResponse;
 import com.trillionares.tryit.product.presentation.dto.response.UpdateRecruitmentStatusResponse;
@@ -125,6 +126,11 @@ public class RecruitmentService {
         validateOwnership(recruitmentId, userId);
         recruitment.updateStatus(request.status());
 
+        if (request.status() == RecruitmentStatus.ENDED) {
+            recruitment.updateActualEndDate(LocalDateTime.now());
+            recruitment.updateCompletionTime(recruitment.calculateDurationInMillis());
+        }
+
         recruitmentRepository.save(recruitment);
 
         return new UpdateRecruitmentStatusResponse(recruitment.getRecruitmentId(),
@@ -207,7 +213,7 @@ public class RecruitmentService {
                 delaySeconds * 1000L
         );
 
-        log.info("모집 ID {}의 상태 {} 변경이 {} 후에 예약", recruitmentId, status, delaySeconds);
+
     }
 
     public void updateRecruitmentStatusToRedis(UUID recruitmentId, RecruitmentStatus status) {
@@ -215,10 +221,16 @@ public class RecruitmentService {
                 .orElseThrow(() -> new RuntimeException("Recruitment not found"));
 
         recruitment.updateStatus(status);
+
+        if (status == RecruitmentStatus.ENDED) {
+            recruitment.updateActualEndDate(recruitment.getRecruitmentEndDate());
+            recruitment.updateCompletionTime(recruitment.calculateDurationInMillis());
+        }
         recruitmentRepository.save(recruitment);
 
         log.info("모집 ID {}의 상태가 {}로 업데이트되었습니다.", recruitmentId, status);
     }
+
     private void validatePermission(String role) {
         if (!(role.contains("ADMIN") || role.contains("COMPANY"))) {
             throw new RuntimeException("권한이 없습니다.");
@@ -233,7 +245,13 @@ public class RecruitmentService {
         }
     }
 
+    public GetCompletionTimeResponse getCompletionTime(UUID productId) {
+        Recruitment recruitment = recruitmentRepository.findByProductId(productId)
+                .orElseThrow(() -> new RuntimeException("Not Found Recruitment"));
+
+        return GetCompletionTimeResponse.fromEntity(recruitment);
+
+    }
+
+
 }
-
-
-
