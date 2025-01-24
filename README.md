@@ -91,7 +91,7 @@
 </details>
 
 <details>
-  <summary><b> 👉기술 스택 테이블 확인하기기 </summary>
+  <summary><b>👉기술 스택 테이블 확인하기</b></summary>
 
 | **항목** | **설명** |
 | --- | --- |
@@ -115,33 +115,37 @@
 
 ## ✨ 주요 기능
 
-### **Kafka 기반 체험단 모집 - 신청 - 알림 이벤트 처리**
-- **Kafka를 통해 체험단 신청 이벤트를 비동기로 처리하여 시스템 부하 분산**
+### Kafka 기반 체험단 모집 - 신청 - 알림 이벤트 처리
+
+- Kafka를 통해 체험단 신청 이벤트를 **비동기로 처리**하여 시스템 부하 분산
 
 <details>
   <summary>신청자 정보와 체험단 정보를 포함한 이벤트 메시지 발행 및 구독</summary>
 
 - 기존 단일 파티션, 단일 머신으로 요청량이 증가함에 따라 처리 오류율을 보임
-    - 이에 파티션 수를 늘리고, 머신 2대로 처리 성능을 개선
+    - 이에 **파티션 수를 늘리고, 머신 2대**로 처리 성능을 개선
 
   </details>
 
 <details>
   <summary> 사용자별 Slack Webhook을 통한 실시간 알림 발송 </summary>
 
-- Kafka Consumer를 통한 체험단 상태 변경 이벤트(신청/당첨/낙첨/리뷰) 구독 및 처리
-    - 알림 발송 실패 시 자동 재시도 로직 구현 및 중복 메시지 검증을 통한 알림 무결성 보장
-    - <img alt="image" src="https://github.com/user-attachments/assets/c0fad59f-3bce-4ff3-bf32-3f209fd2c40e" width="700">
+- **Kafka Consumer**를 통한 체험단 상태 변경 이벤트(신청/당첨/낙첨/리뷰) 구독 및 처리
+    - 알림 발송 **실패 시 자동 재시도** 로직 구현 및 중복 메시지 검증을 통한 알림 무결성 보장
+      <img alt="image" src="https://github.com/user-attachments/assets/c0fad59f-3bce-4ff3-bf32-3f209fd2c40e" width="700">
 
 </details>
 
+<img alt="kafka structure" src="https://github.com/user-attachments/assets/346a7fe1-f7a3-4bc4-abb4-13b28b3a8f66" width="600">
+
 ---
 
-### **Redis 캐싱 기반 사용자 정보 조회**
-- TTL 주기를 짧게 갱신해서 TTI를 줄이고, 리소스 활용을 효율적으로 개선하여 사용자 조회 성능 향상
+### Redis 캐싱 기반 사용자 정보 조회
+
+- **TTL 주기를 짧게 갱신**해서 TTI를 줄이고, 리소스 활용을 효율적으로 개선하여 사용자 조회 성능 향상
 - 캐싱을 적용하여 데이터베이스에 직접 가지 않고 빠르게 조회 가능
 <details>
-  <summary> 캐싱 적용 후 응답시간이 458ms에서 40ms로 약 **91.26% 감소** </summary>
+  <summary> 캐싱 적용 후 응답시간이 458ms에서 40ms로 <b>약 91.26% 감소</b> </summary>
 
 - 관련 내용: [👥사용자 조회 시 Redis 적용](https://www.notion.so/teamsparta/Redis-2b2b14a48c404da489b1dece8d11398c)
 
@@ -149,17 +153,20 @@
 
 ---
 
-### **Redis TTL 기반 체험단 모집 상태 관리**
-- **모집 상태 자동화**: 모집 시작 및 종료 시점을 자동으로 관리하도록 Redis TTL 기능 활용해 모집 상태 관리 최적화 ****
-- **시스템 부하 감소:** Polling 방식을 통해 TTL 만료 키만 확인함으로써 불필요한 DB 조회를 방지, Redis 메모리 기반 조회로 빠른 처리 속도 유지
-- **실시간성 확보:** Redis TTL 만료 이벤트를 활용하여 모집 상태 변경 작업을 지연 없이 수행, 모집 시작/종료 상태 전환의 정확도와 신뢰성 향상
+### Redis TTL 기반 체험단 모집 상태 관리
 
+- 모집 상태 자동화: 모집 시작 및 종료 시점을 자동으로 관리하도록 **Redis TTL 기능 활용**해 모집 상태 관리 최적화
+- 시스템 부하 감소: **Polling 방식**을 통해 TTL 만료 키만 확인함으로써 불필요한 DB 조회를 방지, **Redis 메모리 기반 조회**로 빠른 처리 속도 유지
+- 실시간성 확보: **Redis TTL 만료 이벤트를 활용**하여 모집 상태 변경 작업을 지연 없이 수행, 모집 시작/종료 상태 전환의 정확도와 신뢰성 향상
+
+   <img alt="image" src="https://github.com/user-attachments/assets/9667c341-eda6-4fb7-8f60-52b70d1372c1">
 ---
 
-### **상품 관리 관련된 개선**
-- **Kafka 기반 상품 등록 API 개선**
-    - 이미지 데이터를 DB에 저장하는 데 전체 API 수행시간의 약 **12%**를 차지.
-    - Front가 있다는 가정하에 이미지 업로드 수행시간을 API에서 분리한다면, 이미지 데이터를 DB에 저장하는 데 전체 API 수행시간의 약 **29%**를 차지하게 됨.
+### 상품 관리 관련된 개선
+- Kafka 기반 상품 등록 API 개선
+
+    - 이미지 데이터를 DB에 저장하는 데 전체 API 수행시간의 **약 12%를 차지**.
+    - Front가 있다는 가정하에 **이미지 업로드 수행시간을 API에서 분리**한다면, 이미지 데이터를 DB에 저장하는 데 전체 API 수행시간의 **약 29%를 차지**하게 됨.
 
       <details>
       <summary>이미지 데이터를 DB에 저장하는 로직 분리 전, API 수행시간</summary>
@@ -181,15 +188,16 @@
 
       <img alt="image" src="https://github.com/user-attachments/assets/fedde110-5969-4eb6-810c-95b7f5468582" width="700">
 
-- **Redis TTL을 통한 캐싱 기반 상품 정보 조회**
+- Redis TTL을 통한 캐싱 기반 상품 정보 조회
+
     - 상품 정보 조회 시 자주 조회되는 상품의 경우 **조회 성능 개선** (배포 중/배포 후 테스트)
 
 
 ---
 
-### **QueryDSL 기반의 페이징 및 정렬 기능 구현**
+### QueryDSL 기반의 페이징 및 정렬 기능 구현
 
-- 모든 서비스 목록 조회기능에 동적으로 조회하고 페이징 처리 적용
+- 모든 서비스 목록 조회기능에 **동적으로 조회**하고 **페이징 처리** 적용
 - 알림 서비스 기준 알림전송상태, 사용자 ID, 기간을 동적 검색조건으로 사용하여 페이징된 알림 목록을 조회
 - 상품 서비스 기준 등록된 시점, 등록한 사람을 동적 검색조건으로 사용하여 페이징된 상품 목록을 조회
 
@@ -208,7 +216,7 @@
 - [@Valid, @Validated 예외 처리](https://www.notion.so/teamsparta/Valid-Validated-1d94ef6b0af542b1a93f30b98e84412a)
 - [Checked Exception 처리 개선](https://www.notion.so/teamsparta/Checked-Exception-caa55024912f4dc68c6c67a14b72e302)
 - [MultipartFile을 FeignClient로 전송하기](https://www.notion.so/teamsparta/MultipartFile-FeignClient-7df1bd0ba0ab46be80510e51c13ac130)
-- [배포 & CI/CD](https://www.notion.so/teamsparta/CI-CD-176776321f3047b5bdb8a7648af77c7d)
+- [CI/CD과정에서의 오류 해결](https://www.notion.so/teamsparta/CI-CD-176776321f3047b5bdb8a7648af77c7d)
 - [Kafka 파티션 수 늘리기](https://www.notion.so/teamsparta/Kafka-4453325ff3254da58790fe0db0a238e8)
 
 <br>
@@ -218,21 +226,26 @@
 <details>
   <summary> 🔗카프카 구조도 </summary>
   <img alt="kafka structure" src="https://github.com/user-attachments/assets/346a7fe1-f7a3-4bc4-abb4-13b28b3a8f66" width="600">
+  <img alt="kafka product-image" src="https://github.com/user-attachments/assets/fedde110-5969-4eb6-810c-95b7f5468582" width="700">
 </details>
 
 <details>
   <summary> 🔗ERD </summary>
-  <img alt="erd" src="https://github.com/user-attachments/assets/0afea585-b5d6-4c56-a7a2-7341f1075f67" width="600">
+  <img alt="erd" src="https://github.com/user-attachments/assets/2f800b8f-2111-4c55-88bb-0882142321b4" width="600">
 </details>
 
 <details>
   <summary>🔗테이블 명세서</summary>
-  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=91016624#gid=91016624">➡️ 확인하기</a>
+  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=91016624#gid=91016624">➡️ 전체 테이블 명세서 확인하기</a>
+ <br>
+  <img alt="User flow" src="https://github.com/user-attachments/assets/8d46f6f5-4836-481c-87a8-41f043827da7">
 </details>
 
 <details>
   <summary>🔗API 명세서</summary>
-  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=1840269664#gid=1840269664">➡️ 확인하기</a>
+  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=1840269664#gid=1840269664">➡️ 전체 API 명세서 확인하기</a>
+  <br>
+  <img alt="User flow" src="https://github.com/user-attachments/assets/e3505853-95c9-48ab-9d42-f65360f1d2a9">
 </details>
 
 <details>
@@ -242,7 +255,8 @@
 
 <details>
   <summary>🔗WBS 일정관리</summary>
-  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=2096235861#gid=2096235861">➡️ 확인하기</a>
+  <a href="https://docs.google.com/spreadsheets/d/1Tw1WcOjfr9_PxjtonXc4OV4tweI1FBCfwA45Lor7rYE/edit?gid=2096235861#gid=2096235861">➡️ 전체 일정관리 확인하기</a>
+  <br>
   <img alt="wbs" src="https://github.com/user-attachments/assets/8259f1a5-7ced-43b8-bed5-8fb24526480d" width="600">
 </details>
 
@@ -251,9 +265,9 @@
 ## 🤝 역할 분담 및 협업 방식
 | 손예지<br> | 신영한<br> | 김주한<br> | 하남규<br> | 조승아<br> |
 | :---: | :---: | :---: |:---:| :---: |
-| <img alt="예지" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QEFTESGP-e2b23afd15a7-512" height="100" width="100"> | <img alt="영한" src="https://ca.slack-edge.com/T06B9PCLY1E-U07S875EUBV-g9ae29003de3-512" height="100" width="100"> | <img alt="주한" src="https://ca.slack-edge.com/T06B9PCLY1E-U06QUQQ5UU8-f0cd5f6b2a58-512" height="100" width="100"> | <img alt="남규" src="https://ca.slack-edge.com/T06B9PCLY1E-U07RKNHN003-db789eae7cdc-512" height="100" width="100"> | <img alt="승아" src="https://ca.slack-edge.com/T06B9PCLY1E-U07QQLBVDDJ-1001a73273bb-512" height="100" width="100"> |
+| <img alt="예지" src="https://github.com/user-attachments/assets/c5ac728e-40a5-4b7c-9947-a5d3d9c83859" height="100" width="100"> | <img alt="영한" src="https://github.com/user-attachments/assets/3d6513d9-d96e-4c21-be6e-2790741a3a32" height="100" width="100"> | <img alt="주한" src="https://github.com/user-attachments/assets/78a14d52-799e-4c86-a858-21744aaf4419" height="100" width="100"> | <img alt="남규" src="https://github.com/user-attachments/assets/d1f2d226-def2-469e-a012-2f7f58649390" height="100" width="100"> | <img alt="승아" src="https://github.com/user-attachments/assets/ee28abd2-4eca-46f5-8e30-b7f969c99a71" height="100" width="100"> |
 | [😼handyejee](https://github.com/handyejee) | [😼syhan7516](https://github.com/syhan7516) | [😼Hany-Kim](https://github.com/Hany-Kim) | [😼Namgyu11](https://github.com/Namgyu11) | [😼hiimsajo](https://github.com/hiimsajo) | 
-|<p align="left"> 🐥리더 <br/>- 알림기능 <br/>- 아키텍쳐 설계 및 초기구성<br/>- 일정관리</p>|<p align="left">🐥부리더 <br/>- 리뷰기능<br/>- 통계기능<br/><br/></p>|<p align="left">🐥팀원 <br/>- 상품, 이미지 업로드 기능<br/>- 체험단 신청기능<br/>- AWS 배포</p>|<p align="left">🐥팀원 <br/>- 체험단 모집<br/>- 모집상태 관리<br/><br/></p>|<p align="left">🐥팀원 <br/>- 사용자 기능<br/>- JWT 기반 인증 기능<br/>- Gateway 설정<br/>  </p>|
+|<p align="left"> 🐥리더 <br/>- 알림기능 <br/>- 아키텍쳐 설계 및 초기구성<br/>- 일정관리</p>|<p align="left">🐥부리더<br/>- 리뷰기능<br/>- 통계기능<br/><br/></p>|<p align="left">🐥팀원 <br/>- 상품, 이미지 업로드 기능<br/>- 체험단 신청기능<br/>- AWS 배포</p>|<p align="left">🐥팀원 <br/>- 체험단 모집<br/>- 모집상태 관리<br/><br/></p>|<p align="left">🐥팀원 <br/>- 사용자 기능<br/>- JWT 기반 인증 기능<br/>- Gateway 설정<br/>  </p>|
 
 
 ### 📌**Ground Rule**
@@ -294,8 +308,8 @@
 
 ## 📁 프로젝트 파일 구조
 
-1. **마이크로서비스** 아키텍처 구조<br>
-   프로젝트는 **Microservices Architecture와 DDD(Domain-Driven Design) 기반**의 Layered Architecture를 적용하여 구성되어 있습니다.
+**1. 마이크로서비스 아키텍처 구조**<br>
+프로젝트는 **Microservices Architecture와 DDD(Domain-Driven Design) 기반**의 Layered Architecture를 적용하여 구성되어 있습니다.
 ```text
 ├─ com.trillionares.tryit.*  // 각 마이크로서비스
 │  ├─ auth                   // 인증/인가 서비스
@@ -314,8 +328,8 @@
 └─ prometheus              // 모니터링 시스템
 ```
 
-2. **계층형** 아키텍처 구조<br>
-   각 마이크로서비스는 **DDD 기반의 계층형** 아키텍처로 구성되어 있습니다.
+**2. 계층형 아키텍처 구조**<br>
+각 마이크로서비스는 **DDD 기반의 계층형** 아키텍처로 구성되어 있습니다.
 ``` text
 com.trillionares.tryit.[service-name]
 ├─ application             // 비즈니스 처리 계층
@@ -354,6 +368,6 @@ com.trillionares.tryit.[service-name]
 
 ### 향후 계획
 
-- **제목**
-    - 내용
+- **사용자**
+    - OAuth 2.0 기반의 소셜 로그인(Google 또는 카카오톡 등을 통한 소셜 로그인) 서비스 개발
 
