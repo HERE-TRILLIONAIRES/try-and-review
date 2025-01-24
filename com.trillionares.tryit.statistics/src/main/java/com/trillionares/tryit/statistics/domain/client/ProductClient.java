@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface ProductClient {
 
     @GetMapping("/api/products/{productId}")
-    BaseResponse<StatisticsGetProductInfoResponseDto> getProductInfoStatisticsToProduct(@PathVariable("userId") UUID productId);
+    BaseResponse<StatisticsGetProductInfoResponseDto> getProductInfoStatisticsToProduct(@PathVariable("productId") UUID productId);
 
     @GetMapping("/recruitments/product/{productId}")
     ResponseEntity<StatisticsDataToRecruitmentResponseDto> getStatisticsDataToRecruitment(@PathVariable("productId") UUID productId);
