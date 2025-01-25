@@ -10,9 +10,10 @@ import com.trillionares.tryit.notification.libs.client.auth.AuthClient;
 import com.trillionares.tryit.notification.libs.client.auth.FeignUserIdResponseDto;
 import com.trillionares.tryit.notification.libs.client.auth.FeignUsernameResponseDto;
 import com.trillionares.tryit.notification.libs.exception.ErrorCode;
-import com.trillionares.tryit.notification.libs.exception.ExceptionConverter;
 import com.trillionares.tryit.notification.libs.exception.GlobalException;
 import com.trillionares.tryit.notification.presentation.dto.BaseResponse;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationService {
 
-  private final ExceptionConverter exceptionConverter;
   private final NotificationRepository notificationRepository;
   private final SlackNotificationSender slackNotificationSender;
   private final AuthClient authClient;
@@ -155,5 +155,33 @@ public class NotificationService {
     return roleValidation.isAdmin(role)
         ? notificationRepository.findByNotificationStatus(status, pageable)
         : notificationRepository.findByNotificationStatusAndUserId(status, currentUserId, pageable);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<NotificationResponse> searchNotifications(
+      NotificationStatus status,
+      String role,
+      String username,
+      LocalDate startDate,
+      LocalDate endDate,
+      Pageable pageable) {
+
+    // LocalDate -> LocalDateTime 변환
+    LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : null;
+    LocalDateTime endDateTime = endDate != null ? endDate.atTime(23, 59, 59) : null;
+
+
+    BaseResponse<FeignUsernameResponseDto> response = authClient.getUserByUsername(username);
+    UUID currentUserId = response.getData().getUserId();
+
+    UUID userId = roleValidation.isAdmin(role) ? null : currentUserId; // admin 사용자만 모든 데이터 조회 가능
+
+    return notificationRepository.findBySearch(
+        status,
+        userId,
+        startDateTime,
+        endDateTime,
+        pageable
+    );
   }
 }

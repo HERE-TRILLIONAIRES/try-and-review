@@ -3,6 +3,10 @@ package com.trillionares.tryit.notification.presentation.controller;
 import com.trillionares.tryit.notification.application.dto.response.NotificationResponse;
 import com.trillionares.tryit.notification.application.service.NotificationService;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
+import com.trillionares.tryit.notification.libs.exception.ErrorCode;
+import com.trillionares.tryit.notification.libs.exception.GlobalException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +44,6 @@ public class NotificationController {
     return ResponseEntity.ok(response);
   }
 
-
   @GetMapping
   public ResponseEntity<Page<NotificationResponse>> searchNotifications(
       @RequestParam(required = false) NotificationStatus status,
@@ -53,6 +57,25 @@ public class NotificationController {
     return notifications.isEmpty()
         ? ResponseEntity.noContent().build()
         : ResponseEntity.ok(notifications); // 조회 결과 있을때만 보여주도록
+  }
+
+  @GetMapping("/search")
+  public ResponseEntity<Page<NotificationResponse>> searchNotifications(
+      @RequestParam(required = false) NotificationStatus status,
+      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+      @RequestHeader("X-Auth-Role") String role,        // 헤더로 role 받기
+      @RequestHeader("X-Auth-Username") String username,
+      @PageableDefault(size = 20, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+
+    if ((startDate != null && endDate == null) || (startDate == null && endDate != null)) {
+      throw new GlobalException(ErrorCode.INVALID_DATE_RANGE);
+    }
+
+    Page<NotificationResponse> notifications = notificationService.searchNotifications(
+        status, role, username, startDate, endDate, pageable);
+
+    return ResponseEntity.ok(notifications);
   }
 }
 
