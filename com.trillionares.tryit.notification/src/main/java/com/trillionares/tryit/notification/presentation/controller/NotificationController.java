@@ -3,6 +3,8 @@ package com.trillionares.tryit.notification.presentation.controller;
 import com.trillionares.tryit.notification.application.dto.response.NotificationResponse;
 import com.trillionares.tryit.notification.application.service.NotificationService;
 import com.trillionares.tryit.notification.domain.model.NotificationStatus;
+import com.trillionares.tryit.notification.libs.exception.ErrorCode;
+import com.trillionares.tryit.notification.libs.exception.GlobalException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -66,12 +68,12 @@ public class NotificationController {
       @RequestHeader("X-Auth-Username") String username,
       @PageableDefault(size = 20, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
 
+    if ((startDate != null && endDate == null) || (startDate == null && endDate != null)) {
+      throw new GlobalException(ErrorCode.INVALID_DATE_RANGE);
+    }
+
     Page<NotificationResponse> notifications = notificationService.searchNotifications(
         status, role, username, startDate, endDate, pageable);
-
-    if (startDate != null && notifications.isEmpty()) {
-      return ResponseEntity.noContent().build();
-    }
 
     return ResponseEntity.ok(notifications);
   }
