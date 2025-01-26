@@ -106,6 +106,10 @@ public class RecruitmentService {
         // BaseEntity 구현 후 soft delete 로 변경
         recruitmentRepository.delete(recruitment);
 
+        if(recruitmentItemRepository.existsById(String.valueOf(recruitmentId))){
+            recruitmentItemRepository.deleteById(String.valueOf(recruitmentId));
+        }
+
         return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
 
