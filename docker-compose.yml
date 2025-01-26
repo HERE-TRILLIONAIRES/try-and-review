@@ -160,6 +160,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - auth-network
+      - monitoring-network
 
   recruitment-prometheus:
     image: prom/prometheus:latest
@@ -170,6 +171,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - recruitment-network
+      - monitoring-network
 
   product-prometheus:
     image: prom/prometheus:latest
@@ -180,6 +182,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - product-network
+      - monitoring-network
 
   review-prometheus:
     image: prom/prometheus:latest
@@ -190,6 +193,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - review-network
+      - monitoring-network
 
   notification-prometheus:
     image: prom/prometheus:latest
@@ -210,6 +214,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - statistics-network
+      - monitoring-network
 
   auth-loki:
     image: grafana/loki:latest
@@ -284,6 +289,24 @@ services:
       - notification-network
       - statistics-network
 
+  grafana:
+    image: grafana/grafana:latest
+    platform: linux/amd64
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - grafana-data:/var/lib/grafana
+    networks:
+      - auth-network
+      - recruitment-network
+      - product-network
+      - review-network
+      - notification-network
+      - statistics-network
+      - monitoring-network
+
 networks:
   auth-network:
     driver: bridge
@@ -306,6 +329,9 @@ networks:
   kafka-network:
     driver: bridge
 
+  monitoring-network:
+    driver: bridge
+
 volumes:
   postgres-data:
   auth_redis_data:
@@ -314,3 +340,4 @@ volumes:
   review_redis_data:
   notification_redis_data:
   statistics_redis_data:
+  grafana-data:

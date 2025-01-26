@@ -1,0 +1,9 @@
+spring:
+  config:
+    import:
+      - optional:file:./environment/.env[.properties]
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DNS_NAME}/eureka

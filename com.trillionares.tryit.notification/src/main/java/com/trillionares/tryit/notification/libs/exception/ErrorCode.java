@@ -22,9 +22,7 @@ public enum ErrorCode {
   SLACK_NOTIFICATION_FAILED(500, "알림 생성이 실패되었습니다."),
   SLACK_ID_NOT_FOUND(404, "해당 슬랙 ID는 존재하지 않습니다."),
   DUPLICATE_MESSAGE_ID(404, "중복된 messageID 이므로 알림 시도가 실패됩니다."),
-  MAX_RETRY_EXCEEDED(400, "재시도 횟수 3회를 초과하였습니다"),
-  INVALID_DATE_RANGE(400, "시작일과 종료일을 모두 선택해야 합니다")
-
+  MAX_RETRY_EXCEEDED(400, "재시도 횟수 3회를 초과하였습니다")
   ;
 
   private final int status;
