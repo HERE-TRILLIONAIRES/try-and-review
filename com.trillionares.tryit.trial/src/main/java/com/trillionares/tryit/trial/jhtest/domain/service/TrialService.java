@@ -90,6 +90,24 @@ public class TrialService {
         }
     }
 
+    private void enhancedCheckExistRecruitment(UUID recruitmentId) {
+        // TODO: 객체가 null인지 판단 중인데, 존재여부만 확인하는 endpoint 추가 요청
+
+        RecruitmentExistAndStatusDto responseDto = recruitmentClient.enhancedIsExistRecruitmentById(recruitmentId).getData();
+
+        if(!responseDto.getIsExist()) {
+            throw new IllegalArgumentException("존재하지 않는 모집 입니다.");
+        } else if(responseDto.getStatus().contains("WAITING")) {
+            throw new IllegalArgumentException("모집이 시작되지 않았습니다.");
+        } else if(responseDto.getStatus().contains("PAUSED")) {
+            throw new IllegalArgumentException("모집이 중단 되었습니다.");
+        } else if(responseDto.getStatus().contains("ENDED")) {
+            throw new IllegalArgumentException("모집이 종료 되었습니다.");
+        } else if(responseDto.getStatus().contains("NOT_FOUND")) {
+            throw new IllegalArgumentException("모집을 찾을 수 없습니다.");
+        }
+    }
+
     private Boolean existPastSubmissionHistory(UUID userId, UUID recruitmentId) {
         if(trialRepository.existsByUserIdAndRecruitmentIdAndIsDeletedFalse(userId, recruitmentId)) {
             return true;
@@ -278,7 +296,7 @@ public class TrialService {
             throw new IllegalArgumentException("관리자나 판매자는 체험 신청할 수 없습니다.");
         }
 
-        checkExistRecruitment(requestDto.getRecruitmentId());
+        enhancedCheckExistRecruitment(requestDto.getRecruitmentId());
 
         // TODO: UserId 비동기 업데이트 고려해보기
         UUID userId = authClient.getUserByUsername(username).getData().getUserId();
