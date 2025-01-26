@@ -98,7 +98,7 @@ public class RecruitmentController {
         return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "OK", responseDto);
     }
 
-    @GetMapping("/isExist/{recruitmentId}/enhanced")
+    @GetMapping("/enhanced/isExist/{recruitmentId}")
     public BaseResponseDto<RecruitmentExistAndStatusDto> enhancedIsExistRecruitmentById(
             @PathVariable("recruitmentId") UUID recruitmentId) {
         RecruitmentExistAndStatusDto responseDto = recruitmentService.enhancedIsExistRecruitmentById(recruitmentId);

@@ -152,6 +152,23 @@ jobs: #stages
           java-version: '17'
           distribution: 'temurin'
 
+      # product
+      - name: Grant execute permission for product gradlew
+        run: chmod +x gradlew
+        working-directory: ${{ env.PRODUCT_WD }}
+
+      #- name: Build with product Gradle
+      - name: Build with Test without product Gradle
+        #run: ./gradlew clean build
+        run: ./gradlew clean build -x test
+        working-directory: ${{ env.PRODUCT_WD }}
+
+      - name: Upload product Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: product-build-libs
+          path: ${{ env.PRODUCT_WD }}/build/libs/*.jar
+
       # trial
       - name: Grant execute permission for trial gradlew
         run: chmod +x gradlew
@@ -180,6 +197,13 @@ jobs: #stages
         uses: actions/checkout@v4
 
       # Service Down load ---------------------------------------------------
+      # Product
+      - name: Download product Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: product-build-libs
+          path: ${{ env.PRODUCT_WD }}/build/libs
+
       # Trial
       - name: Download trial Build Artifacts
         uses: actions/download-artifact@v4
@@ -199,6 +223,57 @@ jobs: #stages
         uses: aws-actions/amazon-ecr-login@v1
 
       # Docker BUILD--------------------------------------------------------------
+      # Product
+      - name: Product - Build, tag, and push server image to Amazon ECR
+        id: product-build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/${{ env.PRODUCT_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.PRODUCT_WD }}
+          docker push $ECR_REGISTRY/${{ env.PRODUCT_ECR_REPOSITORY }}:${{ github.sha }}
+          echo "image=$ECR_REGISTRY/${{ env.PRODUCT_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new product image ID in the Amazon ECS task definition
+        id: product-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.PRODUCT_ECS_TASK_DEFINITION }}
+          container-name: ${{ env.PRODUCT_CONTAINER_NAME }}
+          image: ${{ steps.product-build-image.outputs.image }}
+          environment-variables: |
+            EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
+            CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+            GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+            AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+            TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+            PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+            REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+            NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+            STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+            IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
+            DB_URL=${{ secrets.DB_URL }}
+            DB_PRODUCT_USERNAME=${{ secrets.DB_PRODUCT_USERNAME }}
+            DB_PRODUCT_PASSWORD=${{ secrets.DB_PRODUCT_PASSWORD }}
+            PRODUCT_REDIS_HOST=${{ secrets.PRODUCT_REDIS_HOST }}
+            PRODUCT_REDIS_PORT=${{ secrets.PRODUCT_REDIS_PORT }}
+            REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+            KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
+            ELK_URL=${{ secrets.ELK_URL }}
+            ELK_HOST=${{ secrets.ELK_HOST }}
+            ELK_USERNAME=${{ secrets.ELK_USERNAME }}
+            ELK_PASSWORD=${{ secrets.ELK_PASSWORD }}
+
+      - name: Deploy product Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.product-task-def.outputs.task-definition }}
+          service: ${{ env.PRODUCT_ECS_SERVICE }}
+          cluster: ${{ env.PRODUCT_ECS_CLUSTER }}
+          wait-for-service-stability: true
+
       # Trial
       - name: Trial - Build, tag, and push image to Amazon ECR
         id: trial-build-image
