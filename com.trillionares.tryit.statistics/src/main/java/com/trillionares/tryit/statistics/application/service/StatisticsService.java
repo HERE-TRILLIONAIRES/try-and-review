@@ -6,8 +6,8 @@ import com.trillionares.tryit.statistics.application.dto.response.StatisticsGetR
 import com.trillionares.tryit.statistics.application.dto.response.StatisticsGetUserByUsernameResponseDto;
 import com.trillionares.tryit.statistics.domain.client.AuthClient;
 import com.trillionares.tryit.statistics.domain.model.Statistics;
-import com.trillionares.tryit.statistics.domain.respository.StatisticsRepository;
 import com.trillionares.tryit.statistics.domain.service.StatisticsValidation;
+import com.trillionares.tryit.statistics.infrastructure.persistence.StatisticsRepository;
 import com.trillionares.tryit.statistics.libs.exception.ErrorCode;
 import com.trillionares.tryit.statistics.libs.exception.GlobalException;
 import com.trillionares.tryit.statistics.presentation.dto.BaseResponse;
