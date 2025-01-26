@@ -10,7 +10,6 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +21,6 @@ public class StatisticsScheduler {
     private final Job statisticsCreateJob;
 
     @Scheduled(cron = "00 00 00 * * *")
-    @Transactional
     public void createStatisticsSchedule() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("date", LocalDateTime.now().toString())
