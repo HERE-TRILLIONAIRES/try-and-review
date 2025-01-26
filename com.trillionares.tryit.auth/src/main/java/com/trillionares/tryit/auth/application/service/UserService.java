@@ -12,6 +12,8 @@ import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.UserInfoUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -95,7 +97,7 @@ public class UserService {
     userRepository.save(user); // 변경 사항 저장
   }
 
-  @Cacheable(cacheNames = "userCache", key = "#username")
+  @Cacheable(cacheNames = "userCache", key = "#username", unless = "#result == null")
   @Transactional(readOnly = true)
   public InfoByUsernameResponseDto getUserByUsername(String username) {
     log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", username); // 캐싱 여부 확인용
@@ -105,7 +107,7 @@ public class UserService {
     return new InfoByUsernameResponseDto(user);
   }
 
-  @Cacheable(cacheNames = "userCache", key = "#userId")
+  @Cacheable(cacheNames = "userCache", key = "#userId", unless = "#result == null")
   @Transactional(readOnly = true)
   public UserResponseDto getUser(UUID userId) {
     log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", userId); // 캐싱 여부 확인용
@@ -115,7 +117,7 @@ public class UserService {
     return new UserResponseDto(user);
   }
 
-  @Cacheable(cacheNames = "userCache", key = "#userId")
+  @Cacheable(cacheNames = "userCache", key = "#userId", unless = "#result == null")
   @Transactional(readOnly = true)
   public UserResponseDto getInternalUser(UUID userId) {
     log.info("캐싱 적용 전, DB에서 내부용 사용자 정보 조회: {}", userId); // 캐싱 여부 확인용
@@ -128,11 +130,12 @@ public class UserService {
   // 사용자 목록 조회 queryDsl+paging
   @Transactional(readOnly = true)
   @PreAuthorize("hasAuthority('ADMIN')")
-  public PagedModel<UserResponseDto> getUsers(List<UUID> uuidList, Predicate predicate,
+  public PagedModel<UserResponseDto> getUsers(List<UUID> uuidList, String username, String email, Role role,
+      LocalDateTime startDateTime, LocalDateTime endDateTime, Predicate predicate,
       Pageable pageable) {
 
     Page<UserResponseDto> userResponseDtoPage
-        = userRepository.findAllByConditions(uuidList, predicate, pageable);
+        = userRepository.findAllByConditions(uuidList, username, email, role, startDateTime, endDateTime, predicate, pageable);
 
     return new PagedModel<>(userResponseDtoPage);
   }

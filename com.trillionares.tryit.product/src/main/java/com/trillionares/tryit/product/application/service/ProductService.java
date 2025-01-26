@@ -8,12 +8,17 @@ import com.trillionares.tryit.product.domain.common.message.CategoryMessage;
 import com.trillionares.tryit.product.domain.common.message.ProductMessage;
 import com.trillionares.tryit.product.domain.model.category.Category;
 import com.trillionares.tryit.product.domain.model.category.ProductCategory;
+import com.trillionares.tryit.product.domain.model.product.ProductItem;
 import com.trillionares.tryit.product.domain.model.product.Product;
 import com.trillionares.tryit.product.domain.model.product.QProduct;
 import com.trillionares.tryit.product.domain.client.AuthClient;
+import com.trillionares.tryit.product.domain.model.product.SearchProduct;
 import com.trillionares.tryit.product.domain.repository.CategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
+import com.trillionares.tryit.product.domain.repository.ProductElasticSearchRepository;
+import com.trillionares.tryit.product.domain.repository.ProductItemRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
+import com.trillionares.tryit.product.presentation.dto.ProductInfoToProductItemDto;
 import com.trillionares.tryit.product.presentation.dto.productImage.ImageIdResponseDto;
 import com.trillionares.tryit.product.presentation.dto.productImage.ImageInfoResquestDto;
 import com.trillionares.tryit.product.presentation.dto.productImage.ImageUrlDto;
@@ -52,8 +57,10 @@ public class ProductService {
     private Encoder encoder;
 
     private final ProductRepository productRepository;
+    private final ProductItemRepository productItemRepository;
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final ProductElasticSearchRepository productElasticSearchRepository;
 
     private final ImageClient imageClient;
     private final AuthClient authClient;
@@ -113,6 +120,8 @@ public class ProductService {
         } catch (Exception e) {
             throw new RuntimeException("직렬화 실패");
         }
+
+        productElasticSearchRepository.save(productToSearchProduct(product, username, productMainImageUrl.getImageUrl()));
         return product;
     }
 
@@ -144,8 +153,25 @@ public class ProductService {
         productRepository.save(product);
         productCategoryRepository.save(productCategory);
 
+        String mainImgUrl = imageClient.getImageUrlById(product.getProductImgId()).getData().getImageUrl();
+        productElasticSearchRepository.save(productToSearchProduct(product, username, mainImgUrl));
+
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private SearchProduct productToSearchProduct(Product product, String username, String mainImgUrl) {
+        return SearchProduct.builder()
+                .productId(String.valueOf(product.getProductId()))
+                .userId(String.valueOf(product.getUserId()))
+                .seller(username)
+                .productName(product.getProductName())
+                .productContent(product.getProductContent())
+                .productImgUrl(mainImgUrl)
+                .contentImgId(null)
+                .category(product.getProductCategory().getCategory().getCategoryName())
+                .content(product.getProductContent())
+                .build();
     }
 
     private Boolean validatePermission(String role) {
@@ -224,7 +250,9 @@ public class ProductService {
 
             // TODO: --------------
 
-            responseDto.add(ProductInfoResponseDto.from(product, seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList));
+            ProductInfoResponseDto tmp = ProductInfoResponseDto.from(product, product.getUserId(), seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
+            responseDto.add(tmp);
+            productItemRepository.save(ProductInfoToProductItemDto.from(tmp));
         }
 
         return responseDto;
@@ -266,7 +294,41 @@ public class ProductService {
 
         ImageUrlDto productMainImgURL = getImageUrlById(product.getProductImgId());
 
-        return ProductInfoResponseDto.from(product, seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
+        return ProductInfoResponseDto.from(product, product.getUserId(), seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
+    }
+
+    public ProductInfoResponseDto getProductByIdUsingRedis(UUID productId) {
+        if(productItemRepository.existsById(String.valueOf(productId))){
+            ProductItem productItem = productItemRepository.findById(String.valueOf(productId)).get();
+
+            return ProductInfoResponseDto.ofItem(productItem);
+        }
+
+        Product product = productRepository.findByProductIdAndIsDeleteFalse(productId).orElse(null);
+        if(product == null) {
+            throw new ProductNotFoundException(ProductMessage.NOT_FOUND_PRODUCT.getMessage());
+        }
+
+        String seller = authClient.getUserInfo(product.getUserId()).getData().getUsername();
+
+        // TODO: 카테고리 정보 여러개면 문자열 붙이기
+        if(product.getProductCategory().getCategory().getCategoryName() == null) {
+            throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
+        }
+        String allCategory = product.getProductCategory().getCategory().getCategoryName();
+
+        // TODO: 이미지 정보 받아오기
+//        String productMainImgDummydummyURL = "https://dummyimage.com/600x400/000/fff";
+//            List<String> productSubImgDummydummyURLList = List.of("https://dummyimage.com/600x400/000/fff");
+        List<String> contentImgDummydummyURLList = new ArrayList<>();
+        contentImgDummydummyURLList.add("https://dummyimage.com/600x400/000/fff");
+
+        ImageUrlDto productMainImgURL = getImageUrlById(product.getProductImgId());
+
+        ProductInfoResponseDto responseDto = ProductInfoResponseDto.from(product, product.getUserId(), seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
+        productItemRepository.save(ProductInfoToProductItemDto.from(responseDto));
+
+        return responseDto;
     }
 
     @Transactional
@@ -291,7 +353,38 @@ public class ProductService {
         updateProductElement(username, product, requestDto, productMainImage);
 
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
+
+        if(productItemRepository.existsById(String.valueOf(productId))){
+            productItemRepository.deleteById(String.valueOf(productId));
+            ProductInfoResponseDto productInfoResponseDto = setProductInfoForSaveToRedis(product);
+            productItemRepository.save(ProductInfoToProductItemDto.from(productInfoResponseDto));
+        } else {
+            ProductInfoResponseDto productInfoResponseDto = setProductInfoForSaveToRedis(product);
+            productItemRepository.save(ProductInfoToProductItemDto.from(productInfoResponseDto));
+        }
+
+        if(productElasticSearchRepository.existsById(String.valueOf(productId))) {
+            productElasticSearchRepository.deleteById(String.valueOf(productId));
+
+            String mainImgUrl = imageClient.getImageUrlById(product.getProductImgId()).getData().getImageUrl();
+            productElasticSearchRepository.save(productToSearchProduct(product, username, mainImgUrl));
+        }
+
         return responseDto;
+    }
+
+    private ProductInfoResponseDto setProductInfoForSaveToRedis(Product product) {
+        String seller = authClient.getUserInfo(product.getUserId()).getData().getUsername();
+        // TODO: 카테고리 정보 여러개면 문자열 붙이기
+        if(product.getProductCategory().getCategory().getCategoryName() == null) {
+            throw new CategoryNotFoundException(CategoryMessage.NOT_FOUND_CATEGORY.getMessage());
+        }
+        String allCategory = product.getProductCategory().getCategory().getCategoryName();
+        ImageUrlDto productMainImgURL = getImageUrlById(product.getProductImgId());
+        List<String> contentImgDummydummyURLList = new ArrayList<>();
+        contentImgDummydummyURLList.add("https://dummyimage.com/600x400/000/fff");
+
+        return ProductInfoResponseDto.from(product, product.getUserId(), seller, allCategory, productMainImgURL.getImageUrl(), contentImgDummydummyURLList);
     }
 
     private Boolean isProductOwner(UUID userId1, UUID userId2) {
@@ -406,8 +499,15 @@ public class ProductService {
         product.delete(username);
         productRepository.save(product);
 
+        if(productItemRepository.existsById(String.valueOf(productId))){
+            productItemRepository.deleteById(String.valueOf(productId));
+        }
+
+        if(productElasticSearchRepository.existsById(String.valueOf(productId))) {
+            productElasticSearchRepository.deleteById(String.valueOf(productId));
+        }
+
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
     }
-
 }

@@ -3,17 +3,24 @@ package com.trillionares.tryit.product.application.service;
 import com.trillionares.tryit.product.domain.client.AuthClient;
 import com.trillionares.tryit.product.domain.common.json.JsonUtils;
 import com.trillionares.tryit.product.domain.model.recruitment.Recruitment;
+import com.trillionares.tryit.product.domain.model.recruitment.RecruitmentItem;
 import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
+import com.trillionares.tryit.product.domain.repository.RecruitmentItemRepository;
 import com.trillionares.tryit.product.domain.repository.RecruitmentRepository;
+import com.trillionares.tryit.product.infrastructure.service.RedisService;
 import com.trillionares.tryit.product.presentation.dto.RecruitmentExistAndStatusDto;
+import com.trillionares.tryit.product.presentation.dto.RecruitmentToRecruitmentItemDto;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.KafkaMessage;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.RecruitmentSubmissionResponseDto;
 import com.trillionares.tryit.product.presentation.dto.request.CreateRecruitmentRequest;
 import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentRequest;
 import com.trillionares.tryit.product.presentation.dto.request.UpdateRecruitmentStatusRequest;
+import com.trillionares.tryit.product.presentation.dto.response.GetCompletionTimeResponse;
 import com.trillionares.tryit.product.presentation.dto.response.GetRecruitmentResponse;
 import com.trillionares.tryit.product.presentation.dto.response.RecruitmentIdResponse;
 import com.trillionares.tryit.product.presentation.dto.response.UpdateRecruitmentStatusResponse;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +38,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;
+    private final RecruitmentItemRepository recruitmentItemRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final RedisService redisService;
     private final AuthClient authClient;
 
 
@@ -54,6 +63,13 @@ public class RecruitmentService {
 
         recruitmentRepository.save(recruitment);
 
+        scheduleRecruitmentStatusChange(recruitment.getRecruitmentId(), recruitment.getRecruitmentStartDate(),
+                RecruitmentStatus.STARTED);
+        scheduleRecruitmentStatusChange(recruitment.getRecruitmentId(), recruitment.getRecruitmentEndDate(),
+                RecruitmentStatus.ENDED);
+
+        recruitmentItemRepository.save(RecruitmentToRecruitmentItemDto.from(recruitment));
+
         return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
 
@@ -73,6 +89,12 @@ public class RecruitmentService {
 
         recruitmentRepository.save(recruitment);
 
+        if(recruitmentItemRepository.existsById(String.valueOf(recruitmentId))){
+            recruitmentItemRepository.deleteById(String.valueOf(recruitmentId));
+
+            recruitmentItemRepository.save(RecruitmentToRecruitmentItemDto.from(recruitment));
+        }
+
         return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
 
@@ -87,6 +109,10 @@ public class RecruitmentService {
         validateOwnership(recruitmentId, userId);
         // BaseEntity 구현 후 soft delete 로 변경
         recruitmentRepository.delete(recruitment);
+
+        if(recruitmentItemRepository.existsById(String.valueOf(recruitmentId))){
+            recruitmentItemRepository.deleteById(String.valueOf(recruitmentId));
+        }
 
         return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
@@ -116,12 +142,22 @@ public class RecruitmentService {
         validateOwnership(recruitmentId, userId);
         recruitment.updateStatus(request.status());
 
+        if (request.status() == RecruitmentStatus.ENDED) {
+            recruitment.updateActualEndDate(LocalDateTime.now());
+            recruitment.updateCompletionTime(recruitment.calculateDurationInMillis());
+        }
+
         recruitmentRepository.save(recruitment);
+
+        if(recruitmentItemRepository.existsById(String.valueOf(recruitmentId))){
+            recruitmentItemRepository.deleteById(String.valueOf(recruitmentId));
+
+            recruitmentItemRepository.save(RecruitmentToRecruitmentItemDto.from(recruitment));
+        }
 
         return new UpdateRecruitmentStatusResponse(recruitment.getRecruitmentId(),
                 recruitment.getRecruitmentStatus());
     }
-
 
     @Transactional
     public boolean checkAndUpdateRecruitment(UUID recruitmentId, int quantity) {
@@ -160,27 +196,75 @@ public class RecruitmentService {
     }
 
     public RecruitmentExistAndStatusDto isExistRecruitmentById(UUID recruitmentId) {
-        Optional<Recruitment> recruitment = recruitmentRepository.findByRecruitmentId(recruitmentId);
+        String status = "not find";
+        if(recruitmentItemRepository.existsById(String.valueOf(recruitmentId))){
+            RecruitmentItem recruitmentItem = recruitmentItemRepository.findById(String.valueOf(recruitmentId)).get();
 
-        if (!recruitment.isPresent() || recruitment.isEmpty() || recruitment == null) {
-            return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");
+            status = recruitmentItem.getRecruitmentStatus();
+        }
+        else {
+            Optional<Recruitment> recruitment = recruitmentRepository.findByRecruitmentIdAndIsDeletedFalse(recruitmentId);
+
+            if (!recruitment.isPresent() || recruitment.isEmpty() || recruitment == null) {
+                return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");
+            }
+
+            status = recruitment.get().getRecruitmentStatus().toString();
+        }
+
+        if(status.equals("not find")){
+            throw new RuntimeException("상태를 찾을 수 없습니다.");
         }
 
         // TODO: RecruitmentStatus 수정을 임의로 할 수 없다고 생각해서 매핑만 시켜둠
-        switch (recruitment.get().getRecruitmentStatus()) {
-            case WAITING:
+        switch (status) {
+            case "WAITING":
                 return RecruitmentExistAndStatusDto.of(true, "WAITING");
-            case STARTED:
+            case "STARTED":
                 return RecruitmentExistAndStatusDto.of(true, "STARTED");
-            case RESTARTED:
+            case "RESTARTED":
                 return RecruitmentExistAndStatusDto.of(true, "RESTARTED");
-            case PAUSED:
+            case "PAUSED":
                 return RecruitmentExistAndStatusDto.of(true, "PAUSED");
-            case ENDED:
+            case "ENDED":
                 return RecruitmentExistAndStatusDto.of(true, "ENDED");
             default:
                 return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");
         }
+    }
+
+    private void scheduleRecruitmentStatusChange(UUID recruitmentId, LocalDateTime triggerTime,
+                                                 RecruitmentStatus status) {
+        long delaySeconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), triggerTime);
+
+        if (delaySeconds <= 0) {
+            updateRecruitmentStatusToRedis(recruitmentId, status);
+            return;
+        }
+
+        // Redis에 TTL 설정으로 상태 변경 예약
+        redisService.setDataExpire(
+                "recruitment:status:" + recruitmentId + ":" + status.name(),
+                status.name(),
+                delaySeconds * 1000L
+        );
+
+
+    }
+
+    public void updateRecruitmentStatusToRedis(UUID recruitmentId, RecruitmentStatus status) {
+        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new RuntimeException("Recruitment not found"));
+
+        recruitment.updateStatus(status);
+
+        if (status == RecruitmentStatus.ENDED) {
+            recruitment.updateActualEndDate(recruitment.getRecruitmentEndDate());
+            recruitment.updateCompletionTime(recruitment.calculateDurationInMillis());
+        }
+        recruitmentRepository.save(recruitment);
+
+        log.info("모집 ID {}의 상태가 {}로 업데이트되었습니다.", recruitmentId, status);
     }
 
     private void validatePermission(String role) {
@@ -196,5 +280,14 @@ public class RecruitmentService {
             throw new RuntimeException("권한이 없습니다.");
         }
     }
+
+    public GetCompletionTimeResponse getCompletionTime(UUID productId) {
+        Recruitment recruitment = recruitmentRepository.findByProductId(productId)
+                .orElseThrow(() -> new RuntimeException("Not Found Recruitment"));
+
+        return GetCompletionTimeResponse.fromEntity(recruitment);
+
+    }
+
 
 }

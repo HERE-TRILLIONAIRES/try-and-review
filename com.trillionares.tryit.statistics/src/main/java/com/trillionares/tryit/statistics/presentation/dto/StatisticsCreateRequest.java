@@ -14,11 +14,14 @@ public class StatisticsCreateRequest {
     @NotNull
     private UUID productId;
 
-    @NotNull @Min(value = 1) @Max(value = 5)
+    @NotNull @Min(value = 0) @Max(value = 5)
     private Integer highestScore;
 
-    @NotNull @Min(value = 1) @Max(value = 5)
+    @NotNull @Min(value = 0) @Max(value = 5)
     private Integer lowestScore;
+
+    @NotNull @Min(value = 0) @Max(value = 5)
+    private Double averageScore;
 
     @NotNull @PositiveOrZero
     private Integer reviewCount;

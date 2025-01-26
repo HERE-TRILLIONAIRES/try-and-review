@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class ProductIdAndProductImageIdDto {
     private UUID productId;
     private UUID productImageId;
+    private String productImgUrl;
 }
