@@ -3,6 +3,7 @@ package com.trillionares.tryit.image_manage.domain.service;
 import com.trillionares.tryit.image_manage.domain.common.json.JsonUtils;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageIdResponseDto;
 import com.trillionares.tryit.image_manage.presentation.dto.ImageInfoResquestDto;
+import com.trillionares.tryit.image_manage.presentation.dto.ImageUrlDto;
 import com.trillionares.tryit.image_manage.presentation.dto.ProductIdAndProductImageIdDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +26,12 @@ public class ImageEndpoint {
         ImageInfoResquestDto resquestDto = JsonUtils.fromJson(message, ImageInfoResquestDto.class);
 
         ImageIdResponseDto responseDto = imageService.createImage(resquestDto);
+        ImageUrlDto imageUrlDto = imageService.getImageUrlById(responseDto.getImageId());
 
         log.info("Image ID: {}", responseDto.getImageId());
 
 
-        ProductIdAndProductImageIdDto pidAndPimgidDto = ProductIdAndProductImageIdDto.of(resquestDto.getProductId(), responseDto.getImageId());
+        ProductIdAndProductImageIdDto pidAndPimgidDto = ProductIdAndProductImageIdDto.of(resquestDto.getProductId(), responseDto.getImageId(), imageUrlDto.getImageUrl());
 
         String json = JsonUtils.toJson(pidAndPimgidDto);
         kafkaTemplate.send("updateImageIdOfProduct", json);
