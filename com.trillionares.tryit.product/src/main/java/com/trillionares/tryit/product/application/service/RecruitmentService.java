@@ -64,6 +64,8 @@ public class RecruitmentService {
         scheduleRecruitmentStatusChange(recruitment.getRecruitmentId(), recruitment.getRecruitmentEndDate(),
                 RecruitmentStatus.ENDED);
 
+        recruitmentItemRepository.save(RecruitmentToRecruitmentItemDto.from(recruitment));
+
         return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
 
