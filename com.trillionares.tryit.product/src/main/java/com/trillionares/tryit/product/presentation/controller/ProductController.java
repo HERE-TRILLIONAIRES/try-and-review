@@ -57,7 +57,7 @@ public class ProductController {
         } catch (CategoryNotFoundException cnfe) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
         } catch (RuntimeException re){
-            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage(), null);
         } catch  (Exception e) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
@@ -78,7 +78,7 @@ public class ProductController {
         } catch (CategoryNotFoundException cnfe) {
             return BaseResponseDto.from(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND, cnfe.getMessage(), null);
         } catch (RuntimeException re){
-            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_RUNTIME_ERROR.getMessage(), null);
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage(), null);
         } catch  (Exception e) {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
@@ -144,6 +144,24 @@ public class ProductController {
             return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, ProductMessage.NOT_DEFINED_SERVER_ERROR.getMessage(), null);
         }
     }
+
+    @GetMapping("/elk")
+    public BaseResponseDto<List<ProductInfoResponseDto>> getProductsUsingElk(
+            @RequestParam(value = "productName", required = false) String productName,
+            @RequestParam(value = "productId", required = false) String productId,
+            @RequestParam(value = "userId", required = false) String userId,
+            @RequestParam(value = "seller", required = false) String seller,
+            @RequestParam(value = "productContent", required = false) String productContent,
+            @RequestParam(value = "category", required = false) String category
+    ) {
+        try {
+            List<ProductInfoResponseDto> response = searchProductService.search(productName, productId, userId, seller, productContent, category);
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, "ELK 검색 성공", response);
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.OK.value(), HttpStatus.OK, re.getMessage(), null);
+        }
+    }
+
 
     @PutMapping("/{productId}")
     public BaseResponseDto<ProductIdResponseDto> updateProduct(
