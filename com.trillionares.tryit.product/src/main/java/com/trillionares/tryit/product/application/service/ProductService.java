@@ -500,6 +500,10 @@ public class ProductService {
             productItemRepository.deleteById(String.valueOf(productId));
         }
 
+        if(productElasticSearchRepository.existsById(String.valueOf(productId))) {
+            productElasticSearchRepository.deleteById(String.valueOf(productId));
+        }
+
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
     }
