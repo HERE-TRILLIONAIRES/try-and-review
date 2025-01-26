@@ -296,7 +296,7 @@ public class TrialService {
             throw new IllegalArgumentException("관리자나 판매자는 체험 신청할 수 없습니다.");
         }
 
-        enhancedCheckExistRecruitment(requestDto.getRecruitmentId());
+        checkExistRecruitment(requestDto.getRecruitmentId());
 
         // TODO: UserId 비동기 업데이트 고려해보기
         UUID userId = authClient.getUserByUsername(username).getData().getUserId();
