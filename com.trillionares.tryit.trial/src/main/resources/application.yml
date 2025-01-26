@@ -1,6 +1,9 @@
+server:
+  port: 19020
+
 spring:
   application:
-    name: recruitment-service
+    name: trial-service
   config:
     import: configserver:${CONFIG_DNS_NAME}
   datasource:
@@ -29,9 +32,6 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
-server:
-  port: 19020
 
 eureka:
   client:
