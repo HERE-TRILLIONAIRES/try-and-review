@@ -3,10 +3,13 @@ package com.trillionares.tryit.product.application.service;
 import com.trillionares.tryit.product.domain.client.AuthClient;
 import com.trillionares.tryit.product.domain.common.json.JsonUtils;
 import com.trillionares.tryit.product.domain.model.recruitment.Recruitment;
+import com.trillionares.tryit.product.domain.model.recruitment.RecruitmentItem;
 import com.trillionares.tryit.product.domain.model.recruitment.type.RecruitmentStatus;
+import com.trillionares.tryit.product.domain.repository.RecruitmentItemRepository;
 import com.trillionares.tryit.product.domain.repository.RecruitmentRepository;
 import com.trillionares.tryit.product.infrastructure.service.RedisService;
 import com.trillionares.tryit.product.presentation.dto.RecruitmentExistAndStatusDto;
+import com.trillionares.tryit.product.presentation.dto.RecruitmentToRecruitmentItemDto;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.KafkaMessage;
 import com.trillionares.tryit.product.presentation.dto.common.kafka.RecruitmentSubmissionResponseDto;
 import com.trillionares.tryit.product.presentation.dto.request.CreateRecruitmentRequest;
@@ -35,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;
+    private final RecruitmentItemRepository recruitmentItemRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final RedisService redisService;
     private final AuthClient authClient;
@@ -192,23 +196,37 @@ public class RecruitmentService {
     }
 
     public RecruitmentExistAndStatusDto isExistRecruitmentById(UUID recruitmentId) {
-        Optional<Recruitment> recruitment = recruitmentRepository.findByRecruitmentId(recruitmentId);
+        String status = "not find";
+        if(recruitmentItemRepository.existsById(String.valueOf(recruitmentId))){
+            RecruitmentItem recruitmentItem = recruitmentItemRepository.findById(String.valueOf(recruitmentId)).get();
 
-        if (!recruitment.isPresent() || recruitment.isEmpty() || recruitment == null) {
-            return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");
+            status = recruitmentItem.getRecruitmentStatus();
+        }
+        else {
+            Optional<Recruitment> recruitment = recruitmentRepository.findByRecruitmentIdAndIsDeletedFalse(recruitmentId);
+
+            if (!recruitment.isPresent() || recruitment.isEmpty() || recruitment == null) {
+                return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");
+            }
+
+            status = recruitment.get().getRecruitmentStatus().toString();
+        }
+
+        if(status.equals("not find")){
+            throw new RuntimeException("상태를 찾을 수 없습니다.");
         }
 
         // TODO: RecruitmentStatus 수정을 임의로 할 수 없다고 생각해서 매핑만 시켜둠
-        switch (recruitment.get().getRecruitmentStatus()) {
-            case WAITING:
+        switch (status) {
+            case "WAITING":
                 return RecruitmentExistAndStatusDto.of(true, "WAITING");
-            case STARTED:
+            case "STARTED":
                 return RecruitmentExistAndStatusDto.of(true, "STARTED");
-            case RESTARTED:
+            case "RESTARTED":
                 return RecruitmentExistAndStatusDto.of(true, "RESTARTED");
-            case PAUSED:
+            case "PAUSED":
                 return RecruitmentExistAndStatusDto.of(true, "PAUSED");
-            case ENDED:
+            case "ENDED":
                 return RecruitmentExistAndStatusDto.of(true, "ENDED");
             default:
                 return RecruitmentExistAndStatusDto.of(false, "NOT_FOUND");

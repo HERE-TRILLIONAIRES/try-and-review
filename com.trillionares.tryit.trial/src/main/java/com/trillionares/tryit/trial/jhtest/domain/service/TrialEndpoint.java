@@ -2,7 +2,9 @@ package com.trillionares.tryit.trial.jhtest.domain.service;
 
 import com.trillionares.tryit.trial.jhtest.domain.client.AuthClient;
 import com.trillionares.tryit.trial.jhtest.domain.common.json.JsonUtils;
+import com.trillionares.tryit.trial.jhtest.domain.model.Trial;
 import com.trillionares.tryit.trial.jhtest.domain.model.type.SubmissionStatus;
+import com.trillionares.tryit.trial.jhtest.domain.repository.TrialRepository;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.UpdateStatusDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.UserResponseDto;
 import com.trillionares.tryit.trial.jhtest.presentation.dto.common.kafka.KafkaMessage;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TrialEndpoint {
 
+    private final TrialRepository trialRepository;
     private final TrialService trialService;
 
     private final AuthClient authClient;
@@ -37,5 +40,15 @@ public class TrialEndpoint {
         trialService.changeStatusOfTrial(responseDto.getUsername(), responseDto.getRole(), updateStatusDto.getSubmissionId(), SubmissionStatus.SELECTED);
 
         trialService.sendMessageToNotification(updateStatusDto.getSubmissionId());
+    }
+
+    @Transactional
+    @KafkaListener(groupId = "submission-tryit", topics = "save-trialInfo")
+    public void saveTrial(String message) throws Exception {
+        KafkaMessage kafkaMessage = JsonUtils.fromJson(message, KafkaMessage.class);
+
+        Trial trial = JsonUtils.fromJson(kafkaMessage.getPayload(), Trial.class);
+
+        trialRepository.save(trial);
     }
 }

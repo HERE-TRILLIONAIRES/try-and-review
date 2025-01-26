@@ -46,6 +46,23 @@ public class trialController {
         }
     }
 
+    @PostMapping("/enhanced")
+    public BaseResponseDto<TrialIdResponseDto> enhancedCreateTrial(
+            @RequestHeader("X-Auth-Username") String username,
+            @RequestHeader("X-Auth-Role") String role,
+            @RequestBody TrialInfoRequestDto requestDto
+    ) {
+        try{
+            TrialIdResponseDto responseDto = trialService.enhancedCreateTrial(username, role, requestDto);
+
+            return BaseResponseDto.from(HttpStatus.CREATED.value(), HttpStatus.CREATED, "신청을 완료했습니다.", responseDto);
+        } catch (IllegalArgumentException ie) {
+            return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ie.getMessage(), null);
+        } catch (RuntimeException re) {
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
+        }
+    }
+
     @GetMapping("/{submissionId}")
     public BaseResponseDto<TrialInfoResponseDto> getTrialById(
             @RequestHeader("X-Auth-Username") String username,
