@@ -2,7 +2,7 @@ package com.trillionares.tryit.statistics.libs.config;
 
 import com.trillionares.tryit.statistics.domain.client.ProductClient;
 import com.trillionares.tryit.statistics.domain.client.ReviewClient;
-import com.trillionares.tryit.statistics.domain.respository.StatisticsRepository;
+import com.trillionares.tryit.statistics.infrastructure.persistence.StatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -28,13 +28,13 @@ public class StatisticsBatchConfig {
     public Job statisticsCreateJob() {
         return new JobBuilder("statisticsCreateJob",jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(statisticsCreateStep())
+                .start(statisticsCreateTaskletBasedStep())
                 .build();
     }
 
     @Bean
-    public Step statisticsCreateStep() {
-        return new StepBuilder("statisticsCreateStep",jobRepository)
+    public Step statisticsCreateTaskletBasedStep() {
+        return new StepBuilder("statisticsCreateTaskletBasedStep",jobRepository)
                 .tasklet(new StatisticsCreateTasklet(reviewClient,productClient,statisticsRepository),transactionManager)
                 .build();
     }
