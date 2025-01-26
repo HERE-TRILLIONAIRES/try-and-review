@@ -50,5 +50,7 @@ public class TrialEndpoint {
         Trial trial = JsonUtils.fromJson(kafkaMessage.getPayload(), Trial.class);
 
         trialRepository.save(trial);
+
+        trialService.sendMessageToNotification(trial.getSubmissionId());
     }
 }

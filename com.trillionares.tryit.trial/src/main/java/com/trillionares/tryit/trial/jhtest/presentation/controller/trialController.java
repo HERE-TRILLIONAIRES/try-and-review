@@ -42,7 +42,7 @@ public class trialController {
         } catch (IllegalArgumentException ie) {
           return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ie.getMessage(), null);
         } catch (RuntimeException re) {
-            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage(), null);
         }
     }
 
@@ -59,7 +59,7 @@ public class trialController {
         } catch (IllegalArgumentException ie) {
             return BaseResponseDto.from(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST, ie.getMessage(), null);
         } catch (RuntimeException re) {
-            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, "실행 중 오류", null);
+            return BaseResponseDto.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR, re.getMessage(), null);
         }
     }
 

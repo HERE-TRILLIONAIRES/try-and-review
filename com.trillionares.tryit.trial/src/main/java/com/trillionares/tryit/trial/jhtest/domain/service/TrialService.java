@@ -50,6 +50,7 @@ public class TrialService {
         }*/
 
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
+        trial.setSubmissionId(UUID.randomUUID());
 
         trialRepository.save(trial);
 
@@ -287,6 +288,7 @@ public class TrialService {
         }*/
 
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
+        trial.setSubmissionId(UUID.randomUUID());
 
         try {
             String sendPayloadJson = JsonUtils.toJson(trial);
@@ -309,8 +311,6 @@ public class TrialService {
         } catch (Exception e){
             throw new RuntimeException("Recruitment로 메시지 생성 실패");
         }
-
-        sendMessageToNotification(trial.getSubmissionId());
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
     }
