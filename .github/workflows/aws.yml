@@ -151,24 +151,39 @@ jobs: #stages
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      # product
-      - name: Grant execute permission for product gradlew
+      # gateway
+      - name: Grant execute permission for gateway gradlew
         run: chmod +x gradlew
-        working-directory: ${{ env.PRODUCT_WD }}
+        working-directory: ${{ env.GATEWAY_WD }}
 
-      #- name: Build with product Gradle
-      - name: Build with Test without product Gradle
+      #- name: Build with gateway Gradle
+      - name: Build with Test without gateway Gradle
         #run: ./gradlew clean build
         run: ./gradlew clean build -x test
-        working-directory: ${{ env.PRODUCT_WD }}
+        working-directory: ${{ env.GATEWAY_WD }}
 
-      - name: Upload product Build Artifacts
+      - name: Upload gateway Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: product-build-libs
-          path: ${{ env.PRODUCT_WD }}/build/libs/*.jar
+          name: gateway-build-libs
+          path: ${{ env.GATEWAY_WD }}/build/libs/*.jar
 
+      # trial
+      - name: Grant execute permission for trial gradlew
+        run: chmod +x gradlew
+        working-directory: ${{ env.TRIAL_WD }}
+
+      #- name: Build with trial Gradle
+      - name: Build with Test without trial Gradle
+        #run: ./gradlew clean build
+        run: ./gradlew clean build -x test
+        working-directory: ${{ env.TRIAL_WD }}
+
+      - name: Upload trial Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trial-build-libs
+          path: ${{ env.TRIAL_WD }}/build/libs/*.jar
 
   deploy:
     name: Deploy
@@ -181,12 +196,19 @@ jobs: #stages
         uses: actions/checkout@v4
 
       # Service Down load ---------------------------------------------------
-      # Product
-      - name: Download product Build Artifacts
+      # Gateway
+      - name: Download gateway Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: product-build-libs
-          path: ${{ env.PRODUCT_WD }}/build/libs
+          name: gateway-build-libs
+          path: ${{ env.GATEWAY_WD }}/build/libs
+
+      # Trial
+      - name: Download trial Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: trial-build-libs
+          path: ${{ env.TRIAL_WD }}/build/libs
       # ------------------------------------------------------------------------
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -200,24 +222,68 @@ jobs: #stages
         uses: aws-actions/amazon-ecr-login@v1
 
       # Docker BUILD--------------------------------------------------------------
-      # Product
-      - name: Product - Build, tag, and push server image to Amazon ECR
-        id: product-build-image
+      # Gateway
+      - name: Gateway - Build, tag, and push server image to Amazon ECR
+        id: gateway-build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/${{ env.PRODUCT_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.PRODUCT_WD }}
-          docker push $ECR_REGISTRY/${{ env.PRODUCT_ECR_REPOSITORY }}:${{ github.sha }}
-          echo "image=$ECR_REGISTRY/${{ env.PRODUCT_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+          docker build -t $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }} ${{ env.GATEWAY_WD }}
+          docker push $ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}
+          echo "image=$ECR_REGISTRY/${{ env.GATEWAY_ECR_REPOSITORY }}:${{ github.sha }}" >> $GITHUB_OUTPUT
 
-      - name: Fill in the new product image ID in the Amazon ECS task definition
-        id: product-task-def
+      - name: Fill in the new gateway image ID in the Amazon ECS task definition
+        id: gateway-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ env.PRODUCT_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.PRODUCT_CONTAINER_NAME }}
-          image: ${{ steps.product-build-image.outputs.image }}
+          task-definition: ${{ env.GATEWAY_ECS_TASK_DEFINITION }}
+          container-name: ${{ env.GATEWAY_CONTAINER_NAME }}
+          image: ${{ steps.gateway-build-image.outputs.image }}
+          environment-variables: |
+            EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
+            CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
+            GATEWAY_DNS_NAME=${{ secrets.GATEWAY_DNS_NAME }}
+            AUTH_DNS_NAME=${{ secrets.AUTH_DNS_NAME }}
+            TRIAL_DNS_NAME=${{ secrets.TRIAL_DNS_NAME }}
+            PRODUCT_DNS_NAME=${{ secrets.PRODUCT_DNS_NAME }}
+            REVIEW_DNS_NAME=${{ secrets.REVIEW_DNS_NAME }}
+            NOTIFICATION_DNS_NAME=${{ secrets.NOTIFICATION_DNS_NAME }}
+            STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
+            IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
+            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
+
+      - name: Deploy gateway Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.gateway-task-def.outputs.task-definition }}
+          service: ${{ env.GATEWAY_ECS_SERVICE }}
+          cluster: ${{ env.GATEWAY_ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      # Trial
+      - name: Trial - Build, tag, and push image to Amazon ECR
+        id: trial-build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ${{ env.TRIAL_WD }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new trial image ID in the Amazon ECS task definition
+        id: trial-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.trial-build-image.outputs.image }}
           environment-variables: |
             EUREKA_DNS_NAME=${{ secrets.EUREKA_DNS_NAME }}
             CONFIG_DNS_NAME=${{ secrets.CONFIG_DNS_NAME }}
@@ -230,24 +296,20 @@ jobs: #stages
             STATISTICS_DNS_NAME=${{ secrets.STATISTICS_DNS_NAME }}
             IMAGE_MANAGE_DNS_NAME=${{ secrets.IMAGE_MANAGE_DNS_NAME }}
             DB_URL=${{ secrets.DB_URL }}
-            DB_PRODUCT_USERNAME=${{ secrets.DB_PRODUCT_USERNAME }}
-            DB_PRODUCT_PASSWORD=${{ secrets.DB_PRODUCT_PASSWORD }}
-            PRODUCT_REDIS_HOST=${{ secrets.PRODUCT_REDIS_HOST }}
-            PRODUCT_REDIS_PORT=${{ secrets.PRODUCT_REDIS_PORT }}
+            DB_RECRUITMENT_USERNAME=${{ secrets.DB_RECRUITMENT_USERNAME }}
+            DB_RECRUITMENT_PASSWORD=${{ secrets.DB_RECRUITMENT_PASSWORD }}
+            RECRUITMENT_REDIS_HOST=${{ secrets.RECRUITMENT_REDIS_HOST }}
+            RECRUITMENT_REDIS_PORT=${{ secrets.RECRUITMENT_REDIS_PORT }}
             REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
             KAFKA_DNS_URL=${{ secrets.KAFKA_DNS_URL }}
-            ELK_URL=${{ secrets.ELK_URL }}
-            ELK_HOST=${{ secrets.ELK_HOST }}
-            ELK_USERNAME=${{ secrets.ELK_USERNAME }}
-            ELK_PASSWORD=${{ secrets.ELK_PASSWORD }}
+            ZIPKIN_URL=${{ secrets.ZIPKIN_URL }}
 
-      - name: Deploy product Amazon ECS task definition
+      - name: Deploy trial Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-          task-definition: ${{ steps.product-task-def.outputs.task-definition }}
-          service: ${{ env.PRODUCT_ECS_SERVICE }}
-          cluster: ${{ env.PRODUCT_ECS_CLUSTER }}
+          task-definition: ${{ steps.trial-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
 
