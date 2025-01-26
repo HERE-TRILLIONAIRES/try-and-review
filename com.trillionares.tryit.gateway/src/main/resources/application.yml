@@ -41,8 +41,8 @@ spring:
           predicates:
             - Path=/notifications/**
 
-        - id: recruitment-service
-          uri: lb://recruitment-service
+        - id: trial-service
+          uri: lb://trial-service
           predicates:
             - Path=/api/submissions/**
 
