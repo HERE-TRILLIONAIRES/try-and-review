@@ -40,7 +40,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 	// zipkin
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 	implementation 'io.github.openfeign:feign-micrometer'
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
@@ -48,6 +47,7 @@ dependencies {
 	// actuator
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 	// cloud
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'

@@ -34,6 +34,8 @@ dependencies {
 	implementation 'io.github.openfeign:feign-micrometer'
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
 	// kafka
 	implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
@@ -55,8 +57,6 @@ dependencies {
 	// json
 	implementation 'org.json:json:20230227'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
