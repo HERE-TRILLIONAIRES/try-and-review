@@ -23,8 +23,11 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,6 +45,7 @@ public class RecruitmentService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final RedisService redisService;
     private final AuthClient authClient;
+    private final RedissonClient redissonClient;
 
 
     @Transactional
@@ -161,24 +165,40 @@ public class RecruitmentService {
 
     @Transactional
     public boolean checkAndUpdateRecruitment(UUID recruitmentId, int quantity) {
-        Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
-                .orElseThrow(() -> new RuntimeException("Not Found Recruitment"));
+        String lockKey = "lock:recruitment:" + recruitmentId; // 고유한 락 키 생성
+        RLock lock = redissonClient.getLock(lockKey);
 
-        // 모집 상태 확인
-        if (recruitment.getRecruitmentStatus() == RecruitmentStatus.ENDED ||
-                recruitment.getRecruitmentStatus() == RecruitmentStatus.PAUSED) {
-            return false;
+        try {
+            // 락 획득 (10초 대기, 5초 후 락 자동 해제)
+            if (lock.tryLock(10, 5, TimeUnit.SECONDS)) {
+                Recruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                        .orElseThrow(() -> new RuntimeException("Not Found Recruitment"));
+
+                // 모집 상태 확인
+                if (recruitment.getRecruitmentStatus() == RecruitmentStatus.ENDED ||
+                        recruitment.getRecruitmentStatus() == RecruitmentStatus.PAUSED) {
+                    return false;
+                }
+
+                // 모집 인원 초과 확인
+                if (recruitment.getCurrentParticipants() + quantity > recruitment.getMaxParticipants()) {
+                    return false;
+                }
+
+                // 모집 정보 업데이트
+                recruitment.updateCurrentParticipants(recruitment.getCurrentParticipants() + quantity);
+                recruitmentRepository.save(recruitment);
+                return true;
+            } else {
+                throw new RuntimeException("Unable to acquire lock");
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted while acquiring lock", e);
+        } finally {
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock(); // 락 해제
+            }
         }
-
-        // 모집 인원 초과 확인
-        if (recruitment.getCurrentParticipants() + quantity > recruitment.getMaxParticipants()) {
-            return false;
-        }
-
-        // 모집 정보 업데이트
-        recruitment.updateCurrentParticipants(recruitment.getCurrentParticipants() + quantity);
-        recruitmentRepository.save(recruitment);
-        return true;
     }
 
     public void sendSubmissionResponse(String submissionId, String recruitmentId, String userId, String status) {
