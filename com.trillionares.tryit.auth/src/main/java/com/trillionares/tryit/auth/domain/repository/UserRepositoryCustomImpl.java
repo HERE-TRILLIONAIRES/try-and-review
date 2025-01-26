@@ -1,5 +1,6 @@
 package com.trillionares.tryit.auth.domain.repository;
 
+import com.trillionares.tryit.auth.domain.model.QUser;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -8,11 +9,9 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.trillionares.tryit.auth.domain.model.QUser;
 import com.trillionares.tryit.auth.domain.model.Role;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.persistence.EntityManager;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +43,26 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom{
     // userIdList가 비어있지 않으면 해당 ID들만 조회
     if (userIdList != null && !userIdList.isEmpty()) {
       builder.and(user.userId.in(userIdList));
+    }
+
+    // username 조건
+    if (username != null && !username.isEmpty()) {
+      builder.and(user.username.containsIgnoreCase(username));
+    }
+
+    // email 조건
+    if (userIdList != null && !email.isEmpty()) {
+      builder.and(user.email.containsIgnoreCase(email));
+    }
+
+    // role 조건
+    if (role != null) {
+      builder.and(user.role.eq(role));
+    }
+
+    // 날짜 조건
+    if (startDateTime != null && endDateTime != null) {
+      builder.and(user.createdAt.between(startDateTime, endDateTime));
     }
 
     // isDeleted가 false인 사용자만 조회
