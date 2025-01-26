@@ -14,6 +14,12 @@ spring:
       port: ${PRODUCT_REDIS_PORT}
       username: ${REDIS_USERNAME}
       password: ${REDIS_PASSWORD}
+    elasticsearch:
+      host: ${ELK_URL}
+      username: ${ELK_USERNAME}
+      password: ${ELK_PASSWORD}
+      repositories:
+        enabled: true
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:

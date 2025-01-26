@@ -12,8 +12,10 @@ import com.trillionares.tryit.product.domain.model.product.ProductItem;
 import com.trillionares.tryit.product.domain.model.product.Product;
 import com.trillionares.tryit.product.domain.model.product.QProduct;
 import com.trillionares.tryit.product.domain.client.AuthClient;
+import com.trillionares.tryit.product.domain.model.product.SearchProduct;
 import com.trillionares.tryit.product.domain.repository.CategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
+import com.trillionares.tryit.product.domain.repository.ProductElasticSearchRepository;
 import com.trillionares.tryit.product.domain.repository.ProductItemRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoToProductItemDto;
@@ -58,6 +60,7 @@ public class ProductService {
     private final ProductItemRepository productItemRepository;
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final ProductElasticSearchRepository productElasticSearchRepository;
 
     private final ImageClient imageClient;
     private final AuthClient authClient;
@@ -117,6 +120,8 @@ public class ProductService {
         } catch (Exception e) {
             throw new RuntimeException("직렬화 실패");
         }
+
+        productElasticSearchRepository.save(productToSearchProduct(product, username, productMainImageUrl.getImageUrl()));
         return product;
     }
 
@@ -148,8 +153,25 @@ public class ProductService {
         productRepository.save(product);
         productCategoryRepository.save(productCategory);
 
+        String mainImgUrl = imageClient.getImageUrlById(product.getProductImgId()).getData().getImageUrl();
+        productElasticSearchRepository.save(productToSearchProduct(product, username, mainImgUrl));
+
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private SearchProduct productToSearchProduct(Product product, String username, String mainImgUrl) {
+        return SearchProduct.builder()
+                .productId(String.valueOf(product.getProductId()))
+                .userId(String.valueOf(product.getUserId()))
+                .seller(username)
+                .productName(product.getProductName())
+                .productContent(product.getProductContent())
+                .productImgUrl(mainImgUrl)
+                .contentImgId(null)
+                .category(product.getProductCategory().getCategory().getCategoryName())
+                .content(product.getProductContent())
+                .build();
     }
 
     private Boolean validatePermission(String role) {
@@ -341,6 +363,13 @@ public class ProductService {
             productItemRepository.save(ProductInfoToProductItemDto.from(productInfoResponseDto));
         }
 
+        if(productElasticSearchRepository.existsById(String.valueOf(productId))) {
+            productElasticSearchRepository.deleteById(String.valueOf(productId));
+
+            String mainImgUrl = imageClient.getImageUrlById(product.getProductImgId()).getData().getImageUrl();
+            productElasticSearchRepository.save(productToSearchProduct(product, username, mainImgUrl));
+        }
+
         return responseDto;
     }
 
@@ -474,8 +503,11 @@ public class ProductService {
             productItemRepository.deleteById(String.valueOf(productId));
         }
 
+        if(productElasticSearchRepository.existsById(String.valueOf(productId))) {
+            productElasticSearchRepository.deleteById(String.valueOf(productId));
+        }
+
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
     }
-
 }
