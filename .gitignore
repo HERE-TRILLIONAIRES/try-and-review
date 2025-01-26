@@ -12,3 +12,4 @@ environment/**
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+environment.env.backup

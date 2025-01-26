@@ -28,24 +28,27 @@ ext {
 }
 
 dependencies {
-	// ELK
-	implementation 'org.springframework.data:spring-data-elasticsearch:5.4.1'
-	implementation 'net.logstash.logback:logstash-logback-encoder:8.0' // Logback <-> Logstash 연동을 위함
+    // ELK
+    implementation 'org.springframework.data:spring-data-elasticsearch:5.4.1'
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.0' // Logback <-> Logstash 연동을 위함
 
-	// zipkin
+    // zipkin
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 	implementation 'io.github.openfeign:feign-micrometer'
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 
-	// kafka
+    // prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // kafka
 	implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
-	// redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	// feign-form client - multipart
+    // feign-form client - multipart
 	implementation 'io.github.openfeign:feign-form:13.5'
 	implementation 'io.github.openfeign:feign-form-spring:13.5'
 
@@ -62,7 +65,6 @@ dependencies {
 	// json
 	implementation 'org.json:json:20230227'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'

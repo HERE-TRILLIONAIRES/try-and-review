@@ -61,7 +61,8 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(
             SessionCreationPolicy.STATELESS)) // 세션 비활성화
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/users/signup", "/auth/signin", "/users/internals/**", "/actuator/health").permitAll() // 로그인 URL 허용
+            .requestMatchers("/actuator/**").permitAll()
+            .requestMatchers("/users/signup", "/auth/signin", "/users/internals/**").permitAll() // 로그인 URL 허용
             .requestMatchers("/users/userlists").hasAuthority("ADMIN") // 사용자 목록조회는 관리자 권한만 가능
             .anyRequest().authenticated() // 나머지는 인증 필요
         )
