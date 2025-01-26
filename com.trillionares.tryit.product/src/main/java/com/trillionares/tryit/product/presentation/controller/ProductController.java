@@ -2,6 +2,7 @@ package com.trillionares.tryit.product.presentation.controller;
 
 import com.querydsl.core.types.Predicate;
 import com.trillionares.tryit.product.application.service.ProductService;
+import com.trillionares.tryit.product.application.service.SearchProductServiceImpl;
 import com.trillionares.tryit.product.domain.common.json.JsonUtils;
 import com.trillionares.tryit.product.domain.common.message.ProductMessage;
 import com.trillionares.tryit.product.domain.model.product.Product;
@@ -41,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductController {
 
     private final ProductService productService;
+    private final SearchProductServiceImpl searchProductService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponseDto<ProductIdResponseDto> createProduct(
