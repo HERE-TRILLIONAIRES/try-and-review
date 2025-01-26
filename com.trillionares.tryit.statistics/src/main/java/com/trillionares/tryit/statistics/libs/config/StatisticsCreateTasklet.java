@@ -4,7 +4,7 @@ import com.trillionares.tryit.statistics.application.dto.response.StatisticsCrea
 import com.trillionares.tryit.statistics.domain.client.ProductClient;
 import com.trillionares.tryit.statistics.domain.client.ReviewClient;
 import com.trillionares.tryit.statistics.domain.model.Statistics;
-import com.trillionares.tryit.statistics.domain.respository.StatisticsRepository;
+import com.trillionares.tryit.statistics.infrastructure.persistence.StatisticsRepository;
 import com.trillionares.tryit.statistics.presentation.dto.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
@@ -14,6 +14,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -26,12 +27,10 @@ public class StatisticsCreateTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        BaseResponse<List<StatisticsCreateDataResponseDto>>
-                statisticsCreateDataResponseDtoBaseResponse = reviewClient.getStatisticsDataToReview();
+        BaseResponse<List<StatisticsCreateDataResponseDto>> createDataDtos = reviewClient.getStatisticsDataToReview();
 
-        statisticsCreateDataResponseDtoBaseResponse.getData()
-                .forEach(statisticsDataDto
-                        -> statisticsRepository.save(Statistics.of(
+        List<Statistics> statisticsList = createDataDtos.getData().stream()
+                .map(statisticsDataDto -> Statistics.of(
                         productClient.getProductInfoStatisticsToProduct(
                                 statisticsDataDto.getProductId()).getData().getUserId(),
                         statisticsDataDto.getProductId(),
@@ -40,7 +39,11 @@ public class StatisticsCreateTasklet implements Tasklet {
                         statisticsDataDto.getAverageScore(),
                         statisticsDataDto.getReviewCount(),
                         productClient.getStatisticsDataToRecruitment(
-                                statisticsDataDto.getProductId()).getBody().getCompletionTime())));
+                                statisticsDataDto.getProductId()).getBody().getCompletionTime()
+                ))
+                .collect(Collectors.toList());
+
+        statisticsRepository.saveAll(statisticsList);
 
         return RepeatStatus.FINISHED;
     }
