@@ -97,7 +97,7 @@ public class UserService {
     userRepository.save(user); // 변경 사항 저장
   }
 
-  @Cacheable(cacheNames = "userCache", key = "#username")
+  @Cacheable(cacheNames = "userCache", key = "#username", unless = "#result == null")
   @Transactional(readOnly = true)
   public InfoByUsernameResponseDto getUserByUsername(String username) {
     log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", username); // 캐싱 여부 확인용
@@ -107,7 +107,7 @@ public class UserService {
     return new InfoByUsernameResponseDto(user);
   }
 
-  @Cacheable(cacheNames = "userCache", key = "#userId")
+  @Cacheable(cacheNames = "userCache", key = "#userId", unless = "#result == null")
   @Transactional(readOnly = true)
   public UserResponseDto getUser(UUID userId) {
     log.info("캐싱 적용 전, DB에서 사용자 정보 조회: {}", userId); // 캐싱 여부 확인용
@@ -117,7 +117,7 @@ public class UserService {
     return new UserResponseDto(user);
   }
 
-  @Cacheable(cacheNames = "userCache", key = "#userId")
+  @Cacheable(cacheNames = "userCache", key = "#userId", unless = "#result == null")
   @Transactional(readOnly = true)
   public UserResponseDto getInternalUser(UUID userId) {
     log.info("캐싱 적용 전, DB에서 내부용 사용자 정보 조회: {}", userId); // 캐싱 여부 확인용
