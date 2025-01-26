@@ -26,8 +26,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "p_submission", schema = "recruitment")
 public class Trial extends BaseEntity {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "submission_id", updatable = false, nullable = false)
     private UUID submissionId;
     @Column(name = "recruitment_id", nullable = false)
@@ -52,5 +50,9 @@ public class Trial extends BaseEntity {
         this.setDeleted(true);
         this.setDeletedAt(LocalDateTime.now());
         this.setDeletedBy(username);
+    }
+
+    public void setSubmissionId(UUID uuid) {
+        this.submissionId = uuid;
     }
 }
