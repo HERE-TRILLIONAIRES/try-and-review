@@ -4,6 +4,7 @@ package com.trillionares.tryit.auth.presentation.controller;
 import com.querydsl.core.types.Predicate;
 import com.trillionares.tryit.auth.application.dto.InfoByUsernameResponseDto;
 import com.trillionares.tryit.auth.application.service.UserService;
+import com.trillionares.tryit.auth.domain.model.Role;
 import com.trillionares.tryit.auth.infrastructure.config.CustomUserDetails;
 import com.trillionares.tryit.auth.presentation.dto.BaseResponse;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.PasswordUpdateReqDto;
@@ -11,6 +12,8 @@ import com.trillionares.tryit.auth.presentation.dto.requestDto.SignUpRequestDto;
 import com.trillionares.tryit.auth.presentation.dto.requestDto.UserInfoUpdateReqDto;
 import com.trillionares.tryit.auth.presentation.dto.responseDto.UserResponseDto;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +57,7 @@ public class UserController {
   }
 
   @PutMapping("/{userId}")
-  public BaseResponse<UserResponseDto> updateUserInfo(@PathVariable UUID userId,
+  public BaseResponse<UserResponseDto> updateUserInfo(@PathVariable("userId") UUID userId,
       @Valid @RequestBody UserInfoUpdateReqDto reqDto,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     userService.updateUserInfo(userDetails.getUserId(), reqDto);
@@ -65,7 +68,7 @@ public class UserController {
   }
 
   @DeleteMapping("/{userId}")
-  public BaseResponse deleteUser(@PathVariable UUID userId,
+  public BaseResponse deleteUser(@PathVariable("userId") UUID userId,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     userService.deleteUser(userDetails.getUserId());
 
@@ -73,19 +76,19 @@ public class UserController {
   }
 
   @GetMapping("/internals/username/{username}") // 내부통신용으로 인증제외됨
-  public BaseResponse<InfoByUsernameResponseDto> getUserByUsername(@PathVariable String username) {
+  public BaseResponse<InfoByUsernameResponseDto> getUserByUsername(@PathVariable("username") String username) {
     InfoByUsernameResponseDto resDto = userService.getUserByUsername(username);
     return BaseResponse.of(200, HttpStatus.OK, "사용자 정보 조회에 성공하였습니다.", resDto);
   }
 
   @GetMapping("/{userId}")
-  public BaseResponse<UserResponseDto> getUser(@PathVariable UUID userId) {
+  public BaseResponse<UserResponseDto> getUser(@PathVariable("userId") UUID userId) {
     UserResponseDto resDto = userService.getUser(userId);
     return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
   }
 
   @GetMapping("/internals/{userId}")  // 내부통신용으로 인증제외됨
-  public BaseResponse<UserResponseDto> getInternalUser(@PathVariable UUID userId) {
+  public BaseResponse<UserResponseDto> getInternalUser(@PathVariable("userId") UUID userId) {
     UserResponseDto resDto = userService.getInternalUser(userId);
     return BaseResponse.of(200, HttpStatus.OK, "사용자가 조회되었습니다.", resDto);
   }
@@ -93,9 +96,24 @@ public class UserController {
   @GetMapping("/userlists")
   public BaseResponse<PagedModel<UserResponseDto>> getUsers(
       @RequestParam(required = false) List<UUID> uuidList,
+      @RequestParam(required = false) String username,
+      @RequestParam(required = false) String email,
+      @RequestParam(required = false) Role role,
+      @RequestParam(required = false) LocalDate startDate, //우선은 사용자 편의를 위해 시간제외하고 받음
+      @RequestParam(required = false) LocalDate endDate,  //우선은 사용자 편의를 위해 시간제외하고 받음
       @RequestParam(required = false) Predicate predicate,
       Pageable pageable) {
-    PagedModel<UserResponseDto> response = userService.getUsers(uuidList, predicate,
+
+    // LocalDate -> LocalDateTime 변환
+    LocalDateTime startDateTime = (startDate != null)
+        ? startDate.atStartOfDay()
+        : null;
+
+    LocalDateTime endDateTime = (endDate != null)
+        ? endDate.atTime(23, 59, 59)
+        : null;
+
+    PagedModel<UserResponseDto> response = userService.getUsers(uuidList, username, email, role, startDateTime, endDateTime, predicate,
         pageable);
     return BaseResponse.of(200, HttpStatus.OK, "사용자 목록이 조회되었습니다.", response);
   }
