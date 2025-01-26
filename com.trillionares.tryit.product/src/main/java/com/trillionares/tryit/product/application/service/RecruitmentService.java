@@ -85,6 +85,12 @@ public class RecruitmentService {
 
         recruitmentRepository.save(recruitment);
 
+        if(recruitmentItemRepository.existsById(String.valueOf(recruitmentId))){
+            recruitmentItemRepository.deleteById(String.valueOf(recruitmentId));
+
+            recruitmentItemRepository.save(RecruitmentToRecruitmentItemDto.from(recruitment));
+        }
+
         return new RecruitmentIdResponse(recruitment.getRecruitmentId());
     }
 
@@ -134,6 +140,12 @@ public class RecruitmentService {
         }
 
         recruitmentRepository.save(recruitment);
+
+        if(recruitmentItemRepository.existsById(String.valueOf(recruitmentId))){
+            recruitmentItemRepository.deleteById(String.valueOf(recruitmentId));
+
+            recruitmentItemRepository.save(RecruitmentToRecruitmentItemDto.from(recruitment));
+        }
 
         return new UpdateRecruitmentStatusResponse(recruitment.getRecruitmentId(),
                 recruitment.getRecruitmentStatus());
