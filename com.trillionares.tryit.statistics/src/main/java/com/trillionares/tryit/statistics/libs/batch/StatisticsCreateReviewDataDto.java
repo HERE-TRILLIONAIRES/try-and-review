@@ -1,4 +1,4 @@
-package com.trillionares.tryit.statistics.libs.config;
+package com.trillionares.tryit.statistics.libs.batch;
 
 import lombok.AccessLevel;
 import lombok.Builder;

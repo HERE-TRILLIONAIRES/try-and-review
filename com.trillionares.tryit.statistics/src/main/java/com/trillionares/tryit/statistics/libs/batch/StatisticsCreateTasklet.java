@@ -1,4 +1,4 @@
-package com.trillionares.tryit.statistics.libs.config;
+package com.trillionares.tryit.statistics.libs.batch;
 
 import com.trillionares.tryit.statistics.application.dto.response.StatisticsCreateDataResponseDto;
 import com.trillionares.tryit.statistics.domain.client.ProductClient;
