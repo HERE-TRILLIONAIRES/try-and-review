@@ -5,14 +5,16 @@ import com.trillionares.tryit.notification.domain.repository.NotificationReposit
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /**
  * 인터페이스
  */
 public interface NotificationRepository extends
     JpaRepository<Notification, UUID>,
-    NotificationRepositoryCustom {
-
+    NotificationRepositoryCustom,
+    QuerydslPredicateExecutor<Notification>
+{
   Optional<Notification> findByMessageId(String messageId);
 
 }
