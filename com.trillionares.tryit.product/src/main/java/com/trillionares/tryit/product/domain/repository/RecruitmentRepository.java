@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface RecruitmentRepository extends JpaRepository<Recruitment, UUID>, CustomRecruitmentRepository {
-    Optional<Recruitment> findByRecruitmentId(UUID recruitmentId);
-
     @Query("SELECT r.userId FROM Recruitment r WHERE r.recruitmentId = :recruitmentId")
     Optional<UUID> findOwnerIdByRecruitmentId(@Param("recruitmentId") UUID recruitmentId);
 
     Optional<Recruitment> findByProductId(UUID productId);
 
+    @Query("SELECT r.recruitmentId FROM Recruitment r WHERE r.recruitmentId = :recruitmentId")
+    Optional<Recruitment> findByRecruitmentIdAndIsDeletedFalse(UUID recruitmentId);
 }

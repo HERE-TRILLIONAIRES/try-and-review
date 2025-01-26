@@ -50,6 +50,7 @@ public class TrialService {
         }*/
 
         Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
+        trial.setSubmissionId(UUID.randomUUID());
 
         trialRepository.save(trial);
 
@@ -267,6 +268,49 @@ public class TrialService {
         }
 
         trial = statusConvert(trial, trial.getSubmissionStatus(), SubmissionStatus.REVIEW_SUBMITTED, "시스템");
+
+        return TrialIdResponseDto.from(trial.getSubmissionId());
+    }
+
+    @Transactional
+    public TrialIdResponseDto enhancedCreateTrial(String username, String role, TrialInfoRequestDto requestDto) {
+        if(!validatePermission(role)){
+            throw new IllegalArgumentException("관리자나 판매자는 체험 신청할 수 없습니다.");
+        }
+
+        checkExistRecruitment(requestDto.getRecruitmentId());
+
+        // TODO: UserId 비동기 업데이트 고려해보기
+        UUID userId = authClient.getUserByUsername(username).getData().getUserId();
+
+        /*if(existPastSubmissionHistory(userId, requestDto.getRecruitmentId())) {
+            throw new IllegalArgumentException("이전 신청내역이 있는 모집 입니다.");
+        }*/
+
+        Trial trial = TrialInfoRequestDto.toCreateEntity(requestDto, userId, username);
+        trial.setSubmissionId(UUID.randomUUID());
+
+        try {
+            String sendPayloadJson = JsonUtils.toJson(trial);
+            KafkaMessage sendMessage = KafkaMessage.from(sendPayloadJson);
+            String sendMessageJson = JsonUtils.toJson(sendMessage);
+
+            kafkaTemplate.send("save-trialInfo", "TrialEntityDto", sendMessageJson);
+        } catch (Exception e){
+            throw new RuntimeException("Trial 저장을 위한 메시지 생성 실패");
+        }
+
+        // TODO: 재고 빼기, 신청시간 담기, 신청자 정보 담기
+        SendRecruitmentDto sendRecruitmentDto = SendRecruitmentDto.of(trial.getSubmissionId(), requestDto.getRecruitmentId(), userId, trial.getQuantity(), String.valueOf(trial.getCreatedAt()));
+        try {
+            String sendPayloadJson = JsonUtils.toJson(sendRecruitmentDto);
+            KafkaMessage sendMessage = KafkaMessage.from(sendPayloadJson);
+            String sendMessageJson = JsonUtils.toJson(sendMessage);
+
+            kafkaTemplate.send("checkPossible", "ValidatedRecruitment-req", sendMessageJson);
+        } catch (Exception e){
+            throw new RuntimeException("Recruitment로 메시지 생성 실패");
+        }
 
         return TrialIdResponseDto.from(trial.getSubmissionId());
     }
