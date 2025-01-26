@@ -117,6 +117,8 @@ public class ProductService {
         } catch (Exception e) {
             throw new RuntimeException("직렬화 실패");
         }
+
+        productElasticSearchRepository.save(productToSearchProduct(product, username, productMainImageUrl.getImageUrl()));
         return product;
     }
 
@@ -148,8 +150,25 @@ public class ProductService {
         productRepository.save(product);
         productCategoryRepository.save(productCategory);
 
+        String mainImgUrl = imageClient.getImageUrlById(product.getProductImgId()).getData().getImageUrl();
+        productElasticSearchRepository.save(productToSearchProduct(product, username, mainImgUrl));
+
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
+    }
+
+    private SearchProduct productToSearchProduct(Product product, String username, String mainImgUrl) {
+        return SearchProduct.builder()
+                .productId(String.valueOf(product.getProductId()))
+                .userId(String.valueOf(product.getUserId()))
+                .seller(username)
+                .productName(product.getProductName())
+                .productContent(product.getProductContent())
+                .productImgUrl(mainImgUrl)
+                .contentImgId(null)
+                .category(product.getProductCategory().getCategory().getCategoryName())
+                .content(product.getProductContent())
+                .build();
     }
 
     private Boolean validatePermission(String role) {
