@@ -14,6 +14,6 @@ public interface RecruitmentClient {
     @GetMapping("/recruitments/isExist/{recruitmentId}")
     BaseResponseDto<RecruitmentExistAndStatusDto> isExistRecruitmentById(@PathVariable("recruitmentId") UUID recruitmentId);
 
-    @GetMapping("/recruitments/isExist/{recruitmentId}/enhanced")
+    @GetMapping("/recruitments/enhanced/isExist/{recruitmentId}")
     BaseResponseDto<RecruitmentExistAndStatusDto> enhancedIsExistRecruitmentById(@PathVariable("recruitmentId") UUID recruitmentId);
 }
