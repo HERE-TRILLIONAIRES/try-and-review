@@ -360,6 +360,13 @@ public class ProductService {
             productItemRepository.save(ProductInfoToProductItemDto.from(productInfoResponseDto));
         }
 
+        if(productElasticSearchRepository.existsById(String.valueOf(productId))) {
+            productElasticSearchRepository.deleteById(String.valueOf(productId));
+
+            String mainImgUrl = imageClient.getImageUrlById(product.getProductImgId()).getData().getImageUrl();
+            productElasticSearchRepository.save(productToSearchProduct(product, username, mainImgUrl));
+        }
+
         return responseDto;
     }
 
