@@ -12,8 +12,10 @@ import com.trillionares.tryit.product.domain.model.product.ProductItem;
 import com.trillionares.tryit.product.domain.model.product.Product;
 import com.trillionares.tryit.product.domain.model.product.QProduct;
 import com.trillionares.tryit.product.domain.client.AuthClient;
+import com.trillionares.tryit.product.domain.model.product.SearchProduct;
 import com.trillionares.tryit.product.domain.repository.CategoryRepository;
 import com.trillionares.tryit.product.domain.repository.ProductCategoryRepository;
+import com.trillionares.tryit.product.domain.repository.ProductElasticSearchRepository;
 import com.trillionares.tryit.product.domain.repository.ProductItemRepository;
 import com.trillionares.tryit.product.domain.repository.ProductRepository;
 import com.trillionares.tryit.product.presentation.dto.ProductInfoToProductItemDto;
@@ -58,6 +60,7 @@ public class ProductService {
     private final ProductItemRepository productItemRepository;
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final ProductElasticSearchRepository productElasticSearchRepository;
 
     private final ImageClient imageClient;
     private final AuthClient authClient;
@@ -507,5 +510,4 @@ public class ProductService {
         ProductIdResponseDto responseDto = ProductIdResponseDto.from(product.getProductId());
         return responseDto;
     }
-
 }
