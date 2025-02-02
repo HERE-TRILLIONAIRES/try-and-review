@@ -34,7 +34,7 @@
 
 
 ### 🗺️ 아키텍처 설계도
-<img alt="" src="https://github.com/user-attachments/assets/7f469c41-4999-444f-94cf-96441c8f1e43"  width="800">
+<img alt="" src="https://github.com/user-attachments/assets/72dbaaba-a00d-4454-9eef-cd3b22d5c438"  width="800">
 
 
 위 아키텍처는 **MSA 기반의 이커머스 서비스** 구조를 나타냅니다.  
