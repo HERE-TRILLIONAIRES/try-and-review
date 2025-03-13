@@ -55,6 +55,8 @@ public class NotificationOutbox extends BaseEntity {
     this.retryCount++;
     if (this.retryCount >= 3) {
       this.outboxStatus = NotificationStatus.FAILED;
+    } else {
+      this.outboxStatus = NotificationStatus.PENDING;
     }
   }
 
