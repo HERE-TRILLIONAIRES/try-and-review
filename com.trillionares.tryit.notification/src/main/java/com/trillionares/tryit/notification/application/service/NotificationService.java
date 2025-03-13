@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -34,16 +35,51 @@ public class NotificationService {
 
   /**
    * Kafka 이벤트를 기반으로 알림을 생성하고 Slack으로 발송합니다.
+   *
    * @param event 체험단 신청(submission) 카프카 이벤트를 통해 받아온 값
+   * @return
    */
   @Transactional
-  public void createNotificationFromSubmissionEvent(SubmissionKafkaEvent event) {
+  public boolean createNotificationFromSubmissionEvent(SubmissionKafkaEvent event) {
 
     validateNotification(event);
     Notification notification = notificationRepository.save(
         convertEventToNotification(event));
 
-    sendNotificationToSlack(notification, event.getStatus());
+    return sendNotificationToSlack(notification.getNotificationId(), event.getStatus());
+  }
+
+  /**
+   * 생성된 알림을 Slack으로 발송합니다.
+   * @param notificationId 알림 고유 ID
+   * @param status 알림 상태 정보
+   */
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public boolean sendNotificationToSlack(UUID notificationId, String status) {
+
+    Notification notification = notificationRepository.findById(notificationId)
+        .orElseThrow(() -> new GlobalException(ErrorCode.NOTIFICATION_NOT_FOUND));
+
+    try {
+      String slackId = getSlackId(notification);
+
+      boolean result = slackNotificationSender.sendNotification(notification, slackId, status);
+      if (result) {
+        notification.markAsDelivered();
+      } else {
+        notification.increaseAttemptCount();
+      }
+      notificationRepository.save(notification);
+      return result;
+
+    } catch (Exception e) {
+      notification.increaseAttemptCount();
+      notificationRepository.save(notification);
+      log.error("알림 발송 실패, attempt {}: {}",
+          notification.getAttemptCount(), e.getMessage());
+      return false;
+    }
   }
 
   /**
@@ -68,25 +104,6 @@ public class NotificationService {
     if (notification.getAttemptCount() >= 3) {
       log.warn("재시도 횟수 3회 초과 {}", notification.getMessageId());
       throw new GlobalException(ErrorCode.MAX_RETRY_EXCEEDED);
-    }
-  }
-
-  /**
-   * 생성된 알림을 Slack으로 발송합니다.
-   * @param notification 알림 객체
-   * @param status 알림 상태 정보
-   */
-  private void sendNotificationToSlack(Notification notification, String status) {
-    try {
-      String slackId = getSlackId(notification);
-      slackNotificationSender.sendNotification(notification, slackId, status);
-      notification.markAsDelivered();
-
-    } catch (Exception e) {
-      notification.increaseAttemptCount();
-      log.error("알림 발송 실패, attempt {}: {}",
-          notification.getAttemptCount(), e.getMessage());
-      throw e;
     }
   }
 
@@ -116,7 +133,6 @@ public class NotificationService {
    * @return 생성된 알림 데이터
    */
   private Notification convertEventToNotification(SubmissionKafkaEvent event) {
-
     return Notification.builder()
         .userId(event.getUserId())
         .submissionId(event.getSubmissionId())

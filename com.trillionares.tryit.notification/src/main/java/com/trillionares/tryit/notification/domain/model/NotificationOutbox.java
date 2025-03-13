@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class NotificationOutbox extends BaseEntity {
 
   @Id
-  @Column(name = "notification_id", updatable = false)
+  @Column(name = "event_id", updatable = false)
   private UUID eventId;
 
   @Column(name = "message_id", nullable = false)
