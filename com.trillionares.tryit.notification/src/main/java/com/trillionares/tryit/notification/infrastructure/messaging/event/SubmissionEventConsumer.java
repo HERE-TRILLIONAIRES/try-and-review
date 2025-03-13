@@ -2,7 +2,7 @@ package com.trillionares.tryit.notification.infrastructure.messaging.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trillionares.tryit.notification.application.service.NotificationService;
+import com.trillionares.tryit.notification.application.service.NotificationEventService;
 import com.trillionares.tryit.notification.libs.exception.ErrorCode;
 import com.trillionares.tryit.notification.libs.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SubmissionEventConsumer {
 
-  private final NotificationService notificationService;
+  private final NotificationEventService notificationEventService; // 추가
   private final ObjectMapper objectMapper;
 
   @KafkaListener(
@@ -23,7 +23,7 @@ public class SubmissionEventConsumer {
       groupId = "${spring.kafka.consumer.group-id}"
   )
 
-  public void handleSubmissionEvent(String message) {
+  public void consumeSubmissionEvent(String message) {
     try {
       KafkaMessage kafkaMessage = objectMapper.readValue(message, KafkaMessage.class);
 
@@ -36,7 +36,8 @@ public class SubmissionEventConsumer {
       event.setMessageId(kafkaMessage.getMessageId());
       log.info("두번째 역직렬화 SubmissionKafkaEvent: {}", event);
 
-      notificationService.createNotificationFromSubmissionEvent(event);
+      notificationEventService.processSubmissionNotification(kafkaMessage, event);
+
     } catch (JsonProcessingException e) {
       log.error("Failed to process kafka message: {}", message, e);
 

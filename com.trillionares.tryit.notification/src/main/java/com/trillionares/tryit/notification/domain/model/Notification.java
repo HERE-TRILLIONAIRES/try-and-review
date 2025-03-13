@@ -54,16 +54,16 @@ public class Notification extends BaseEntity {
     this.expiryDate = LocalDateTime.now().plusMonths(3); // 저장일로 부터 3개월
   }
 
-  public void increaseAttemptCount() {
-    this.attemptCount++;
-    updateNotificationStatus();
-  }
-
   public void markAsDelivered() {
     this.notificationStatus = NotificationStatus.SENT;
   }
 
-  public void updateNotificationStatus() {
+  public void increaseAttemptCount() {
+    this.attemptCount++;
+    updateStatus();
+  }
+
+  public void updateStatus() {
     if (this.attemptCount >= MAX_ATTEMPT_COUNT) {
       this.notificationStatus = NotificationStatus.FAILED; // 시도 횟수 3번 이상 실패
 
