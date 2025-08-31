@@ -26,6 +26,12 @@ spring:
       format-sql: true
       use_sql_comments: true
 
+  batch: # batch
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+
 server:
   port: 19060
 
